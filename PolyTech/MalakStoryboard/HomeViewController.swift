@@ -6,10 +6,10 @@ class HomeViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        Notificationbtn.isUserInteractionEnabled = true
-        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(notificationTapped))
-        Notificationbtn.addGestureRecognizer(tapGesture)
+//
+//        Notificationbtn.isUserInteractionEnabled = true
+//        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(notificationTapped))
+//        Notificationbtn.addGestureRecognizer(tapGesture)
     }
     
 // change the name of the controller
