@@ -16,6 +16,12 @@ class HomeViewController: UIViewController {
     }
     
 
+    @IBAction func FAQbtn(_ sender: UIButton) {
+        
+    }
+    
+    
+    @IBOutlet weak var Notificationbtn: UIImageView!
     /*
     // MARK: - Navigation
 
