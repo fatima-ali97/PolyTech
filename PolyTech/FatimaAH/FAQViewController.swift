@@ -1,0 +1,32 @@
+//
+//  FAQViewController.swift
+//  PolyTech
+//
+//  Created by BP-19-130-12 on 21/12/2025.
+//
+
+import UIKit
+
+class FAQViewController: UIViewController {
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+
+        // Do any additional setup after loading the view.
+    }
+    
+    @IBOutlet weak var SearchBar: UISearchBar!
+    
+    @IBAction func GetHelpbtn(_ sender: UIButton) {
+    }
+    /*
+    // MARK: - Navigation
+
+    // In a storyboard-based application, you will often want to do a little preparation before navigation
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        // Get the new view controller using segue.destination.
+        // Pass the selected object to the new view controller.
+    }
+    */
+
+}
