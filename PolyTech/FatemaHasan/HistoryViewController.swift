@@ -1,29 +1,41 @@
-//
-//  HistoryViewController.swift
-//  PolyTech
-//
-//  Created by BP-19-130-13 on 21/12/2025.
-//
-
 import UIKit
 
 class HistoryViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        // Do any additional setup after loading the view.
     }
     
-
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destination.
-        // Pass the selected object to the new view controller.
+    @IBAction func ViewDetails(_ sender: UIButton) {
+        showViewDetailsPopup()
     }
-    */
+    
+    @IBAction func Feedbackbtn(_ sender: UIButton) {
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+        let feedbackVC = storyboard.instantiateViewController(
+            withIdentifier: "FeedbackViewController"
+        ) as! FeedbackViewController
+        
+        // Push to Feedback page
+        self.navigationController?.pushViewController(feedbackVC, animated: true)
+    }
+    
+    @IBAction func ViewDetails1(_ sender: Any) {
+        showViewDetailsPopup()
+    }
 
+    func showViewDetailsPopup() {
+        let alert = UIAlertController(
+            title: "Details",
+            message: "The details:",
+            preferredStyle: .alert
+        )
+        
+        let okAction = UIAlertAction(title: "OK", style: .default, handler: nil)
+        alert.addAction(okAction)
+        
+        self.present(alert, animated: true, completion: nil)
+    }
 }
+
+
