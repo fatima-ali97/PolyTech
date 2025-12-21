@@ -52,7 +52,7 @@
                                                 <textInputTraits key="textInputTraits"/>
                                             </searchBar>
                                             <button opaque="NO" contentMode="scaleToFill" ambiguous="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="zeg-St-HFW">
-                                                <rect key="frame" x="143" y="638" width="91" height="44"/>
+                                                <rect key="frame" x="151" y="638" width="91" height="44"/>
                                                 <constraints>
                                                     <constraint firstAttribute="width" constant="160" id="Rj6-Gd-nn7"/>
                                                     <constraint firstAttribute="height" constant="44" id="xm7-XD-WtN"/>
@@ -64,13 +64,6 @@
                                                     <action selector="GetHelpbtn:" destination="Y6W-OH-hqX" eventType="touchUpInside" id="1Er-IL-pwV"/>
                                                 </connections>
                                             </button>
-                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Find important inforamtion and useful help guide." lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="zwU-hN-ilv">
-                                                <rect key="frame" x="12" y="14" width="373" height="82"/>
-                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                                <color key="textColor" white="0.66666666669999997" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                                <nil key="highlightedColor"/>
-                                            </label>
                                             <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="fIe-GH-nf9">
                                                 <rect key="frame" x="0.0" y="138" width="393" height="492"/>
                                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
@@ -79,12 +72,28 @@
                                                         <rect key="frame" x="0.0" y="0.0" width="393" height="492"/>
                                                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                                         <prototypes>
-                                                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" id="NbY-OW-UBF">
-                                                                <rect key="frame" x="0.0" y="50" width="393" height="47.666667938232422"/>
+                                                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="FAQCell" textLabel="Djp-2g-8eT" detailTextLabel="7Km-OB-RFc" rowHeight="446" style="IBUITableViewCellStyleSubtitle" id="uv0-mk-WRS">
+                                                                <rect key="frame" x="0.0" y="50" width="393" height="446"/>
                                                                 <autoresizingMask key="autoresizingMask"/>
-                                                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="NbY-OW-UBF" id="1hO-xt-nid">
-                                                                    <rect key="frame" x="0.0" y="0.0" width="393" height="47.666667938232422"/>
+                                                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="uv0-mk-WRS" id="qaG-Fr-9eN">
+                                                                    <rect key="frame" x="0.0" y="0.0" width="393" height="446"/>
                                                                     <autoresizingMask key="autoresizingMask"/>
+                                                                    <subviews>
+                                                                        <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" insetsLayoutMarginsFromSafeArea="NO" text="" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="Djp-2g-8eT">
+                                                                            <rect key="frame" x="20" y="207" width="25" height="14.333333333333334"/>
+                                                                            <autoresizingMask key="autoresizingMask"/>
+                                                                            <fontDescription key="fontDescription" type="system" pointSize="0.0"/>
+                                                                            <nil key="textColor"/>
+                                                                            <nil key="highlightedColor"/>
+                                                                        </label>
+                                                                        <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" insetsLayoutMarginsFromSafeArea="NO" text="" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="7Km-OB-RFc">
+                                                                            <rect key="frame" x="19.999999999999996" y="223.33333333333334" width="43.666666666666664" height="14.333333333333334"/>
+                                                                            <autoresizingMask key="autoresizingMask"/>
+                                                                            <fontDescription key="fontDescription" type="system" pointSize="0.0"/>
+                                                                            <nil key="textColor"/>
+                                                                            <nil key="highlightedColor"/>
+                                                                        </label>
+                                                                    </subviews>
                                                                 </tableViewCellContentView>
                                                             </tableViewCell>
                                                         </prototypes>
@@ -97,6 +106,13 @@
                                                 <viewLayoutGuide key="contentLayoutGuide" id="TI6-R3-wyo"/>
                                                 <viewLayoutGuide key="frameLayoutGuide" id="817-rW-xSw"/>
                                             </scrollView>
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Find important inforamtion and useful help guide." lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="zwU-hN-ilv">
+                                                <rect key="frame" x="12" y="14" width="373" height="82"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                <color key="textColor" white="0.66666666669999997" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                <nil key="highlightedColor"/>
+                                            </label>
                                         </subviews>
                                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                     </view>
@@ -109,12 +125,15 @@
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                     </view>
                     <connections>
+                        <outlet property="FaqTable" destination="fEM-2C-zoq" id="hXg-bZ-rqu"/>
+                        <outlet property="Search" destination="diR-9d-PCi" id="t2V-xT-wrZ"/>
                         <outlet property="SearchBar" destination="diR-9d-PCi" id="YmS-fs-YtR"/>
+                        <outlet property="tableView" destination="fEM-2C-zoq" id="Bav-OU-TdU"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Ief-a0-LHa" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="48" y="-2"/>
+            <point key="canvasLocation" x="46.564885496183201" y="-2.1126760563380285"/>
         </scene>
     </scenes>
     <resources>
