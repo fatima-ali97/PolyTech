@@ -1,35 +1,26 @@
-//
-//  HomeViewController.swift
-//  PolyTech
-//
-//  Created by BP-19-130-11 on 21/12/2025.
-//
-
 import UIKit
 
 class HomeViewController: UIViewController {
 
+    @IBOutlet weak var Notificationbtn: UIImageView!
+
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        // Do any additional setup after loading the view.
+        Notificationbtn.isUserInteractionEnabled = true
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(notificationTapped))
+        Notificationbtn.addGestureRecognizer(tapGesture)
     }
     
-
+// change the name of the controller
+//    @objc func notificationTapped() {
+//          let vc = storyboard?.instantiateViewController(withIdentifier: "NotificationVC") as! NotificationViewController
+//          navigationController?.pushViewController(vc, animated: true)
+//      }
+    
     @IBAction func FAQbtn(_ sender: UIButton) {
-        
+        let vc = storyboard?.instantiateViewController(withIdentifier: "FAQVC") as! FAQViewController
+        navigationController?.pushViewController(vc, animated: true)
     }
     
-    
-    @IBOutlet weak var Notificationbtn: UIImageView!
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destination.
-        // Pass the selected object to the new view controller.
-    }
-    */
-
 }
