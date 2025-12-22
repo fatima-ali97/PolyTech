@@ -1,5 +1,6 @@
 import UIKit
 import FirebaseFirestore
+import FirebaseAuth
 
 class NewInventoryViewController: UIViewController {
 
@@ -10,15 +11,15 @@ class NewInventoryViewController: UIViewController {
     @IBOutlet weak var location: UITextField!
     @IBOutlet weak var reason: UITextField!
     
+    let database = Firestore.firestore()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        // Do any additional setup after loading the view.
     }
     
 
-    
     @IBAction func Savebtn(_ sender: UIButton) {
+        
         let requestName = requestName.text ?? ""
         let itemName = itemName.text ?? ""
         let category = category.text ?? ""
@@ -27,6 +28,16 @@ class NewInventoryViewController: UIViewController {
         let location = location.text ?? ""
         let reason = reason.text ?? ""
         
+
+        let data: [String: Any] = [
+            "requestName": requestName,
+            "itemName": itemName,
+            "category": category,
+            "quantity": quantity,
+            "location": location,
+            "reason": reason,
+            "createdAt": Timestamp()
+        ]
         
         
     }
