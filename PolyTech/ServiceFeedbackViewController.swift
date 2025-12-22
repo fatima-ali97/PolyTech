@@ -37,6 +37,10 @@ class ServiceFeedbackViewController: UIViewController, UITextViewDelegate {
         notesTextView.text = placeholderText
         notesTextView.textColor = .secondaryLabel
         
+        notesTextView.isEditable = true
+        notesTextView.isSelectable = true
+        notesTextView.isUserInteractionEnabled = true
+        
         notesTextView.delegate = self
     }
     

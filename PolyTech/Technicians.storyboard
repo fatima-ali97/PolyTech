@@ -27,7 +27,7 @@
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                 <color key="separatorColor" systemColor="systemBackgroundColor"/>
                                 <prototypes>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="TechnicianCardCell" rowHeight="160" id="v1w-Gk-LFx" customClass="TechnicianCardCell" customModule="PolyTech">
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" restorationIdentifier="TechnicianCardCell" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="TechnicianCardCell" rowHeight="160" id="v1w-Gk-LFx" customClass="TechnicianCardCell" customModule="PolyTech">
                                         <rect key="frame" x="0.0" y="50" width="393" height="160"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="v1w-Gk-LFx" id="kaw-PJ-QSz">
@@ -35,7 +35,7 @@
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="kxs-E8-Ngh">
-                                                    <rect key="frame" x="36" y="24" width="321" height="136"/>
+                                                    <rect key="frame" x="16" y="12" width="361" height="136"/>
                                                     <subviews>
                                                         <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="rqm-AD-S2b">
                                                             <rect key="frame" x="16" y="16" width="10" height="10"/>
@@ -51,13 +51,13 @@
                                                             </userDefinedRuntimeAttributes>
                                                         </view>
                                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Ali Fadhel" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="cHI-KX-H00">
-                                                            <rect key="frame" x="36.000000000000007" y="12.333333333333337" width="83.666666666666686" height="21.666666666666671"/>
+                                                            <rect key="frame" x="36.000000000000007" y="12.33333333333333" width="83.666666666666686" height="21.666666666666671"/>
                                                             <fontDescription key="fontDescription" type="boldSystem" pointSize="18"/>
                                                             <nil key="textColor"/>
                                                             <nil key="highlightedColor"/>
                                                         </label>
                                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Available" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="7cI-Vf-dHo">
-                                                            <rect key="frame" x="244.66666666666671" y="14" width="60.333333333333343" height="28"/>
+                                                            <rect key="frame" x="284.66666666666669" y="14" width="60.333333333333314" height="28"/>
                                                             <color key="backgroundColor" systemColor="tableCellBlueTextColor"/>
                                                             <constraints>
                                                                 <constraint firstAttribute="height" constant="28" id="BgD-8u-Vd7"/>
@@ -67,10 +67,10 @@
                                                             <nil key="highlightedColor"/>
                                                         </label>
                                                         <stackView opaque="NO" contentMode="scaleToFill" alignment="center" spacing="12" translatesAutoresizingMaskIntoConstraints="NO" id="CfY-Nc-xPK">
-                                                            <rect key="frame" x="16" y="50" width="289" height="70"/>
+                                                            <rect key="frame" x="16" y="50" width="329" height="70"/>
                                                             <subviews>
                                                                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="L3L-IP-ncB">
-                                                                    <rect key="frame" x="0.0" y="0.3333333333333286" width="289" height="69.666666666666671"/>
+                                                                    <rect key="frame" x="0.0" y="0.3333333333333357" width="329" height="69.666666666666657"/>
                                                                     <subviews>
                                                                         <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" alignment="center" spacing="6" id="ZY9-Mt-l9U">
                                                                             <rect key="frame" x="0.0" y="0.0" width="138.33333333333337" height="70"/>
@@ -168,10 +168,10 @@
                                                 </view>
                                             </subviews>
                                             <constraints>
-                                                <constraint firstItem="kxs-E8-Ngh" firstAttribute="leading" secondItem="kaw-PJ-QSz" secondAttribute="leadingMargin" constant="16" id="Ghg-a4-L4I"/>
-                                                <constraint firstItem="kxs-E8-Ngh" firstAttribute="top" secondItem="kaw-PJ-QSz" secondAttribute="topMargin" constant="12" id="c9k-jn-Uwc"/>
-                                                <constraint firstAttribute="trailingMargin" secondItem="kxs-E8-Ngh" secondAttribute="trailing" constant="16" id="fMp-Jq-pJP"/>
-                                                <constraint firstItem="kxs-E8-Ngh" firstAttribute="bottom" secondItem="kaw-PJ-QSz" secondAttribute="bottomMargin" constant="12" id="hpX-zs-QuW"/>
+                                                <constraint firstItem="kxs-E8-Ngh" firstAttribute="top" secondItem="kaw-PJ-QSz" secondAttribute="top" constant="12" id="9V7-Mm-J2H"/>
+                                                <constraint firstAttribute="trailing" secondItem="kxs-E8-Ngh" secondAttribute="trailing" constant="16" id="Od7-do-7DN"/>
+                                                <constraint firstItem="kxs-E8-Ngh" firstAttribute="leading" secondItem="kaw-PJ-QSz" secondAttribute="leading" constant="16" id="RNf-8B-wVu"/>
+                                                <constraint firstAttribute="bottom" secondItem="kxs-E8-Ngh" secondAttribute="bottom" constant="12" id="u0e-9e-3xh"/>
                                             </constraints>
                                         </tableViewCellContentView>
                                         <connections>
