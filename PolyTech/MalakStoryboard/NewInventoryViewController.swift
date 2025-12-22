@@ -38,8 +38,17 @@ class NewInventoryViewController: UIViewController {
             "reason": reason,
             "createdAt": Timestamp()
         ]
-        
-        
+
+        database.collection("inventoryRequest").addDocument(data: data) { [weak self] error in
+                guard let self = self else { return }
+                
+                if error == nil {
+                    self.navigationController?.popViewController(animated: true)
+                } else {
+                    print("Error: \(error!.localizedDescription)")
+                }
+
+        }
     }
     
 
