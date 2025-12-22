@@ -11,7 +11,7 @@
         <!--Admin Dashboard View Controller-->
         <scene sceneID="N0N-B9-yur">
             <objects>
-                <viewController id="Srr-pD-4gI" customClass="AdminDashboardViewController" customModule="PolyTech" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="AdminDashboardViewController" id="Srr-pD-4gI" customClass="AdminDashboardViewController" customModule="PolyTech" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="eqL-Y6-G4W">
                         <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
