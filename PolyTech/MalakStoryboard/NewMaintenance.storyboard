@@ -44,6 +44,9 @@
                                 <color key="tintColor" red="0.086274509799999996" green="0.1647058824" blue="0.2666666667" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                                 <state key="normal" title="Button"/>
                                 <buttonConfiguration key="configuration" style="filled" title="Save Changes" cornerStyle="capsule"/>
+                                <connections>
+                                    <action selector="Savebtn:" destination="iUh-Uj-aok" eventType="touchUpInside" id="cNB-Pa-o6K"/>
+                                </connections>
                             </button>
                             <textField opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="248" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" id="y7O-ik-8p4">
                                 <rect key="frame" x="38" y="216" width="302" height="34"/>
@@ -135,6 +138,13 @@
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" id="tPd-Cl-udt"/>
+                    <connections>
+                        <outlet property="category" destination="O5p-4W-SpH" id="urU-UV-6gJ"/>
+                        <outlet property="imageUpload" destination="VVv-96-c6C" id="8VW-8m-1Qf"/>
+                        <outlet property="location" destination="jEs-HO-JZY" id="BWE-dO-6YN"/>
+                        <outlet property="requestName" destination="y7O-ik-8p4" id="Tjc-uI-dWY"/>
+                        <outlet property="urgency" destination="NJx-qO-D0q" id="i3s-qD-fCl"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="QGQ-AJ-MhK" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
