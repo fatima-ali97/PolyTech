@@ -18,9 +18,20 @@ class HomeViewController: UIViewController {
 //          navigationController?.pushViewController(vc, animated: true)
 //      }
     
-    @IBAction func FAQbtn(_ sender: UIButton) {
-        let vc = storyboard?.instantiateViewController(withIdentifier: "FAQVC") as! FAQViewController
-        navigationController?.pushViewController(vc, animated: true)
-    }
+    
+       
+
+        
+    @IBOutlet weak var FAQbtn: UIButton!
+    
+            @IBAction func FAQbtn(_ sender: UIButton) {
+
+                let sb = UIStoryboard(name: "FAQ", bundle: nil)
+                let faqNav = sb.instantiateViewController(withIdentifier: "FAQNavController")
+
+                self.navigationController?.pushViewController(faqNav, animated: true)
+            }
+
+        
     
 }

@@ -95,7 +95,7 @@ class ViewController: UIViewController {
             
             switch role.lowercased() {
             case "student":
-                storyboardID = "FAQ"
+                storyboardID = "StudentHomeViewController"
             case "admin":
                 storyboardID = "AdminHomeViewController"
             case "technician":
