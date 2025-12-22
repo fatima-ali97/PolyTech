@@ -5,7 +5,7 @@
 //  Created by BP-19-130-12 on 21/12/2025.
 //
 import UIKit
-
+import FirebaseFirestore
 struct FAQItem {
     let question: String
     let answer: String
