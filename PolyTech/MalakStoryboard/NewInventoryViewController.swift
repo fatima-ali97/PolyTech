@@ -1,10 +1,3 @@
-//
-//  NewInventoryViewController.swift
-//  PolyTech
-//
-//  Created by BP-19-130-11 on 21/12/2025.
-//
-
 import UIKit
 
 class NewInventoryViewController: UIViewController {
@@ -15,9 +8,30 @@ class NewInventoryViewController: UIViewController {
         // Do any additional setup after loading the view.
     }
     
-
+    @IBAction func RequestName(_ sender: UITextField) {
+    }
+    
+    @IBAction func ItemName(_ sender: UITextField) {
+    }
+    
+    @IBAction func Savebtn(_ sender: UIButton) {
+    }
+    
+    @IBAction func Category(_ sender: UITextField) {
+    }
+    
+    @IBAction func Quantity(_ sender: UITextField) {
+    }
+    
+    @IBAction func Location(_ sender: UITextField) {
+    }
+    
+    @IBAction func ReasonForRequest(_ sender: UITextField) {
+    }
+    
     /*
-    // MARK: - Navigation
+
+     // MARK: - Navigation
 
     // In a storyboard-based application, you will often want to do a little preparation before navigation
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
