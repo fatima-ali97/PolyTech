@@ -5,7 +5,7 @@
 //  Created by BP-19-130-12 on 21/12/2025.
 //
 import UIKit
-
+import FirebaseFirestore
 struct FAQItem {
     let question: String
     let answer: String
@@ -18,6 +18,15 @@ final class FAQViewController: UIViewController {
 
     @IBOutlet weak var tableView: UITableView!
     
+    @IBOutlet weak var getHelpTapped: UIButton!
+    @IBAction func getHelpTapped(_ sender: UIButton) {
+        let sb = UIStoryboard(name: "HelpPage", bundle: nil)
+        let vc = sb.instantiateViewController(withIdentifier: "HelpPageVC")
+
+    
+        navigationController?.pushViewController(vc, animated: true)
+
+    }
     private var faqs: [FAQItem] = [
         FAQItem(question: "Banner login",
                 answer: "1) Go to the Bahrain Polytechnic website.\n2) Click Banner.\n3) Enter your student ID and password.",

@@ -9,7 +9,7 @@ class HistoryViewController: UIViewController {
     @IBAction func ViewDetails(_ sender: UIButton) {
         showViewDetailsPopup()
     }
-    
+    /*
     @IBAction func Feedbackbtn(_ sender: UIButton) {
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
         let feedbackVC = storyboard.instantiateViewController(
@@ -19,7 +19,7 @@ class HistoryViewController: UIViewController {
         // Push to Feedback page
         self.navigationController?.pushViewController(feedbackVC, animated: true)
     }
-    
+    */
     @IBAction func ViewDetails1(_ sender: Any) {
         showViewDetailsPopup()
     }

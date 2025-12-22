@@ -11,7 +11,7 @@
         <!--Help Page View Controller-->
         <scene sceneID="s0d-6b-0kx">
             <objects>
-                <viewController id="Y6W-OH-hqX" customClass="HelpPageViewController" customModule="PolyTech" sceneMemberID="viewController">
+                <viewController restorationIdentifier="HelpPageViewController" storyboardIdentifier="HelpPageVC" id="Y6W-OH-hqX" customClass="HelpPageViewController" customModule="PolyTech" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="5EZ-qb-Rvc">
                         <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -47,7 +47,7 @@
                                                 <nil key="highlightedColor"/>
                                             </label>
                                             <stackView opaque="NO" contentMode="scaleToFill" fixedFrame="YES" spacing="16" translatesAutoresizingMaskIntoConstraints="NO" id="gEA-OT-EgT">
-                                                <rect key="frame" x="47" y="136" width="192.33333333333334" height="26"/>
+                                                <rect key="frame" x="47" y="136" width="192.33333333333331" height="26"/>
                                                 <subviews>
                                                     <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" image="in" translatesAutoresizingMaskIntoConstraints="NO" id="xxu-Ag-TrV">
                                                         <rect key="frame" x="0.0" y="0.0" width="26" height="26"/>
@@ -67,7 +67,7 @@
                                                 </subviews>
                                             </stackView>
                                             <stackView opaque="NO" contentMode="scaleToFill" fixedFrame="YES" spacing="16" translatesAutoresizingMaskIntoConstraints="NO" id="bOO-Zd-fNN">
-                                                <rect key="frame" x="47" y="191" width="202.33333333333331" height="26"/>
+                                                <rect key="frame" x="47.000000000000014" y="191" width="202.33333333333337" height="26"/>
                                                 <subviews>
                                                     <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" image="inst" translatesAutoresizingMaskIntoConstraints="NO" id="E0S-5L-7GW">
                                                         <rect key="frame" x="0.0" y="0.0" width="26" height="26"/>
@@ -103,7 +103,7 @@
                                                 </subviews>
                                             </stackView>
                                             <stackView opaque="NO" contentMode="scaleToFill" fixedFrame="YES" spacing="16" translatesAutoresizingMaskIntoConstraints="NO" id="uVS-ul-8Kt">
-                                                <rect key="frame" x="47" y="305" width="167.66666666666669" height="26"/>
+                                                <rect key="frame" x="46.999999999999986" y="305" width="167.66666666666663" height="26"/>
                                                 <subviews>
                                                     <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" image="phone" translatesAutoresizingMaskIntoConstraints="NO" id="EYT-Ar-dwn">
                                                         <rect key="frame" x="0.0" y="0.0" width="26" height="26"/>
@@ -121,7 +121,7 @@
                                                 </subviews>
                                             </stackView>
                                             <stackView opaque="NO" contentMode="scaleToFill" fixedFrame="YES" spacing="16" translatesAutoresizingMaskIntoConstraints="NO" id="fuQ-C4-bRq">
-                                                <rect key="frame" x="47" y="361" width="202.33333333333331" height="26"/>
+                                                <rect key="frame" x="47.000000000000014" y="361" width="202.33333333333337" height="26"/>
                                                 <subviews>
                                                     <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" image="tik" translatesAutoresizingMaskIntoConstraints="NO" id="sc6-D1-nk7">
                                                         <rect key="frame" x="0.0" y="0.0" width="26" height="26"/>
