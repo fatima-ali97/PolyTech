@@ -22,8 +22,11 @@ class NewInventoryViewController: UIViewController {
         let requestName = requestName.text ?? ""
         let itemName = itemName.text ?? ""
         let category = category.text ?? ""
-        let quantity = quantity.text ?? ""
-        let location
+        let quantityText = quantity.text ?? ""
+        let quantity = Int(quantityText) ?? 0
+        let location = location.text ?? ""
+        let reason = reason.text ?? ""
+        
         
         
     }
