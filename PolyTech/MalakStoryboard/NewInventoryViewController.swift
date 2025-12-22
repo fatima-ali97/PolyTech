@@ -1,43 +1,35 @@
 import UIKit
+import FirebaseFirestore
 
 class NewInventoryViewController: UIViewController {
 
+    @IBOutlet weak var requestName: UITextField!
+    @IBOutlet weak var itemName: UITextField!
+    @IBOutlet weak var category: UITextField!
+    @IBOutlet weak var quantity: UITextField!
+    @IBOutlet weak var location: UITextField!
+    @IBOutlet weak var reason: UITextField!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
 
         // Do any additional setup after loading the view.
     }
     
-    @IBAction func RequestName(_ sender: UITextField) {
-    }
-    
-    @IBAction func ItemName(_ sender: UITextField) {
-    }
+
     
     @IBAction func Savebtn(_ sender: UIButton) {
+        let requestName = requestName.text ?? ""
+        let itemName = itemName.text ?? ""
+        let category = category.text ?? ""
+        let quantityText = quantity.text ?? ""
+        let quantity = Int(quantityText) ?? 0
+        let location = location.text ?? ""
+        let reason = reason.text ?? ""
+        
+        
+        
     }
     
-    @IBAction func Category(_ sender: UITextField) {
-    }
-    
-    @IBAction func Quantity(_ sender: UITextField) {
-    }
-    
-    @IBAction func Location(_ sender: UITextField) {
-    }
-    
-    @IBAction func ReasonForRequest(_ sender: UITextField) {
-    }
-    
-    /*
-
-     // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destination.
-        // Pass the selected object to the new view controller.
-    }
-    */
 
 }
