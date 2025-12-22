@@ -20,10 +20,25 @@ class HistoryViewController: UIViewController {
         self.navigationController?.pushViewController(feedbackVC, animated: true)
     }
     */
+    @IBOutlet weak var Search: UISearchBar!
+    
+    
     @IBAction func ViewDetails1(_ sender: Any) {
         showViewDetailsPopup()
     }
 
+    @IBAction func ViewDetails2(_ sender: UIButton) {
+        showViewDetailsPopup()
+    }
+    
+    @IBAction func ViewDetails3(_ sender: Any) {
+        showViewDetailsPopup()
+    }
+    
+    @IBAction func ViewDetails4(_ sender: UIButton) {
+        showViewDetailsPopup()
+    }
+    
     func showViewDetailsPopup() {
         let alert = UIAlertController(
             title: "Details",
