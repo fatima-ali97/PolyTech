@@ -117,6 +117,9 @@
                                 <color key="tintColor" red="0.086274509799999996" green="0.1647058824" blue="0.2666666667" alpha="1" colorSpace="calibratedRGB"/>
                                 <state key="normal" title="Button"/>
                                 <buttonConfiguration key="configuration" style="filled" title="View Details"/>
+                                <connections>
+                                    <action selector="ViewDetails2:" destination="qbR-nc-I13" eventType="touchUpInside" id="7TN-QD-c4L"/>
+                                </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="dtS-SQ-0AH">
                                 <rect key="frame" x="42" y="600" width="118" height="39"/>
@@ -124,6 +127,9 @@
                                 <color key="tintColor" red="0.086274509799999996" green="0.1647058824" blue="0.2666666667" alpha="1" colorSpace="calibratedRGB"/>
                                 <state key="normal" title="Button"/>
                                 <buttonConfiguration key="configuration" style="filled" title="View Details"/>
+                                <connections>
+                                    <action selector="ViewDetails3:" destination="qbR-nc-I13" eventType="touchUpInside" id="KYm-S5-aFe"/>
+                                </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="xoR-yz-aYT">
                                 <rect key="frame" x="42" y="719" width="118" height="39"/>
@@ -131,6 +137,9 @@
                                 <color key="tintColor" red="0.086274509799999996" green="0.1647058824" blue="0.2666666667" alpha="1" colorSpace="calibratedRGB"/>
                                 <state key="normal" title="Button"/>
                                 <buttonConfiguration key="configuration" style="filled" title="View Details"/>
+                                <connections>
+                                    <action selector="ViewDetails4:" destination="qbR-nc-I13" eventType="touchUpInside" id="CnU-qT-XbM"/>
+                                </connections>
                             </button>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Request History" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="tul-5K-KQI">
                                 <rect key="frame" x="135" y="108" width="122" height="21"/>
@@ -186,6 +195,9 @@
                         <viewLayoutGuide key="safeArea" id="XRK-u5-Bhz"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                     </view>
+                    <connections>
+                        <outlet property="Search" destination="nO0-tW-w3w" id="eFI-mI-8ev"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="p21-QV-qj7" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>

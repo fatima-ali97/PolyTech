@@ -66,6 +66,10 @@
                                 <color key="tintColor" red="0.086274509799999996" green="0.1647058824" blue="0.2666666667" alpha="1" colorSpace="calibratedRGB"/>
                                 <state key="normal" title="Button"/>
                                 <buttonConfiguration key="configuration" style="filled" title="Delete"/>
+                                <connections>
+                                    <action selector="Delete1:" destination="R4J-GF-moI" eventType="touchUpInside" id="XV1-Ob-S0E"/>
+                                    <action selector="deleteButtonTapped:" destination="R4J-GF-moI" eventType="touchUpInside" id="DV9-c6-WuW"/>
+                                </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="quz-LV-82L">
                                 <rect key="frame" x="230" y="313" width="77" height="28"/>
@@ -73,6 +77,10 @@
                                 <color key="tintColor" red="0.086274509799999996" green="0.1647058824" blue="0.2666666667" alpha="1" colorSpace="calibratedRGB"/>
                                 <state key="normal" title="Button"/>
                                 <buttonConfiguration key="configuration" style="filled" title="Delete"/>
+                                <connections>
+                                    <action selector="Delete2:" destination="R4J-GF-moI" eventType="touchUpInside" id="bqU-mm-fnw"/>
+                                    <action selector="deleteButtonTapped:" destination="R4J-GF-moI" eventType="touchUpInside" id="Uia-E5-nz9"/>
+                                </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Uzh-Fr-rKL">
                                 <rect key="frame" x="230" y="442" width="77" height="28"/>
@@ -80,6 +88,9 @@
                                 <color key="tintColor" red="0.086274509799999996" green="0.1647058824" blue="0.2666666667" alpha="1" colorSpace="calibratedRGB"/>
                                 <state key="normal" title="Button"/>
                                 <buttonConfiguration key="configuration" style="filled" title="Delete"/>
+                                <connections>
+                                    <action selector="Delete3:" destination="R4J-GF-moI" eventType="touchUpInside" id="crP-Bv-PKy"/>
+                                </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="vkk-JL-HL4">
                                 <rect key="frame" x="230" y="575" width="77" height="28"/>
@@ -87,6 +98,9 @@
                                 <color key="tintColor" red="0.086274509799999996" green="0.1647058824" blue="0.2666666667" alpha="1" colorSpace="calibratedRGB"/>
                                 <state key="normal" title="Button"/>
                                 <buttonConfiguration key="configuration" style="filled" title="Delete"/>
+                                <connections>
+                                    <action selector="Delete4:" destination="R4J-GF-moI" eventType="touchUpInside" id="D6h-eA-qta"/>
+                                </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="rN3-8m-MPV">
                                 <rect key="frame" x="139" y="190" width="77" height="28"/>
@@ -94,6 +108,10 @@
                                 <color key="tintColor" red="0.086274509799999996" green="0.1647058824" blue="0.2666666667" alpha="1" colorSpace="calibratedRGB"/>
                                 <state key="normal" title="Button"/>
                                 <buttonConfiguration key="configuration" style="filled" title="Edit"/>
+                                <connections>
+                                    <action selector="Edit1:" destination="R4J-GF-moI" eventType="touchUpInside" id="L6z-wg-VRV"/>
+                                    <action selector="editButtonTapped:" destination="R4J-GF-moI" eventType="touchUpInside" id="GL2-wi-oqe"/>
+                                </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="y8l-t8-QMG">
                                 <rect key="frame" x="139" y="313" width="77" height="28"/>
@@ -101,6 +119,10 @@
                                 <color key="tintColor" red="0.086274509799999996" green="0.1647058824" blue="0.2666666667" alpha="1" colorSpace="calibratedRGB"/>
                                 <state key="normal" title="Button"/>
                                 <buttonConfiguration key="configuration" style="filled" title="Edit"/>
+                                <connections>
+                                    <action selector="Edit2:" destination="R4J-GF-moI" eventType="touchUpInside" id="CFh-CO-tmE"/>
+                                    <action selector="editButtonTapped:" destination="R4J-GF-moI" eventType="touchUpInside" id="7Bh-04-1cQ"/>
+                                </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="na8-gU-ZSr">
                                 <rect key="frame" x="139" y="442" width="77" height="28"/>
@@ -108,6 +130,9 @@
                                 <color key="tintColor" red="0.086274509799999996" green="0.1647058824" blue="0.2666666667" alpha="1" colorSpace="calibratedRGB"/>
                                 <state key="normal" title="Button"/>
                                 <buttonConfiguration key="configuration" style="filled" title="Edit"/>
+                                <connections>
+                                    <action selector="Edit3:" destination="R4J-GF-moI" eventType="touchUpInside" id="K3e-VX-MXQ"/>
+                                </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="wB5-Uz-ZZf">
                                 <rect key="frame" x="139" y="575" width="77" height="28"/>
@@ -115,6 +140,9 @@
                                 <color key="tintColor" red="0.086274509799999996" green="0.1647058824" blue="0.2666666667" alpha="1" colorSpace="calibratedRGB"/>
                                 <state key="normal" title="Button"/>
                                 <buttonConfiguration key="configuration" style="filled" title="Edit"/>
+                                <connections>
+                                    <action selector="Edit4:" destination="R4J-GF-moI" eventType="touchUpInside" id="v8Y-t4-Pci"/>
+                                </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="gSB-pv-1G1">
                                 <rect key="frame" x="139" y="702" width="77" height="28"/>
@@ -122,6 +150,9 @@
                                 <color key="tintColor" red="0.086274509799999996" green="0.1647058824" blue="0.2666666667" alpha="1" colorSpace="calibratedRGB"/>
                                 <state key="normal" title="Button"/>
                                 <buttonConfiguration key="configuration" style="filled" title="Edit"/>
+                                <connections>
+                                    <action selector="Edit5:" destination="R4J-GF-moI" eventType="touchUpInside" id="OjW-Mw-hVD"/>
+                                </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="f3O-uk-jXW">
                                 <rect key="frame" x="39" y="190" width="77" height="28"/>
@@ -129,6 +160,11 @@
                                 <color key="tintColor" red="0.086274509799999996" green="0.1647058824" blue="0.2666666667" alpha="1" colorSpace="calibratedRGB"/>
                                 <state key="normal" title="Button"/>
                                 <buttonConfiguration key="configuration" style="filled" title="View"/>
+                                <connections>
+                                    <action selector="V1:" destination="R4J-GF-moI" eventType="touchUpInside" id="0sx-zZ-AOi"/>
+                                    <action selector="View1:" destination="R4J-GF-moI" eventType="touchUpInside" id="TQY-Mj-GX4"/>
+                                    <action selector="viewButtonTapped:" destination="R4J-GF-moI" eventType="touchUpInside" id="kw1-nP-zUf"/>
+                                </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="3kR-wf-xg2">
                                 <rect key="frame" x="39" y="313" width="77" height="28"/>
@@ -136,6 +172,10 @@
                                 <color key="tintColor" red="0.086274509799999996" green="0.1647058824" blue="0.2666666667" alpha="1" colorSpace="calibratedRGB"/>
                                 <state key="normal" title="Button"/>
                                 <buttonConfiguration key="configuration" style="filled" title="View"/>
+                                <connections>
+                                    <action selector="V2:" destination="R4J-GF-moI" eventType="touchUpInside" id="J0y-Z4-jZw"/>
+                                    <action selector="viewButtonTapped:" destination="R4J-GF-moI" eventType="touchUpInside" id="hFF-70-Sp9"/>
+                                </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Idf-bv-mQo">
                                 <rect key="frame" x="39" y="442" width="77" height="28"/>
@@ -143,6 +183,9 @@
                                 <color key="tintColor" red="0.086274509799999996" green="0.1647058824" blue="0.2666666667" alpha="1" colorSpace="calibratedRGB"/>
                                 <state key="normal" title="Button"/>
                                 <buttonConfiguration key="configuration" style="filled" title="View"/>
+                                <connections>
+                                    <action selector="V3:" destination="R4J-GF-moI" eventType="touchUpInside" id="6eW-7O-gNg"/>
+                                </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="H7s-En-oam">
                                 <rect key="frame" x="39" y="575" width="77" height="28"/>
@@ -150,6 +193,9 @@
                                 <color key="tintColor" red="0.086274509799999996" green="0.1647058824" blue="0.2666666667" alpha="1" colorSpace="calibratedRGB"/>
                                 <state key="normal" title="Button"/>
                                 <buttonConfiguration key="configuration" style="filled" title="View"/>
+                                <connections>
+                                    <action selector="V4:" destination="R4J-GF-moI" eventType="touchUpInside" id="bba-9F-QAE"/>
+                                </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="AWX-AF-BTi">
                                 <rect key="frame" x="39" y="702" width="77" height="28"/>
@@ -157,6 +203,9 @@
                                 <color key="tintColor" red="0.086274509799999996" green="0.1647058824" blue="0.2666666667" alpha="1" colorSpace="calibratedRGB"/>
                                 <state key="normal" title="Button"/>
                                 <buttonConfiguration key="configuration" style="filled" title="View"/>
+                                <connections>
+                                    <action selector="V5:" destination="R4J-GF-moI" eventType="touchUpInside" id="cdF-Ry-HlH"/>
+                                </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="QB2-Or-vEx">
                                 <rect key="frame" x="230" y="702" width="77" height="28"/>
@@ -164,6 +213,9 @@
                                 <color key="tintColor" red="0.086274509799999996" green="0.1647058824" blue="0.2666666667" alpha="1" colorSpace="calibratedRGB"/>
                                 <state key="normal" title="Button"/>
                                 <buttonConfiguration key="configuration" style="filled" title="Delete"/>
+                                <connections>
+                                    <action selector="Delete5:" destination="R4J-GF-moI" eventType="touchUpInside" id="9og-Vq-WQk"/>
+                                </connections>
                             </button>
                             <view tag="-1" contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="o5a-WV-92J">
                                 <rect key="frame" x="0.0" y="-18" width="393" height="128"/>
