@@ -35,8 +35,8 @@ class TechnicianDashboardViewController: UIViewController {
     func setupChartData() {
         guard let chart = donutChartView else { return }
         
-        let colorCompleted = UIColor(red: 0.35, green: 0.67, blue: 0.93, alpha: 1.0)
-        let colorInProgress = UIColor(red: 0.00, green: 0.42, blue: 0.85, alpha: 1.0)
+        let colorCompleted = UIColor(red: 0.00, green: 0.42, blue: 0.85, alpha: 1.0)
+        let colorInProgress = UIColor(red: 0.35, green: 0.67, blue: 0.93, alpha: 1.0)
         let colorPending = UIColor(red: 0.56, green: 0.62, blue: 0.67, alpha: 1.0)
 
         chart.dataEntries = [
