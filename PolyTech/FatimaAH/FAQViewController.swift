@@ -21,7 +21,10 @@ final class FAQViewController: UIViewController {
     @IBOutlet weak var getHelpTapped: UIButton!
     @IBAction func getHelpTapped(_ sender: UIButton) {
         let sb = UIStoryboard(name: "HelpPage", bundle: nil)
-        let vc = sb.instantiateViewController(withIdentifier: "HelpPageVC")
+        guard let vc = sb.instantiateViewController(withIdentifier: "HelpPageVC") as? HelpPageViewController else {
+            print(" ❌ HelpPageVC not found. Cheak Storyboard ID!")
+            return
+        }
 
     
         navigationController?.pushViewController(vc, animated: true)
