@@ -59,12 +59,12 @@ class NewInventoryViewController: UIViewController {
     }
     
     @IBAction func Savebtn(_ sender: UIButton) {
-        
+
         guard let requestNameText = requestName.text, !requestNameText.isEmpty,
               let itemNameText = itemName.text, !itemNameText.isEmpty,
               let quantityText = quantity.text,
               let quantityValue = Int(quantityText), quantityValue > 0 else {
-            
+
             let alert = UIAlertController(
                 title: "Error",
                 message: "Please fill in the fields correctly",
@@ -74,40 +74,49 @@ class NewInventoryViewController: UIViewController {
             present(alert, animated: true)
             return
         }
-        let categoryText = category.text ?? ""
-        let locationText = location.text ?? ""
-        let reasonText = reason.text ?? ""
-        
 
         let data: [String: Any] = [
             "requestName": requestNameText,
             "itemName": itemNameText,
-            "category": categoryText,
-            "quantity": quantityText,
-            "location": locationText,
-            "reason": reasonText,
-            "createdAt": Timestamp()
+            "category": category.text ?? "",
+            "quantity": quantityValue,
+            "location": location.text ?? "",
+            "reason": reason.text ?? "",
+            "updatedAt": Timestamp()
         ]
-        
+
         if isEditMode, let documentId = documentId {
-                updateRequest(documentId: documentId, data: data)
-            } else {
-                newRequest(data: data)
-            }
+            updateRequest(documentId: documentId, data: data)
+        } else {
+            newRequest(data: data)
+        }
     }
+
     
     func newRequest(data: [String: Any]) {
-        database.collection("inventoryRequest").addDocument(data: data) { [weak self] error in
-            self?.handleInventoryResult(error: error, successMessage: "Inventory request created successfully")
+        var newData = data
+        newData["createdAt"] = Timestamp()
+
+        database.collection("inventoryRequest").addDocument(data: newData) { [weak self] error in
+            self?.handleInventoryResult(
+                error: error,
+                successMessage: "Inventory request created successfully"
+            )
         }
     }
+
     
     func updateRequest(documentId: String, data: [String: Any]) {
-        database.collection("inventoryRequest").document(documentId).updateData(data) { [weak self] error in
-            self?.handleInventoryResult(error: error, successMessage: "Inventory request updated successfully")
-        }
+        database.collection("inventoryRequest")
+            .document(documentId)
+            .updateData(data) { [weak self] error in
+                self?.handleInventoryResult(
+                    error: error,
+                    successMessage: "Inventory request updated successfully"
+                )
+            }
     }
-        
+
     func handleInventoryResult(error: Error?, successMessage: String) {
         if let error = error {
             let alert = UIAlertController(title: "Error", message: error.localizedDescription, preferredStyle: .alert)
@@ -122,21 +131,6 @@ class NewInventoryViewController: UIViewController {
         }
     }
     
-    
-    database.collection("inventoryRequest").addDocument(data: data) { [weak, self] error in
-                guard let self = self else { return }
-                if error == nil {
-                    let alert = UIAlertController(title: "Success", message: "Inventory request saved successfully", preferredStyle: .alert)
-                    alert.addAction(UIAlertAction(title: "OK", style: .default) { _ in
-                        self.navigationController?.popViewController(animated: true)
-                    })
-                    self.present(alert, animated: true)
-                } else {
-                    print("Error: \(error!.localizedDescription)")
-                }
-
-
-        }
     }
     
 
