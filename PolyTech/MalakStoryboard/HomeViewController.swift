@@ -33,8 +33,8 @@ class HomeViewController: UIViewController {
     
     
     @IBAction func FAQbtn(_ sender: UIButton) {
-        let vc = storyboard?.instantiateViewController(withIdentifier: "FAQViewController") as! FAQViewController
-        navigationController?.pushViewController(vc, animated: true)
+        let vc = storyboard!.instantiateViewController(withIdentifier: "TempFaqViewController") as! FAQViewController
+        navigationController!.pushViewController(vc, animated: true)
     }
     
     

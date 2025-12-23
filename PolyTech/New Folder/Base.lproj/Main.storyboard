@@ -198,10 +198,10 @@
             </objects>
             <point key="canvasLocation" x="6183.9694656488546" y="-176.05633802816902"/>
         </scene>
-        <!--FAQ-->
+        <!--TempFaqViewController-->
         <scene sceneID="08c-p8-6EB">
             <objects>
-                <viewController storyboardIdentifier="FAQNavController" title="FAQ" modalPresentationStyle="fullScreen" id="wqR-iE-tV5" customClass="FAQViewController" customModule="PolyTech" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="TempFaqViewController" title="TempFaqViewController" modalPresentationStyle="fullScreen" id="wqR-iE-tV5" customClass="TempFaqViewController" customModule="PolyTech" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="aD6-c2-Kif">
                         <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
