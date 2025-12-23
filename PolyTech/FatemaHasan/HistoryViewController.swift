@@ -1,4 +1,5 @@
 import UIKit
+import UIKit
 import Firebase
 import FirebaseFirestore
 import FirebaseAuth
@@ -33,17 +34,14 @@ class HistoryViewController: UIViewController {
     
     @IBAction func ViewDetails2(_ sender: UIButton) {
         showViewDetailsPopup()
-        fetchDataFromFirestore()
     }
     
     @IBAction func ViewDetails3(_ sender: Any) {
         showViewDetailsPopup()
-        fetchDataFromFirestore()
     }
     
     @IBAction func ViewDetails4(_ sender: UIButton) {
         showViewDetailsPopup()
-        fetchDataFromFirestore()
     }
     
     func fetchDataFromFirestore() {
