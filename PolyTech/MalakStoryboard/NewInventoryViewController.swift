@@ -28,8 +28,8 @@ class NewInventoryViewController: UIViewController {
     
     @IBAction func Savebtn(_ sender: UIButton) {
         
-        guard let requestName = requestName.text, !requestName.isEmpty,
-              let itemName = itemName.text, !itemName.isEmpty,
+        guard let requestNameText = requestName.text, !requestNameText.isEmpty,
+              let itemNameText = itemName.text, !itemNameText.isEmpty,
               let quantityText = quantity.text, let quantity = Int(quantityText), quantity > 0 else {
             let alert = UIAlertController(title: "Error", message: "Please fill in the fields", preferredStyle: .alert)
             alert.addAction(UIAlertAction(title: "OK", style: .default))
@@ -38,18 +38,18 @@ class NewInventoryViewController: UIViewController {
         }
         
         
-        let category = category.text ?? ""
-        let location = location.text ?? ""
-        let reason = reason.text ?? ""
+        let categoryText = category.text ?? ""
+        let locationText = location.text ?? ""
+        let reasonText = reason.text ?? ""
         
 
         let data: [String: Any] = [
-            "requestName": requestName,
-            "itemName": itemName,
-            "category": category,
-            "quantity": quantity,
-            "location": location,
-            "reason": reason,
+            "requestName": requestNameText,
+            "itemName": itemNameText,
+            "category": categoryText,
+            "quantity": quantityText,
+            "location": locationText,
+            "reason": reasonText,
             "createdAt": Timestamp()
         ]
 
