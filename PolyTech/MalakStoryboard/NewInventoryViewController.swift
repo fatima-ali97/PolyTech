@@ -2,12 +2,13 @@ import UIKit
 import FirebaseFirestore
 import FirebaseAuth
 
-var isEditMode = false
-var documentId: String?
-var existingData: [String: Any]?
 
 class NewInventoryViewController: UIViewController {
 
+    var isEditMode = false
+    var documentId: String?
+    var existingData: [String: Any]?
+    
     @IBOutlet weak var requestName: UITextField!
     @IBOutlet weak var itemName: UITextField!
     @IBOutlet weak var category: UITextField!
