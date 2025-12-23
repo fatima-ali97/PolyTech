@@ -23,7 +23,7 @@ class HomeViewController: UIViewController {
     
 // change the name of the controller
 //    @objc func notificationTapped() {
-//          let vc = storyboard?.instantiateViewController(withIdentifier: "NotificationVC") as! NotificationViewController
+//          let vc = storyboard?.instantiateViewController(withIdentifier: "NotificationViewController") as! NotificationViewController
 //          navigationController?.pushViewController(vc, animated: true)
 //      }
     
@@ -33,10 +33,8 @@ class HomeViewController: UIViewController {
     
     
     @IBAction func FAQbtn(_ sender: UIButton) {
-        
-        // Embed in navigation controller if not already
-    
-       
+        let vc = storyboard?.instantiateViewController(withIdentifier: "FAQViewController") as! FAQViewController
+        navigationController?.pushViewController(vc, animated: true)
     }
     
     
