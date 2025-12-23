@@ -1,13 +1,13 @@
 //
-//  SplashViewController.swift
+//  NotificationViewController.swift
 //  PolyTech
 //
-//  Created by Guest User on 13/12/2025.
+//  Created by BP-19-130-15 on 22/12/2025.
 //
 
 import UIKit
 
-class SplashViewController: ViewController {
+class NotificationViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()

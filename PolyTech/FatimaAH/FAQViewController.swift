@@ -16,6 +16,7 @@ struct FAQItem {
 
 final class FAQViewController: UIViewController {
 
+    @IBOutlet weak var FaqTable: UITableViewCell!
     @IBOutlet weak var searchBar: UISearchBar!
     @IBOutlet weak var getHelpTapped: UIButton!
     @IBOutlet weak var tableView: UITableView!

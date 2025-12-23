@@ -1,6 +1,15 @@
 import UIKit
 
 class HomeViewController: UIViewController {
+    
+    
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+
+        // Hide the navigation bar on the this view controller
+        self.navigationController?.setNavigationBarHidden(true, animated: animated)
+    }
 
     @IBOutlet weak var Notificationbtn: UIImageView!
 
@@ -18,9 +27,15 @@ class HomeViewController: UIViewController {
 //          navigationController?.pushViewController(vc, animated: true)
 //      }
     
+    
+    
+    @IBOutlet weak var FAQbtn: UIButton!
+    
+    
     @IBAction func FAQbtn(_ sender: UIButton) {
         let vc = storyboard?.instantiateViewController(withIdentifier: "FAQViewController") as! FAQViewController
         navigationController?.pushViewController(vc, animated: true)
     }
+    
     
 }
