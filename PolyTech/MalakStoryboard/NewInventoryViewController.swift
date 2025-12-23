@@ -2,12 +2,13 @@ import UIKit
 import FirebaseFirestore
 import FirebaseAuth
 
-var isEditMode = false
-var documentId: String?
-var existingData: [String: Any]?
 
 class NewInventoryViewController: UIViewController {
 
+    var isEditMode = false
+    var documentId: String?
+    var existingData: [String: Any]?
+    
     @IBOutlet weak var requestName: UITextField!
     @IBOutlet weak var itemName: UITextField!
     @IBOutlet weak var category: UITextField!
@@ -122,7 +123,7 @@ class NewInventoryViewController: UIViewController {
     }
     
     
-        database.collection("inventoryRequest").addDocument(data: data) { [weak self] error in
+    database.collection("inventoryRequest").addDocument(data: data) { [weak, self] error in
                 guard let self = self else { return }
                 if error == nil {
                     let alert = UIAlertController(title: "Success", message: "Inventory request saved successfully", preferredStyle: .alert)
@@ -139,4 +140,4 @@ class NewInventoryViewController: UIViewController {
     }
     
 
-}
+
