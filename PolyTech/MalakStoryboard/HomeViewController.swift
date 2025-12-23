@@ -30,12 +30,7 @@ class HomeViewController: UIViewController {
     
     
     @IBOutlet weak var FAQbtn: UIButton!
-    
-    
-    @IBAction func FAQbtn(_ sender: UIButton) {
-        let vc = storyboard!.instantiateViewController(withIdentifier: "TempFaqViewController") as! FAQViewController
-        navigationController!.pushViewController(vc, animated: true)
-    }
+
     
     
 }

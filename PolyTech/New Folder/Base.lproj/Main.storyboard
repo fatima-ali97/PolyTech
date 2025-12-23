@@ -147,8 +147,7 @@
                                 <state key="normal" title="Button"/>
                                 <buttonConfiguration key="configuration" style="filled" title="FAQ &amp; Guide" cornerStyle="capsule"/>
                                 <connections>
-                                    <action selector="FAQbtn:" destination="Bp8-2G-vRJ" eventType="touchUpInside" id="gen-mY-1HV"/>
-                                    <segue destination="wqR-iE-tV5" kind="show" id="FuW-EX-JGF"/>
+                                    <segue destination="wqR-iE-tV5" kind="show" id="yQs-Km-yst"/>
                                 </connections>
                             </button>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Submit a request, and we'll handle the rest." textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Wpy-yB-DcV">
