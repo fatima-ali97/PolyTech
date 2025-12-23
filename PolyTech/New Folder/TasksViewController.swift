@@ -42,8 +42,6 @@ class TasksViewController: UIViewController, UITableViewDataSource, UITableViewD
         guard let tableView = tableView,
               let searchBar = searchBar,
               let filterStackView = filterStackView else {
-            
-            print("FATAL ERROR AVOIDED: Missing one or more IBOutlet connections in Storyboard!")
             return
         }
 
@@ -99,10 +97,12 @@ class TasksViewController: UIViewController, UITableViewDataSource, UITableViewD
             return
         }
 
+        searchBar.text = ""
         filterTasks(by: selectedFilter)
 
         updateFilterButtonsUI(selectedButton: sender)
     }
+
 
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -135,12 +135,20 @@ class TasksViewController: UIViewController, UITableViewDataSource, UITableViewD
         let lowercasedSearchText = searchText.lowercased()
 
         tasks = allTasks.filter { task in
-            return task.client.lowercased().contains(lowercasedSearchText) ||
-            task.id.lowercased().contains(lowercasedSearchText) ||
-            task.status.lowercased().contains(lowercasedSearchText)
+            let matchesSearchText = task.client.lowercased().contains(lowercasedSearchText) ||
+                task.id.lowercased().contains(lowercasedSearchText) ||
+                task.status.lowercased().contains(lowercasedSearchText)
+
+            if currentFilter == .all {
+                return matchesSearchText
+            } else {
+                return matchesSearchText && task.status == currentFilter.rawValue
+            }
         }
+        
         tableView.reloadData()
     }
+
 
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
         searchBar.resignFirstResponder()

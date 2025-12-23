@@ -59,6 +59,5 @@ class TechnicianDashboardViewController: UIViewController {
     }
 
     @IBAction func taskListButtonTapped(_ sender: UIButton) {
-        print("Task List button tapped. Navigating...")
     }
 }
