@@ -10,14 +10,22 @@ class NewInventoryViewController: UIViewController {
     @IBOutlet weak var quantity: UITextField!
     @IBOutlet weak var location: UITextField!
     @IBOutlet weak var reason: UITextField!
+    @IBOutlet weak var Backbtn: UIImageView!
     
     let database = Firestore.firestore()
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        Backbtn.isUserInteractionEnabled = true
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(backTapped))
+        Backbtn.addGestureRecognizer(tapGesture)
     }
     
-
+    @objc func backTapped() {
+        
+    }
+    
     @IBAction func Savebtn(_ sender: UIButton) {
         
         guard let requestName = requestName.text, !requestName.isEmpty,
