@@ -1,13 +1,13 @@
 //
-//  SplashViewController.swift
+//  ReturnInventoryViewController.swift
 //  PolyTech
 //
-//  Created by Guest User on 13/12/2025.
+//  Created by BP-19-130-11 on 21/12/2025.
 //
 
 import UIKit
 
-class SplashViewController: ViewController {
+class ReturnInventoryViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
