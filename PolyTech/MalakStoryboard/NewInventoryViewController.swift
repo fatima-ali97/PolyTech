@@ -23,7 +23,7 @@ class NewInventoryViewController: UIViewController {
     }
     
     @objc func backTapped() {
-        
+        navigationController?.popViewController(animated: true)
     }
     
     @IBAction func Savebtn(_ sender: UIButton) {
