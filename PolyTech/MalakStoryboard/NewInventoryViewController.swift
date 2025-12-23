@@ -1,5 +1,6 @@
 import UIKit
 import FirebaseFirestore
+import FirebaseAuth
 
 class NewInventoryViewController: UIViewController {
 
@@ -10,25 +11,54 @@ class NewInventoryViewController: UIViewController {
     @IBOutlet weak var location: UITextField!
     @IBOutlet weak var reason: UITextField!
     
+    let database = Firestore.firestore()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        // Do any additional setup after loading the view.
     }
     
 
-    
     @IBAction func Savebtn(_ sender: UIButton) {
-        let requestName = requestName.text ?? ""
-        let itemName = itemName.text ?? ""
+        
+        guard let requestName = requestName.text, !requestName.isEmpty,
+              let itemName = itemName.text, !itemName.isEmpty,
+              let quantityText = quantity.text, let quantity = Int(quantityText), quantity > 0 else {
+            let alert = UIAlertController(title: "Error", message: "Please fill in the fields", preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: "OK", style: .default))
+            self.present(alert, animated: true)
+            return
+        }
+        
+        
         let category = category.text ?? ""
-        let quantityText = quantity.text ?? ""
-        let quantity = Int(quantityText) ?? 0
         let location = location.text ?? ""
         let reason = reason.text ?? ""
         
-        
-        
+
+        let data: [String: Any] = [
+            "requestName": requestName,
+            "itemName": itemName,
+            "category": category,
+            "quantity": quantity,
+            "location": location,
+            "reason": reason,
+            "createdAt": Timestamp()
+        ]
+
+        database.collection("inventoryRequest").addDocument(data: data) { [weak self] error in
+                guard let self = self else { return }
+                if error == nil {
+                    let alert = UIAlertController(title: "Success", message: "Inventory request saved successfully", preferredStyle: .alert)
+                    alert.addAction(UIAlertAction(title: "OK", style: .default) { _ in
+                        self.navigationController?.popViewController(animated: true)
+                    })
+                    self.present(alert, animated: true)
+                } else {
+                    print("Error: \(error!.localizedDescription)")
+                }
+
+
+        }
     }
     
 
