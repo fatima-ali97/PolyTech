@@ -60,7 +60,7 @@
                                                 <buttonConfiguration key="configuration" style="filled" title="Get Help" cornerStyle="capsule"/>
                                                 <connections>
                                                     <action selector="GetHelpbtn:" destination="Y6W-OH-hqX" eventType="touchUpInside" id="1Er-IL-pwV"/>
-                                                    <action selector="getHelpTapped:" destination="Y6W-OH-hqX" eventType="touchUpInside" id="RlA-IL-X9t"/>
+                                                    <action selector="getHelpTapped:" destination="Y6W-OH-hqX" eventType="touchUpInside" id="bJZ-rj-s2T"/>
                                                 </connections>
                                             </button>
                                             <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="fIe-GH-nf9">
@@ -170,9 +170,9 @@
                     </view>
                     <navigationItem key="navigationItem" id="dfd-gI-MYd"/>
                     <connections>
-                        <outlet property="FaqTable" destination="fEM-2C-zoq" id="hXg-bZ-rqu"/>
-                        <outlet property="getHelpTapped" destination="zeg-St-HFW" id="VWq-bd-Z5J"/>
-                        <outlet property="searchBar" destination="diR-9d-PCi" id="Yhd-pO-nFs"/>
+                        <outlet property="getHelpTapped" destination="zeg-St-HFW" id="a9y-EW-27o"/>
+                        <outlet property="searchBar" destination="diR-9d-PCi" id="MCl-07-PA2"/>
+                        <outlet property="tableView" destination="fEM-2C-zoq" id="gI9-pS-nz1"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Ief-a0-LHa" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
