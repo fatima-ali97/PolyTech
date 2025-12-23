@@ -25,6 +25,7 @@ class TasksViewController: UIViewController, UITableViewDataSource, UITableViewD
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var searchBar: UISearchBar!
     @IBOutlet weak var filterStackView: UIStackView!
+    @IBOutlet weak var noTasksLabel: UILabel!
 
     let allTasks: [TaskModel] = [
         TaskModel(id: "001", client: "Ali", dueDate: "2025-12-20", status: "Pending", description: "Install new HVAC system.", Address: "Compus A"),
@@ -88,8 +89,12 @@ class TasksViewController: UIViewController, UITableViewDataSource, UITableViewD
             tasks = allTasks.filter { $0.status == TaskFilter.completed.rawValue }
         }
 
+        updateNoTasksLabel()
         tableView.reloadData()
     }
+
+
+
 
     @IBAction func filterButtonTapped(_ sender: UIButton) {
         guard let buttonTitle = sender.titleLabel?.text,
@@ -102,6 +107,7 @@ class TasksViewController: UIViewController, UITableViewDataSource, UITableViewD
 
         updateFilterButtonsUI(selectedButton: sender)
     }
+
 
 
     
@@ -146,8 +152,21 @@ class TasksViewController: UIViewController, UITableViewDataSource, UITableViewD
             }
         }
         
+        updateNoTasksLabel()
         tableView.reloadData()
     }
+
+    
+    func updateNoTasksLabel() {
+        if tasks.isEmpty {
+            noTasksLabel.alpha = 1.0
+        } else {
+            noTasksLabel.alpha = 0.0
+        }
+    }
+
+
+
 
 
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
