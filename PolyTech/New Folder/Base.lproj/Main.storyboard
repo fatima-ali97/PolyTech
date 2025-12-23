@@ -8,10 +8,10 @@
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
-        <!--View Controller-->
+        <!--Login View Controller-->
         <scene sceneID="tne-QT-ifu">
             <objects>
-                <viewController id="BYZ-38-t0r" customClass="ViewController" customModule="PolyTech" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController id="BYZ-38-t0r" customClass="LoginViewController" customModule="PolyTech" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="8bC-Xf-vdC">
                         <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -22,8 +22,8 @@
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="Welcome back, you’ve been missed!" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="VJ9-kA-u8D">
-                                <rect key="frame" x="53" y="194" width="299" height="67"/>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Welcome back, you’ve been missed!" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="VJ9-kA-u8D">
+                                <rect key="frame" x="53" y="194" width="366" height="67"/>
                                 <constraints>
                                     <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="299" id="lQa-YY-HgF"/>
                                     <constraint firstAttribute="height" constant="67" id="zKa-T0-IPB"/>
@@ -68,8 +68,8 @@
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                 <textInputTraits key="textInputTraits" autocorrectionType="no" spellCheckingType="no" enablesReturnKeyAutomatically="YES" secureTextEntry="YES" smartInsertDeleteType="no" smartQuotesType="no" textContentType="password"/>
                             </textField>
-                            <button opaque="NO" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="OF1-tj-yW2">
-                                <rect key="frame" x="49" y="541" width="303" height="40"/>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="OF1-tj-yW2">
+                                <rect key="frame" x="82.666666666666686" y="541" width="303" height="40"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="40" id="cLZ-5h-9lm"/>
                                     <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="303" id="ngw-iZ-D6J"/>
@@ -114,20 +114,21 @@
                             <constraint firstItem="ltE-IE-uUc" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" constant="19" id="zFY-tb-Sc2"/>
                         </constraints>
                     </view>
-                    <navigationItem key="navigationItem" id="uvp-kc-vEZ"/>
+                    <navigationItem key="navigationItem" largeTitleDisplayMode="always" id="uvp-kc-vEZ"/>
                     <connections>
-                        <outlet property="AcademicIdTextField" destination="wUp-tV-UFr" id="35A-ka-aUN"/>
-                        <outlet property="passwordTextField" destination="nCq-mL-sIt" id="OiJ-C8-8PC"/>
+                        <outlet property="academicIdTextField" destination="wUp-tV-UFr" id="uvi-hD-srH"/>
+                        <outlet property="loginButton" destination="OF1-tj-yW2" id="6Oc-qw-ctz"/>
+                        <outlet property="passwordTextField" destination="nCq-mL-sIt" id="WPF-vK-jIR"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2091" y="-213"/>
+            <point key="canvasLocation" x="4439" y="-176"/>
         </scene>
         <!--Home View Controller-->
         <scene sceneID="Wfo-5Z-oRR">
             <objects>
-                <viewController storyboardIdentifier="StudentHomeViewController" id="Bp8-2G-vRJ" customClass="HomeViewController" customModule="PolyTech" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="StudentHomeViewController" modalPresentationStyle="fullScreen" id="Bp8-2G-vRJ" customClass="HomeViewController" customModule="PolyTech" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="M33-vD-82u">
                         <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -146,8 +147,8 @@
                                 <state key="normal" title="Button"/>
                                 <buttonConfiguration key="configuration" style="filled" title="FAQ &amp; Guide" cornerStyle="capsule"/>
                                 <connections>
-                                    <action selector="FAQbtn:" destination="Bp8-2G-vRJ" eventType="touchUpInside" id="tY0-sd-M4g"/>
-                                    <segue destination="7dB-PJ-2YH" kind="show" id="EC8-Tx-9Xx"/>
+                                    <action selector="FAQbtn:" destination="Bp8-2G-vRJ" eventType="touchUpInside" id="gen-mY-1HV"/>
+                                    <segue destination="wqR-iE-tV5" kind="show" id="FuW-EX-JGF"/>
                                 </connections>
                             </button>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Submit a request, and we'll handle the rest." textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Wpy-yB-DcV">
@@ -168,63 +169,64 @@
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                     </view>
                     <toolbarItems/>
-                    <navigationItem key="navigationItem" id="Bcg-g4-eMo"/>
+                    <navigationItem key="navigationItem" largeTitleDisplayMode="never" id="Bcg-g4-eMo"/>
                     <simulatedToolbarMetrics key="simulatedBottomBarMetrics"/>
                     <connections>
-                        <outlet property="FAQbtn" destination="gnO-Ke-jXL" id="Sad-Hg-2dN"/>
+                        <outlet property="FAQbtn" destination="gnO-Ke-jXL" id="R9x-WB-eVJ"/>
                         <outlet property="Notificationbtn" destination="0aB-tN-JQl" id="744-JD-JLj"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="XtY-Nf-IsC" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="3901.5267175572517" y="-213.38028169014086"/>
+            <point key="canvasLocation" x="7110.6870229007627" y="-176.05633802816902"/>
+        </scene>
+        <!--Navigation Controller-->
+        <scene sceneID="3tP-77-4gO">
+            <objects>
+                <navigationController automaticallyAdjustsScrollViewInsets="NO" id="feG-jw-yJN" sceneMemberID="viewController">
+                    <toolbarItems/>
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="fqS-90-VXC">
+                        <rect key="frame" x="0.0" y="118" width="393" height="44"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <nil name="viewControllers"/>
+                    <connections>
+                        <segue destination="Bp8-2G-vRJ" kind="relationship" relationship="rootViewController" id="NdJ-gd-zjD"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="6fw-4L-Djd" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="6183.9694656488546" y="-176.05633802816902"/>
         </scene>
         <!--FAQ-->
-        <scene sceneID="MKk-oY-qVX">
+        <scene sceneID="08c-p8-6EB">
             <objects>
-                <viewControllerPlaceholder storyboardName="FAQ" id="Mfc-pP-gjW" sceneMemberID="viewController">
-                    <navigationItem key="navigationItem" id="ZqJ-jM-Jho"/>
-                </viewControllerPlaceholder>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="cMm-bx-zqd" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+                <viewController storyboardIdentifier="FAQNavController" title="FAQ" modalPresentationStyle="fullScreen" id="wqR-iE-tV5" customClass="FAQViewController" customModule="PolyTech" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="aD6-c2-Kif">
+                        <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="dummy FAQ" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Htt-Qu-eZB">
+                                <rect key="frame" x="0.0" y="162" width="393" height="573"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                        </subviews>
+                        <viewLayoutGuide key="safeArea" id="Vl4-Z2-ZnX"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <constraints>
+                            <constraint firstItem="Vl4-Z2-ZnX" firstAttribute="bottom" secondItem="Htt-Qu-eZB" secondAttribute="bottom" id="89R-2T-pIW"/>
+                            <constraint firstItem="Htt-Qu-eZB" firstAttribute="leading" secondItem="Vl4-Z2-ZnX" secondAttribute="leading" id="KmG-0V-JCN"/>
+                            <constraint firstItem="Vl4-Z2-ZnX" firstAttribute="trailing" secondItem="Htt-Qu-eZB" secondAttribute="trailing" id="uq5-Mm-EXA"/>
+                            <constraint firstItem="Htt-Qu-eZB" firstAttribute="top" secondItem="Vl4-Z2-ZnX" secondAttribute="top" id="xzM-LD-np9"/>
+                        </constraints>
+                    </view>
+                    <navigationItem key="navigationItem" largeTitleDisplayMode="always" id="5EE-3k-udg"/>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="Wh4-DG-rBN" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="5469.4656488549617" y="-272.53521126760563"/>
-        </scene>
-        <!--Navigation Controller-->
-        <scene sceneID="CfN-QG-X5y">
-            <objects>
-                <navigationController automaticallyAdjustsScrollViewInsets="NO" id="vZI-L6-fKC" sceneMemberID="viewController">
-                    <toolbarItems/>
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="0vM-sP-Jhs">
-                        <rect key="frame" x="0.0" y="118" width="393" height="44"/>
-                        <autoresizingMask key="autoresizingMask"/>
-                    </navigationBar>
-                    <nil name="viewControllers"/>
-                    <connections>
-                        <segue destination="Bp8-2G-vRJ" kind="relationship" relationship="rootViewController" id="eQy-lf-PnU"/>
-                    </connections>
-                </navigationController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="lG7-6O-WfQ" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="2853" y="-213"/>
-        </scene>
-        <!--Navigation Controller-->
-        <scene sceneID="wbG-z7-HG9">
-            <objects>
-                <navigationController automaticallyAdjustsScrollViewInsets="NO" id="7dB-PJ-2YH" sceneMemberID="viewController">
-                    <toolbarItems/>
-                    <navigationItem key="navigationItem" id="83B-YG-83V"/>
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="hbo-uc-47p">
-                        <rect key="frame" x="0.0" y="118" width="393" height="44"/>
-                        <autoresizingMask key="autoresizingMask"/>
-                    </navigationBar>
-                    <nil name="viewControllers"/>
-                    <connections>
-                        <segue destination="Mfc-pP-gjW" kind="relationship" relationship="rootViewController" id="F9D-1l-0li"/>
-                    </connections>
-                </navigationController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="5eb-Hs-sJj" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="4714" y="-237"/>
+            <point key="canvasLocation" x="8030" y="-176"/>
         </scene>
     </scenes>
     <resources>
