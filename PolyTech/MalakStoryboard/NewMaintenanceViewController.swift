@@ -5,12 +5,18 @@ import FirebaseAuth
 
 class NewMaintenanceViewController: UIViewController, UIImagePickerControllerDelegate, UINavigationBarDelegate {
     
+    var isEditMode = false
+    var documentId: String?
+    var existingData: [String: Any]?
+    
     @IBOutlet weak var requestName: UITextField!
     @IBOutlet weak var category: UITextField!
     @IBOutlet weak var location: UITextField!
     @IBOutlet weak var urgency: UITextField!
     @IBOutlet weak var imageUpload: UITextField!
     @IBOutlet weak var Backbtn: UIImageView!
+    @IBOutlet weak var savebtn: UIButton!
+    @IBOutlet weak var pageTitle: UILabel!
     
     let database = Firestore.firestore()
    
@@ -21,6 +27,15 @@ class NewMaintenanceViewController: UIViewController, UIImagePickerControllerDel
         Backbtn.isUserInteractionEnabled = true
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(backTapped))
         Backbtn.addGestureRecognizer(tapGesture)
+//        
+//        if isEditMode {
+//            pageTitle.text = "Edit Inventory Request"
+//            savebtn.setTitle("Edit", for: .normal)
+//            showFields()
+//        } else {
+//            pageTitle.text = "New Inventory Request"
+//            savebtn.setTitle("Save", for: .normal)
+//        }
     }
     
     @objc func backTapped() {
