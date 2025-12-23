@@ -5,7 +5,7 @@
 //  Created by zahra ismaeel on 22/12/2025.
 //
 
-iimport UIKit
+import UIKit
 
 struct Message {
     let text: String

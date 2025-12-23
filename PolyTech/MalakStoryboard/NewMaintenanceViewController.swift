@@ -1,7 +1,7 @@
 import UIKit
 import FirebaseFirestore
 import FirebaseAuth
-import FirebaseStorage
+
 
 class NewMaintenanceViewController: UIViewController, UIImagePickerControllerDelegate, UINavigationBarDelegate {
     
@@ -13,7 +13,7 @@ class NewMaintenanceViewController: UIViewController, UIImagePickerControllerDel
     @IBOutlet weak var Backbtn: UIImageView!
     
     let database = Firestore.firestore()
-    let storage = Storage.storage()
+   
     
     override func viewDidLoad() {
         super.viewDidLoad()
