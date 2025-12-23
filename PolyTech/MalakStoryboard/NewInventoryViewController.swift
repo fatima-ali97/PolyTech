@@ -122,7 +122,7 @@ class NewInventoryViewController: UIViewController {
     }
     
     
-        database.collection("inventoryRequest").addDocument(data: data) { [weak self] error in
+    database.collection("inventoryRequest").addDocument(data: data) { [weak, self] error in
                 guard let self = self else { return }
                 if error == nil {
                     let alert = UIAlertController(title: "Success", message: "Inventory request saved successfully", preferredStyle: .alert)
@@ -139,4 +139,4 @@ class NewInventoryViewController: UIViewController {
     }
     
 
-}
+
