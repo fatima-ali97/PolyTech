@@ -1,5 +1,7 @@
 import UIKit
-
+import Firebase
+import FirebaseFirestore
+import FirebaseAuth
 class InventoryViewController: UIViewController {
 
     override func viewDidLoad() {
