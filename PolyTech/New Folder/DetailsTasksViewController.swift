@@ -40,16 +40,19 @@ class DetailsTasksViewController: UIViewController {
         dueDateLabel.text = "Scheduled for \(task.dueDate)"
         AddressLabel.text = task.Address ?? "No Address"
         
-        if let statusIndex = TaskFilter.allCases
-            .dropFirst()
-            .firstIndex(where: { $0.rawValue == task.status }) {
-            if statusIndex < statusSegmentedControl.numberOfSegments {
-                statusSegmentedControl.selectedSegmentIndex = statusIndex
-            }
-        } else {
+        switch task.status {
+        case TaskFilter.pending.rawValue:
+            statusSegmentedControl.selectedSegmentIndex = 0 // pending
+        case TaskFilter.inProgress.rawValue:
+            statusSegmentedControl.selectedSegmentIndex = 1 // in progress
+        case TaskFilter.completed.rawValue:
+            statusSegmentedControl.selectedSegmentIndex = 2 // completed
+        default:
             statusSegmentedControl.selectedSegmentIndex = UISegmentedControl.noSegment
         }
     }
+
+
 
 
     @IBAction func updateStatusTapped(_ sender: UIButton) {
