@@ -3,6 +3,10 @@ import FirebaseFirestore
 import FirebaseAuth
 
 class ReturnInventoryViewController: UIViewController {
+
+    var isEditMode = false
+    var documentId: String?
+    var existingData: [String: Any]?
     
     @IBOutlet weak var itemName: UITextField!
     @IBOutlet weak var category: UITextField!
@@ -10,7 +14,9 @@ class ReturnInventoryViewController: UIViewController {
     @IBOutlet weak var reason: UITextField!
     @IBOutlet weak var condition: UITextField!
     @IBOutlet weak var Backbtn: UIImageView!
-    
+    @IBOutlet weak var returnbtn: UIButton!
+    @IBOutlet weak var pageTitle: UILabel!
+ 
     let database = Firestore.firestore()
     
     override func viewDidLoad() {
@@ -19,6 +25,28 @@ class ReturnInventoryViewController: UIViewController {
         Backbtn.isUserInteractionEnabled = true
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(backTapped))
         Backbtn.addGestureRecognizer(tapGesture)
+        
+        if isEditMode {
+            pageTitle.text = "Edit Return Inventory"
+            returnbtn.setTitle("Edit", for: .normal)
+            showFields()
+        } else {
+            pageTitle.text = "New Return Inventory"
+            returnbtn.setTitle("Save", for: .normal)
+        }
+    }
+    
+    func showFields() {
+        guard let data = existingData else { return }
+        
+        itemName.text = data["itemName"] as? String
+        category.text = data["category"] as? String
+        reason.text = data["reason"] as? String
+        condition.text = data["condition"] as? String
+        
+        if let quantityValue = data["quantity"] as? Int {
+            quantity.text = "\(quantityValue)"
+        }
     }
     
     @objc func backTapped() {
@@ -41,38 +69,45 @@ class ReturnInventoryViewController: UIViewController {
             alert.addAction(UIAlertAction(title: "OK", style: .default))
             present(alert, animated: true)
             return
+        }
+        
+        var data: [String: Any] = [
+            "itemName": itemNameText,
+            "category": categoryText,
+            "quantity": quantityValue,
+            "reason": reasonText,
+            "condition": conditionText
+        ]
+        
+        if isEditMode, let documentId = documentId {
+            data["updatedAt"] = Timestamp()
+            
+            database.collection("returnInventoryRequest")
+                .document(documentId)
+                .updateData(data) { [weak self] error in
+                    self?.handleResult(error: error, successMessage: "Return inventory updated successfully")
+                }
+        } else {
+            data["createdAt"] = Timestamp()
+            
+            database.collection("returnInventoryRequest")
+                .addDocument(data: data) { [weak self] error in
+                    self?.handleResult(error: error, successMessage: "Return inventory saved successfully")
+                }
+        }
     }
     
-    let data: [String: Any] = [
-        "itemName": itemNameText,
-        "category": categoryText,
-        "quantity": quantityValue,
-        "reason": reasonText,
-        "condition": conditionText,
-        "createdAt": Timestamp()
-    ]
-    
-        database.collection("returnInventoryRequest").addDocument(data: data) { [weak self] error in
-            guard let self = self else { return }
-            
-            if let error = error {
-                let alert = UIAlertController(
-                    title: "Error",
-                    message: error.localizedDescription,
-                    preferredStyle: .alert
-                )
-                alert.addAction(UIAlertAction(title: "OK", style: .default))
-                self.present(alert, animated: true)
-            } else {
-                let alert = UIAlertController(
-                    title: "Success",
-                    message: "Return Inventory saved successfully",
-                    preferredStyle: .alert
-                )
-                alert.addAction(UIAlertAction(title: "OK", style: .default) { _ in
-                    self.navigationController?.popViewController(animated: true)
-                })
-                self.present(alert, animated: true)
-            }}
+    func handleResult(error: Error?, successMessage: String) {
+        if let error = error {
+            let alert = UIAlertController(title: "Error", message: error.localizedDescription, preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: "OK", style: .default))
+            present(alert, animated: true)
+        } else {
+            let alert = UIAlertController(title: "Success", message: successMessage, preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: "OK", style: .default) { _ in
+                self.navigationController?.popViewController(animated: true)
+            })
+            present(alert, animated: true)
+        }
     }
 }
