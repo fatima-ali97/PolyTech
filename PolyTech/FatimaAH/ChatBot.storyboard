@@ -60,6 +60,9 @@
                                         </constraints>
                                         <state key="normal" title="Button"/>
                                         <buttonConfiguration key="configuration" style="filled" title="Send"/>
+                                        <connections>
+                                            <action selector="sendButtonTapped:" destination="Y6W-OH-hqX" eventType="touchUpInside" id="arU-O5-2Zn"/>
+                                        </connections>
                                     </button>
                                 </subviews>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
@@ -90,6 +93,10 @@
                             <constraint firstAttribute="bottom" secondItem="N9y-sC-FrE" secondAttribute="bottom" id="zIT-U3-ACT"/>
                         </constraints>
                     </view>
+                    <connections>
+                        <outlet property="messageTextField" destination="r7M-6a-i5d" id="Em8-j5-v0K"/>
+                        <outlet property="tableView" destination="N9y-sC-FrE" id="Yee-ga-U2F"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Ief-a0-LHa" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
