@@ -91,7 +91,7 @@ extension ChatBotViewController: UITableViewDataSource, UITableViewDelegate {
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
 
-        let cell = tableView.dequeueReusableCell(withIdentifier: "MessageCell", for: indexPath)
+        let cell = tableView.dequeueReusableCell(withIdentifier: "ChatCell", for: indexPath)
 
         let msg = messages[indexPath.row]
         cell.textLabel?.text = msg.text
