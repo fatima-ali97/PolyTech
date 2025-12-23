@@ -4,101 +4,148 @@
 //
 //  Created by BP-19-130-12 on 21/12/2025.
 //
+
 import UIKit
 import FirebaseFirestore
 struct FAQItem {
-    let question: String
-    let answer: String
-    var isExpanded: Bool
+    let id: String
+    let title: String
+    let desc: String
+    var isExpanded: Bool = false
 }
 
 final class FAQViewController: UIViewController {
 
+    @IBOutlet weak var FaqTable: UITableViewCell!
     @IBOutlet weak var searchBar: UISearchBar!
-
+    @IBOutlet weak var getHelpTapped: UIButton!
     @IBOutlet weak var tableView: UITableView!
     
-    @IBOutlet weak var getHelpTapped: UIButton!
     @IBAction func getHelpTapped(_ sender: UIButton) {
-        let sb = UIStoryboard(name: "HelpPage", bundle: nil)
-        guard let vc = sb.instantiateViewController(withIdentifier: "HelpPageVC") as? HelpPageViewController else {
-            print(" ❌ HelpPageVC not found. Cheak Storyboard ID!")
-            return
-        }
-
-    
+        let storyboard = UIStoryboard(name: "HelpPage", bundle: nil)
+        let vc = storyboard.instantiateViewController(withIdentifier: "HelpPageVC")
         navigationController?.pushViewController(vc, animated: true)
-
     }
-    private var faqs: [FAQItem] = [
-        FAQItem(question: "Banner login",
-                answer: "1) Go to the Bahrain Polytechnic website.\n2) Click Banner.\n3) Enter your student ID and password.",
-                isExpanded: false),
+    
+    private let db = Firestore.firestore()
 
-        FAQItem(question: "Authenticator App setup",
-                answer: "1) Install Google Authenticator.\n2) Scan the QR code.\n3) Enter the 6-digit code to confirm.",
-                isExpanded: false),
-
-        FAQItem(question: "VMware virtual machine Starting Error",
-                answer: "1) Open VMware.\n2) Check the VM settings.\n3) Make sure the VM files path is correct.",
-                isExpanded: false),
-
-        FAQItem(question: "Password reset on computer",
-                answer: "1) Open the reset page.\n2) Enter your student ID.\n3) Follow the steps to set a new password.",
-                isExpanded: false),
-
-        FAQItem(question: "Moodle login",
-                answer: "1) Go to Moodle.\n2) Enter your credentials.\n3) If locked, reset your password.",
-                isExpanded: false)
-    ]
+    private var allFAQs: [FAQItem] = []
+    private var shownFAQs: [FAQItem] = []
+    private var isSearching = false
 
     override func viewDidLoad() {
         super.viewDidLoad()
+
         title = "FAQs"
 
         tableView.dataSource = self
         tableView.delegate = self
         searchBar.delegate = self
 
-        tableView.estimatedRowHeight = 60
+        // Dynamic height
         tableView.rowHeight = UITableView.automaticDimension
+        tableView.estimatedRowHeight = 60
+
+        fetchFAQs()
+    }
+
+    private func fetchFAQs() {
+        db.collection("FAQ").getDocuments { [weak self] snapshot, error in
+            guard let self = self else { return }
+
+            if let error = error {
+                print("🔥 Firestore error:", error.localizedDescription)
+                return
+            }
+
+            guard let docs = snapshot?.documents else { return }
+
+            var temp: [FAQItem] = docs.compactMap { doc in
+                let data = doc.data()
+                let title = data["Title"] as? String ?? ""
+                let desc  = data["Description"] as? String ?? ""
+                return FAQItem(id: doc.documentID, title: title, desc: desc, isExpanded: false)
+            }
+
+           
+            temp.sort {
+                (Int($0.id) ?? 999999) < (Int($1.id) ?? 999999)
+            }
+
+            self.allFAQs = temp
+            self.shownFAQs = temp
+            self.tableView.reloadData()
+        }
+    }
+
+    private func updateChevron(for cell: UITableViewCell, expanded: Bool) {
+        let iconName = expanded ? "chevron.up" : "chevron.down"
+        let imageView = UIImageView(image: UIImage(systemName: iconName))
+        imageView.tintColor = .systemGray
+        cell.accessoryView = imageView
     }
 }
 
 extension FAQViewController: UITableViewDataSource, UITableViewDelegate {
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return faqs.count
+        return shownFAQs.count
     }
 
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        // Use a Subtitle cell style OR add your own labels
+    func tableView(_ tableView: UITableView,
+                   cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+
         let cell = tableView.dequeueReusableCell(withIdentifier: "FAQCell", for: indexPath)
 
-        let item = faqs[indexPath.row]
-        cell.textLabel?.text = item.question
-        cell.textLabel?.numberOfLines = 1
+        let item = shownFAQs[indexPath.row]
+        cell.textLabel?.text = item.title
+        cell.textLabel?.numberOfLines = 0
 
-        // Show answer only when expanded
-        cell.detailTextLabel?.text = item.isExpanded ? item.answer : nil
-        cell.detailTextLabel?.numberOfLines = 0
-
-        // Chevron
-        let iconName = item.isExpanded ? "chevron.up" : "chevron.down"
-        cell.accessoryView = UIImageView(image: UIImage(systemName: iconName))
+        if item.isExpanded {
+            cell.detailTextLabel?.text = item.desc
+            cell.detailTextLabel?.numberOfLines = 0
+        } else {
+            cell.detailTextLabel?.text = nil
+        }
 
         cell.selectionStyle = .none
+        updateChevron(for: cell, expanded: item.isExpanded)
+
         return cell
     }
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        faqs[indexPath.row].isExpanded.toggle()
+        shownFAQs[indexPath.row].isExpanded.toggle()
+
+
+        if let originalIndex = allFAQs.firstIndex(where: { $0.id == shownFAQs[indexPath.row].id }) {
+            allFAQs[originalIndex].isExpanded = shownFAQs[indexPath.row].isExpanded
+        }
+
         tableView.reloadRows(at: [indexPath], with: .automatic)
     }
 }
 
 extension FAQViewController: UISearchBarDelegate {
+
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-        // optional later (filtering)
+        let text = searchText.trimmingCharacters(in: .whitespacesAndNewlines)
+
+        if text.isEmpty {
+            isSearching = false
+            shownFAQs = allFAQs
+        } else {
+            isSearching = true
+            shownFAQs = allFAQs.filter {
+                $0.title.localizedCaseInsensitiveContains(text) ||
+                $0.desc.localizedCaseInsensitiveContains(text)
+            }
+        }
+
+        tableView.reloadData()
+    }
+
+    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        searchBar.resignFirstResponder()
     }
 }

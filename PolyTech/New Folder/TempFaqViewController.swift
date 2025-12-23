@@ -1,13 +1,13 @@
 //
-//  SplashViewController.swift
+//  TempFaqViewController.swift
 //  PolyTech
 //
-//  Created by Guest User on 13/12/2025.
+//  Created by BP-19-130-15 on 23/12/2025.
 //
 
 import UIKit
 
-class SplashViewController: ViewController {
+class TempFaqViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
