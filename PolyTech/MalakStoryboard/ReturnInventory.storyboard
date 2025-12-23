@@ -44,6 +44,9 @@
                                 <color key="tintColor" red="0.086274509799999996" green="0.1647058824" blue="0.2666666667" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                                 <state key="normal" title="Button"/>
                                 <buttonConfiguration key="configuration" style="filled" title="Return Item" cornerStyle="capsule"/>
+                                <connections>
+                                    <action selector="Returnbtn:" destination="5S1-yw-Fwx" eventType="touchUpInside" id="9Nf-Lr-rfO"/>
+                                </connections>
                             </button>
                             <textField opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="248" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" id="DsH-Iw-Nw4">
                                 <rect key="frame" x="38" y="216" width="302" height="34"/>
@@ -130,6 +133,14 @@
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" id="uif-wB-iH8"/>
+                    <connections>
+                        <outlet property="Backbtn" destination="rD5-5I-U8K" id="ML6-Hj-A5z"/>
+                        <outlet property="category" destination="V6y-NC-Lpy" id="4Zr-jg-VkV"/>
+                        <outlet property="condition" destination="0bE-oy-zQu" id="peq-n3-P0J"/>
+                        <outlet property="itemName" destination="DsH-Iw-Nw4" id="8UO-Y0-muM"/>
+                        <outlet property="quantity" destination="qTh-UU-s4r" id="F3Y-P9-QrP"/>
+                        <outlet property="reason" destination="ONf-He-JnD" id="hWe-tg-gAx"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="g0d-AR-Pvc" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>

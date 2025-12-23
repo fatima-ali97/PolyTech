@@ -171,9 +171,11 @@
                         <outlet property="category" destination="IoG-Mr-Svf" id="leZ-UG-Ati"/>
                         <outlet property="itemName" destination="LJu-z6-hVb" id="WCa-Ho-qG7"/>
                         <outlet property="location" destination="AGp-gM-G3v" id="77B-Lh-xEk"/>
+                        <outlet property="pageTitle" destination="f1C-sl-e48" id="7Wn-P4-Voe"/>
                         <outlet property="quantity" destination="mah-6q-T13" id="mq2-r4-Wfc"/>
                         <outlet property="reason" destination="AZh-b1-qMs" id="YlZ-Ln-2gs"/>
                         <outlet property="requestName" destination="2xb-CK-Tzp" id="XIr-hm-Vt1"/>
+                        <outlet property="savebtn" destination="NNc-l0-gAI" id="OMb-VA-GpP"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="rNL-cR-6xC" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
@@ -187,7 +189,7 @@
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>
         <systemColor name="systemGray2Color">
-            <color red="0.68235294120000001" green="0.68235294120000001" blue="0.69803921570000005" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.68235294117647061" green="0.68235294117647061" blue="0.69803921568627447" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
     </resources>
 </document>
