@@ -138,8 +138,10 @@
                         <outlet property="category" destination="V6y-NC-Lpy" id="4Zr-jg-VkV"/>
                         <outlet property="condition" destination="0bE-oy-zQu" id="peq-n3-P0J"/>
                         <outlet property="itemName" destination="DsH-Iw-Nw4" id="8UO-Y0-muM"/>
+                        <outlet property="pageTitle" destination="cRQ-KX-rp5" id="0qG-qf-63G"/>
                         <outlet property="quantity" destination="qTh-UU-s4r" id="F3Y-P9-QrP"/>
                         <outlet property="reason" destination="ONf-He-JnD" id="hWe-tg-gAx"/>
+                        <outlet property="returnbtn" destination="EhC-Md-KvG" id="dNV-7U-MKl"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="g0d-AR-Pvc" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
@@ -153,7 +155,7 @@
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>
         <systemColor name="systemGray2Color">
-            <color red="0.68235294117647061" green="0.68235294117647061" blue="0.69803921568627447" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.68235294120000001" green="0.68235294120000001" blue="0.69803921570000005" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
     </resources>
 </document>
