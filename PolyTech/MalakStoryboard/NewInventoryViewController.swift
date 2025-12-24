@@ -19,6 +19,7 @@ class NewInventoryViewController: UIViewController {
     @IBOutlet weak var savebtn: UIButton!
     @IBOutlet weak var pageTitle: UILabel!
     
+    
     let database = Firestore.firestore()
     
     override func viewDidLoad() {
