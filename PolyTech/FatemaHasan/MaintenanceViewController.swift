@@ -2,91 +2,84 @@ import UIKit
 import Firebase
 import FirebaseFirestore
 import FirebaseAuth
-class MaintenanceViewController: UIViewController {
 
+class MaintenanceViewController: UIViewController {
+    
+    let db = Firestore.firestore()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
     }
-  //View Buttons
     
-    @IBAction func View1(_ sender: Any) {
-        showAlert1(title: "Details", message: "Showing inventory details.")
-    }
-    
-    @IBAction func View2(_ sender: UIButton) {
-        showAlert1(title: "Details", message: "Showing inventory details.")
+    @IBAction func viewButtonTapped(_ sender: UIButton) {
+        let documentId = "item\(sender.tag)"
+        fetchMaintenanceDetails(documentId: documentId)
     }
     
-    @IBAction func View3(_ sender: UIButton) {
-        showAlert1(title: "Details", message: "Showing inventory details.")
+    @IBAction func editButtonTapped(_ sender: UIButton) {
+        openNewMaintenancePage()
     }
     
-    @IBAction func View4(_ sender: UIButton) {
-        showAlert1(title: "Details", message: "Showing inventory details.")
+    @IBAction func deleteButtonTapped(_ sender: UIButton) {
+        showAlert(title: "Success", message: "Request is removed successfully.")
     }
     
-    @IBAction func View5(_ sender: UIButton) {
-        showAlert1(title: "Details", message: "Showing inventory details.")
-    }
-    //Edit Buttons
-    @IBAction func Ed1(_ sender: UIButton) {
-        performSegue(withIdentifier: "goToEdit", sender: self)   }
-    
-    @IBAction func ED2(_ sender: UIButton) { performSegue(withIdentifier: "goToEdit", sender: self)
-    }
-
-    @IBAction func ED3(_ sender: UIButton) { performSegue(withIdentifier: "goToEdit", sender: self)
-    }
-    @IBAction func Ed4(_ sender: UIButton) { performSegue(withIdentifier: "goToEdit", sender: self)
-    }
-    
-    @IBAction func Ed5(_ sender: UIButton) { performSegue(withIdentifier: "goToEdit", sender: self)
-    }
-    //Delete
-    @IBAction func D1(_ sender: UIButton) {
-        showAlert1(
-            title: "Success",
-            message: "Request is removed successfully."
-        )
-    }
-    
-    @IBAction func D2(_ sender: UIButton) {
-        showAlert1(
-            title: "Success",
-            message: "Request is removed successfully."
-        )
-    }
-    
-    @IBAction func D3(_ sender: UIButton) {
-        showAlert1(
-            title: "Success",
-            message: "Request is removed successfully."
-        )
-    }
-    
-    @IBAction func D4(_ sender: UIButton) {
-        showAlert1(
-            title: "Success",
-            message: "Request is removed successfully."
-        )
-    }
-    
-    @IBAction func D5(_ sender: UIButton) {
-        showAlert1(
-            title: "Success",
-            message: "Request is removed successfully."
-        )
-    }
-    func showAlert1(title: String, message: String) {
-            let alert = UIAlertController(
-                title: title,
-                message: message,
-                preferredStyle: .alert
-            )
-
-            let ok = UIAlertAction(title: "OK", style: .default)
-            alert.addAction(ok)
-
-            present(alert, animated: true)
+    func fetchMaintenanceDetails(documentId: String) {
+        let docRef = db.collection("Maintenance").document(documentId)
+        docRef.getDocument { snapshot, error in
+            if let error = error {
+                print("Error fetching maintenance: \(error.localizedDescription)")
+                return
+            }
+            
+            guard let data = snapshot?.data() else {
+                print("No maintenance data found for \(documentId)")
+                return
+            }
+            
+            DispatchQueue.main.async {
+                self.showMaintenanceDetailsPopup(data: data)
+            }
         }
     }
+    
+    func showMaintenanceDetailsPopup(data: [String: Any]) {
+        let requestName = data["requestName"] as? String ?? "N/A"
+        let itemName = data["itemName"] as? String ?? "N/A"
+        let category = data["category"] as? String ?? "N/A"
+        let location = data["location"] as? String ?? "N/A"
+        let reason = data["reason"] as? String ?? "N/A"
+        
+        let message = """
+        Request Name: \(requestName)
+        Item Name: \(itemName)
+        Category: \(category)
+        Location: \(location)
+        Reason: \(reason)
+        """
+        
+        let alert = UIAlertController(title: "Maintenance Details", message: message, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "OK", style: .default))
+        present(alert, animated: true)
+    }
+    
+    func openNewMaintenancePage() {
+        let storyboard = UIStoryboard(name: "MalakStoryboard", bundle: nil)
+        guard let newMaintenanceVC = storyboard.instantiateViewController(withIdentifier: "NewMaintenance") as? NewMaintenanceViewController else {
+            print("NewMaintenanceViewController not found in MalakStoryboard")
+            return
+        }
+        
+        if let nav = self.navigationController {
+            nav.pushViewController(newMaintenanceVC, animated: true)
+        } else {
+            present(newMaintenanceVC, animated: true)
+        }
+    }
+    
+    func showAlert(title: String, message: String) {
+        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "OK", style: .default))
+        present(alert, animated: true)
+    }
+}
