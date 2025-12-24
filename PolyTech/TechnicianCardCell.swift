@@ -10,12 +10,11 @@ import UIKit
 
 final class TechnicianCardCell: UITableViewCell {
     
-    @IBOutlet weak var dotView: UIView!
-    @IBOutlet weak var nameLabel: UILabel!
-    @IBOutlet weak var statusLabel: UILabel!
-    @IBOutlet weak var tasksValueLabel: UILabel!
     @IBOutlet weak var hoursValueLabel: UILabel!
-    
+    @IBOutlet weak var tasksValueLabel: UILabel!
+    @IBOutlet weak var statusLabel: UILabel!
+    @IBOutlet weak var nameLabel: UILabel!
+    @IBOutlet weak var dotView: UIView!
     override func awakeFromNib() {
         super.awakeFromNib()
         
