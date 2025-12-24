@@ -9,16 +9,26 @@ import UIKit
 import FirebaseCore
 import FirebaseFirestore
 import FirebaseAuth
-      
+import UserNotifications
+
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
 
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-        // Override point for customization after application launch.
+        //notifications code here -- for permission
         
-        // Use Firebase library to configure APIs
+        let center = UNUserNotificationCenter.current()
+        center.delegate = self // Make sure AppDelegate conforms to UNUserNotificationCenterDelegate
+            center.requestAuthorization(options: [.alert, .sound, .badge]) { granted, error in
+                if granted {
+                    print("Notification permission granted")
+                } else if let error = error {
+                    print("Error requesting notification permission: \(error)")
+                }
+            }
+      // Use Firebase library
         FirebaseApp.configure()
         return true
     }
@@ -40,3 +50,20 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
 }
 
+
+extension AppDelegate: UNUserNotificationCenterDelegate {
+    
+    // Handle notification when app is in foreground
+    func userNotificationCenter(_ center: UNUserNotificationCenter,
+                                willPresent notification: UNNotification,
+                                withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
+        completionHandler([.banner, .sound, .badge])
+    }
+    
+    // Handle notification tap
+    func userNotificationCenter(_ center: UNUserNotificationCenter,
+                                didReceive response: UNNotificationResponse,
+                                withCompletionHandler completionHandler: @escaping () -> Void) {
+        print("User tapped notification: \(response.notification.request.content.title)")
+        completionHandler()
+    }}
