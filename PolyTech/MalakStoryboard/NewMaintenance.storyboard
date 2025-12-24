@@ -139,16 +139,19 @@
                     </view>
                     <navigationItem key="navigationItem" id="tPd-Cl-udt"/>
                     <connections>
+                        <outlet property="Backbtn" destination="Pj1-JQ-obv" id="mLK-RZ-SDh"/>
                         <outlet property="category" destination="O5p-4W-SpH" id="urU-UV-6gJ"/>
                         <outlet property="imageUpload" destination="VVv-96-c6C" id="8VW-8m-1Qf"/>
                         <outlet property="location" destination="jEs-HO-JZY" id="BWE-dO-6YN"/>
+                        <outlet property="pageTitle" destination="mSt-YA-kRE" id="w7u-sl-iuW"/>
                         <outlet property="requestName" destination="y7O-ik-8p4" id="Tjc-uI-dWY"/>
+                        <outlet property="savebtn" destination="F8X-sl-1RF" id="iVK-Wd-Hmf"/>
                         <outlet property="urgency" destination="NJx-qO-D0q" id="i3s-qD-fCl"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="QGQ-AJ-MhK" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-66" y="-756"/>
+            <point key="canvasLocation" x="335" y="-883"/>
         </scene>
     </scenes>
     <resources>
