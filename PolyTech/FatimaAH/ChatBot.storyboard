@@ -12,12 +12,12 @@
         <scene sceneID="s0d-6b-0kx">
             <objects>
                 <viewController storyboardIdentifier="ChatBotVC" id="Y6W-OH-hqX" customClass="ChatBotViewController" customModule="PolyTech" sceneMemberID="viewController">
-                    <view key="view" contentMode="scaleToFill" id="5EZ-qb-Rvc">
+                    <view key="view" contentMode="scaleToFill" ambiguous="YES" id="5EZ-qb-Rvc">
                         <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <tableView clipsSubviews="YES" contentMode="scaleToFill" misplaced="YES" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="N9y-sC-FrE">
-                                <rect key="frame" x="0.0" y="136" width="388" height="571"/>
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" ambiguous="YES" misplaced="YES" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="N9y-sC-FrE">
+                                <rect key="frame" x="0.0" y="129" width="388" height="564"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                 <prototypes>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="ChatCell" textLabel="6bQ-CK-pBR" rowHeight="65" style="IBUITableViewCellStyleDefault" id="sy1-bh-Qqa">
@@ -39,15 +39,6 @@
                                     </tableViewCell>
                                 </prototypes>
                             </tableView>
-                            <textField opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="248" misplaced="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Type a message...." textAlignment="center" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="r7M-6a-i5d">
-                                <rect key="frame" x="18" y="717" width="287" height="34"/>
-                                <constraints>
-                                    <constraint firstAttribute="height" constant="40" id="7jX-qB-YWt"/>
-                                    <constraint firstAttribute="width" constant="40" id="NIU-SW-SyF"/>
-                                </constraints>
-                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                <textInputTraits key="textInputTraits"/>
-                            </textField>
                             <view tag="-1" contentMode="scaleToFill" id="Si0-KA-jpX">
                                 <rect key="frame" x="0.0" y="0.0" width="393" height="128"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
@@ -72,9 +63,10 @@
                                     <constraint firstItem="IET-SA-Tg1" firstAttribute="top" secondItem="Si0-KA-jpX" secondAttribute="top" constant="70" id="4ME-b0-d6C"/>
                                 </constraints>
                             </view>
-                            <button opaque="NO" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ztm-zW-fKz">
-                                <rect key="frame" x="313" y="715" width="63.333333333333343" height="39"/>
+                            <button opaque="NO" contentMode="scaleToFill" ambiguous="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ztm-zW-fKz">
+                                <rect key="frame" x="313" y="701" width="63.333333333333371" height="36"/>
                                 <constraints>
+                                    <constraint firstAttribute="height" constant="36" id="1Bu-rY-RRC"/>
                                     <constraint firstAttribute="width" constant="67" id="h8z-Tk-TJF"/>
                                 </constraints>
                                 <color key="tintColor" red="0.068406730890000003" green="0.1321217418" blue="0.21183627839999999" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
@@ -84,6 +76,15 @@
                                     <action selector="sendButtonTapped:" destination="Y6W-OH-hqX" eventType="touchUpInside" id="arU-O5-2Zn"/>
                                 </connections>
                             </button>
+                            <textField opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="248" ambiguous="YES" misplaced="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Type a message...." textAlignment="center" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="r7M-6a-i5d">
+                                <rect key="frame" x="18" y="702" width="287" height="34"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="40" id="7jX-qB-YWt"/>
+                                    <constraint firstAttribute="width" constant="40" id="NIU-SW-SyF"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <textInputTraits key="textInputTraits"/>
+                            </textField>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="vDu-zF-Fre"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
@@ -95,14 +96,17 @@
                             <constraint firstItem="ztm-zW-fKz" firstAttribute="leading" secondItem="r7M-6a-i5d" secondAttribute="trailing" constant="10" id="OZp-wp-6rr"/>
                             <constraint firstItem="N9y-sC-FrE" firstAttribute="top" secondItem="vDu-zF-Fre" secondAttribute="top" constant="-25" id="SkA-7R-Xoy"/>
                             <constraint firstItem="r7M-6a-i5d" firstAttribute="top" secondItem="N9y-sC-FrE" secondAttribute="bottom" constant="8" id="TrZ-wT-emS"/>
+                            <constraint firstItem="N9y-sC-FrE" firstAttribute="top" secondItem="5EZ-qb-Rvc" secondAttribute="top" constant="8" id="a0y-ZI-aJ5"/>
                             <constraint firstItem="ztm-zW-fKz" firstAttribute="top" secondItem="r7M-6a-i5d" secondAttribute="top" id="ghp-DW-G08"/>
+                            <constraint firstItem="N9y-sC-FrE" firstAttribute="top" secondItem="Si0-KA-jpX" secondAttribute="bottom" constant="8" symbolic="YES" id="lbz-qc-lUX"/>
                             <constraint firstItem="vDu-zF-Fre" firstAttribute="trailing" secondItem="ztm-zW-fKz" secondAttribute="trailing" constant="20" id="rH5-bn-qXn"/>
+                            <constraint firstAttribute="trailing" secondItem="N9y-sC-FrE" secondAttribute="trailing" id="t3T-lK-Y5W"/>
                             <constraint firstAttribute="bottom" secondItem="N9y-sC-FrE" secondAttribute="bottom" constant="159" id="uxe-SP-8Qm"/>
                         </constraints>
                     </view>
                     <connections>
-                        <outlet property="messageTextField" destination="r7M-6a-i5d" id="Em8-j5-v0K"/>
-                        <outlet property="tableView" destination="N9y-sC-FrE" id="Yee-ga-U2F"/>
+                        <outlet property="messageTextField" destination="r7M-6a-i5d" id="4Ww-tt-USV"/>
+                        <outlet property="tableView" destination="N9y-sC-FrE" id="RdI-RV-aRN"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Ief-a0-LHa" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
