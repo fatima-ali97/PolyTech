@@ -22,6 +22,10 @@ class LoginViewController: UIViewController {
     // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
+        NotificationManager.shared.showSuccess(
+               title: "Welcome!",
+               message: "The notification system is working"
+           )
         setupUI()
     }
     
