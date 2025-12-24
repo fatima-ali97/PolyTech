@@ -4,7 +4,16 @@
 <dict>
 	<key>UIAppFonts</key>
 	<array>
-		<string>DMSans-VariableFont_opsz,wght.ttf</string>
+		<string>DMSans-Black.ttf</string>
+		<string>DMSans-Bold.ttf</string>
+		<string>DMSans-ExtraBold.ttf</string>
+		<string>DMSans-ExtraLight.ttf </string>
+		<string>DMSans-Italic.ttf</string>
+		<string>DMSans-Light.ttf</string>
+		<string>DMSans-Medium.ttf</string>
+		<string>DMSans-Regular.ttf</string>
+		<string>DMSans-SemiBold.ttf</string>
+		<string>DMSans-Thin.ttf</string>
 	</array>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
