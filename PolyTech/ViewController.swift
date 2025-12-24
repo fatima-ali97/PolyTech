@@ -110,53 +110,46 @@ class LoginViewController: UIViewController {
     
     // MARK: - Navigation
     private func navigateToHome(for role: String, userId: String) {
-        let storyboardID: String
+        // Determine which storyboard file to load based on role
+        let storyboardName: String
+        let viewControllerID: String
         
         switch role.lowercased() {
         case "student":
-            storyboardID = "StudentHomeViewController"
+            storyboardName = "StudentDashboard"  // Name of the storyboard file (without .storyboard extension)
+            viewControllerID = "StudentHomeViewController"  // Storyboard ID set in Identity Inspector
         case "admin":
-            storyboardID = "AdminHomeViewController"
+            storyboardName = "AdminHome"
+            viewControllerID = "AdminHomeViewController"
         case "technician":
-            storyboardID = "TechnicianHomeViewController"
+            storyboardName = "TechnicianHome"
+            viewControllerID = "TechnicianHomeViewController"
         default:
             showAlert(title: "Error", message: "Invalid user role: \(role)")
             signOutUser()
             return
         }
         
-        guard let homeVC = storyboard?.instantiateViewController(withIdentifier: storyboardID) else {
+        // Load the storyboard file
+        let storyboard = UIStoryboard(name: storyboardName, bundle: nil)
+        
+        // Instantiate the view controller from the storyboard
+        guard let homeVC = storyboard.instantiateViewController(withIdentifier: viewControllerID) as? UIViewController else {
             showAlert(title: "Error", message: "Unable to load home screen.")
             return
         }
         
-        // Pass userId to the destination VC if needed
-        if let homeVC = homeVC as? BaseHomeViewController {
-            homeVC.userId = userId
+        // Pass userId to the destination VC if it conforms to BaseHomeViewController
+        if var baseHomeVC = homeVC as? BaseHomeViewController {
+            baseHomeVC.userId = userId
         }
         
-        // Embed in navigation controller if not already
+        // Embed in navigation controller
         let navigationController = UINavigationController(rootViewController: homeVC)
         navigationController.modalPresentationStyle = .fullScreen
         
-        // Transition to new root
-        setNewRootViewController(navigationController)
-    }
-    
-    private func setNewRootViewController(_ viewController: UIViewController) {
-        guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
-              let window = windowScene.windows.first else {
-            return
-        }
-        
-        window.rootViewController = viewController
-        window.makeKeyAndVisible()
-        
-        UIView.transition(with: window,
-                         duration: 0.3,
-                         options: .transitionCrossDissolve,
-                         animations: nil,
-                         completion: nil)
+        // Present the navigation controller
+        self.present(navigationController, animated: true, completion: nil)
     }
     
     // MARK: - Error Handling
