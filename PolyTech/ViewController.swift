@@ -116,8 +116,8 @@ class LoginViewController: UIViewController {
         
         switch role.lowercased() {
         case "student":
-            storyboardName = "StudentDashboard"  // Name of the storyboard file (without .storyboard extension)
-            viewControllerID = "StudentHomeViewController"  // Storyboard ID set in Identity Inspector
+            storyboardName = "HomePage"  // Name of the storyboard file (without .storyboard extension)
+            viewControllerID = "HomeViewController"  // Storyboard ID set in Identity Inspector
         case "admin":
             storyboardName = "AdminHome"
             viewControllerID = "AdminHomeViewController"
