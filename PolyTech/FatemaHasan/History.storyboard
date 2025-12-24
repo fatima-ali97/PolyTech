@@ -54,6 +54,7 @@
                                 <state key="normal" title="Button"/>
                                 <buttonConfiguration key="configuration" style="filled" title="Feedback"/>
                                 <connections>
+                                    <action selector="Feedback2:" destination="qbR-nc-I13" eventType="touchUpInside" id="dXI-aO-jSU"/>
                                     <action selector="Feedbackbtn:" destination="qbR-nc-I13" eventType="touchUpInside" id="CE3-OQ-mZK"/>
                                 </connections>
                             </button>
@@ -80,6 +81,7 @@
                                 <state key="normal" title="Button"/>
                                 <buttonConfiguration key="configuration" style="filled" title="Feedback"/>
                                 <connections>
+                                    <action selector="Feedback3:" destination="qbR-nc-I13" eventType="touchUpInside" id="Vhg-lW-UF4"/>
                                     <action selector="Feedbackbtn:" destination="qbR-nc-I13" eventType="touchUpInside" id="Zl6-w1-gMa"/>
                                 </connections>
                             </button>
@@ -106,6 +108,7 @@
                                 <state key="normal" title="Button"/>
                                 <buttonConfiguration key="configuration" style="filled" title="Feedback"/>
                                 <connections>
+                                    <action selector="Feedback4:" destination="qbR-nc-I13" eventType="touchUpInside" id="pKa-4i-3S8"/>
                                     <action selector="Feedbackbtn:" destination="qbR-nc-I13" eventType="touchUpInside" id="Ruv-Io-JS8"/>
                                 </connections>
                             </button>
@@ -204,6 +207,7 @@
                                 <state key="normal" title="Button"/>
                                 <buttonConfiguration key="configuration" style="filled" title="Feedback"/>
                                 <connections>
+                                    <action selector="Feedback1:" destination="qbR-nc-I13" eventType="touchUpInside" id="kg0-5I-2XH"/>
                                     <action selector="Feedbackbtn:" destination="qbR-nc-I13" eventType="touchUpInside" id="5NT-jb-vXM"/>
                                 </connections>
                             </button>
@@ -222,6 +226,7 @@
                                 <state key="normal" title="Button"/>
                                 <buttonConfiguration key="configuration" style="filled" title="Feedback"/>
                                 <connections>
+                                    <action selector="Feedback5:" destination="qbR-nc-I13" eventType="touchUpInside" id="C4c-SP-8ZP"/>
                                     <action selector="Feedbackbtn:" destination="qbR-nc-I13" eventType="touchUpInside" id="l1M-00-Md5"/>
                                 </connections>
                             </button>
