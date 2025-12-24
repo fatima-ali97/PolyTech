@@ -20,37 +20,41 @@
                                 <rect key="frame" x="0.0" y="162" width="393" height="622"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                 <prototypes>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" rowHeight="80" id="Jm4-q8-gc8">
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="NotificationTableViewCell" rowHeight="80" id="Jm4-q8-gc8" customClass="NotificationTableViewCell" customModule="PolyTech" customModuleProvider="target">
                                         <rect key="frame" x="0.0" y="50" width="393" height="80"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="Jm4-q8-gc8" id="xBZ-mC-jxd">
                                             <rect key="frame" x="0.0" y="0.0" width="393" height="80"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
-                                                <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="fsP-xf-d7T">
-                                                    <rect key="frame" x="20" y="0.0" width="353" height="80"/>
-                                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="fsP-xf-d7T">
+                                                    <rect key="frame" x="8" y="4" width="377" height="72"/>
                                                     <subviews>
-                                                        <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="hi3-82-nbN">
-                                                            <rect key="frame" x="0.0" y="0.0" width="71" height="80"/>
-                                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                        <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="hi3-82-nbN">
+                                                            <rect key="frame" x="12" y="16" width="40" height="40"/>
+                                                            <constraints>
+                                                                <constraint firstAttribute="height" constant="40" id="O6C-7c-nwA"/>
+                                                                <constraint firstAttribute="width" constant="40" id="uXc-Cl-ZsI"/>
+                                                            </constraints>
                                                         </imageView>
                                                         <stackView opaque="NO" contentMode="scaleToFill" fixedFrame="YES" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="zhL-xi-v5O">
                                                             <rect key="frame" x="79" y="0.0" width="274" height="80"/>
                                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                                         </stackView>
                                                     </subviews>
-                                                    <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                                    <color key="backgroundColor" systemColor="systemGray5Color"/>
+                                                    <constraints>
+                                                        <constraint firstItem="hi3-82-nbN" firstAttribute="leading" secondItem="fsP-xf-d7T" secondAttribute="leading" constant="12" id="fIP-Zh-4fo"/>
+                                                    </constraints>
                                                 </view>
                                             </subviews>
-                                        </tableViewCellContentView>
-                                    </tableViewCell>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" id="O0L-Hi-A9v">
-                                        <rect key="frame" x="0.0" y="130" width="393" height="47.666667938232422"/>
-                                        <autoresizingMask key="autoresizingMask"/>
-                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="O0L-Hi-A9v" id="XJc-Ah-eic">
-                                            <rect key="frame" x="0.0" y="0.0" width="393" height="47.666667938232422"/>
-                                            <autoresizingMask key="autoresizingMask"/>
+                                            <constraints>
+                                                <constraint firstItem="fsP-xf-d7T" firstAttribute="leading" secondItem="xBZ-mC-jxd" secondAttribute="leading" constant="8" id="3t8-1S-En1"/>
+                                                <constraint firstAttribute="bottom" secondItem="fsP-xf-d7T" secondAttribute="bottom" constant="4" id="Q1I-Mk-DJN"/>
+                                                <constraint firstItem="hi3-82-nbN" firstAttribute="centerY" secondItem="xBZ-mC-jxd" secondAttribute="centerY" id="Rdd-Ij-rF8"/>
+                                                <constraint firstItem="fsP-xf-d7T" firstAttribute="top" secondItem="xBZ-mC-jxd" secondAttribute="top" constant="4" id="mqO-Uw-0Mm"/>
+                                                <constraint firstAttribute="trailing" secondItem="fsP-xf-d7T" secondAttribute="trailing" constant="8" id="ukO-xA-hGF"/>
+                                            </constraints>
                                         </tableViewCellContentView>
                                     </tableViewCell>
                                 </prototypes>
@@ -87,12 +91,15 @@
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="kyj-sy-aEa" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="138.1679389312977" y="-2.1126760563380285"/>
+            <point key="canvasLocation" x="132" y="32"/>
         </scene>
     </scenes>
     <resources>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
+        <systemColor name="systemGray5Color">
+            <color red="0.89803921568627454" green="0.89803921568627454" blue="0.91764705882352937" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
     </resources>
 </document>
