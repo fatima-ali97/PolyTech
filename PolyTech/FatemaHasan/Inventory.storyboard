@@ -95,8 +95,7 @@
                                 <state key="normal" title="Button"/>
                                 <buttonConfiguration key="configuration" style="filled" title="Delete"/>
                                 <connections>
-                                    <action selector="Delete1:" destination="R4J-GF-moI" eventType="touchUpInside" id="XV1-Ob-S0E"/>
-                                    <action selector="deleteButtonTapped:" destination="R4J-GF-moI" eventType="touchUpInside" id="DV9-c6-WuW"/>
+                                    <action selector="deleteButtonTapped:" destination="R4J-GF-moI" eventType="touchUpInside" id="ZpF-i7-Qhe"/>
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="quz-LV-82L">
@@ -106,8 +105,7 @@
                                 <state key="normal" title="Button"/>
                                 <buttonConfiguration key="configuration" style="filled" title="Delete"/>
                                 <connections>
-                                    <action selector="Delete2:" destination="R4J-GF-moI" eventType="touchUpInside" id="bqU-mm-fnw"/>
-                                    <action selector="deleteButtonTapped:" destination="R4J-GF-moI" eventType="touchUpInside" id="Uia-E5-nz9"/>
+                                    <action selector="deleteButtonTapped:" destination="R4J-GF-moI" eventType="touchUpInside" id="v61-CV-IlU"/>
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Uzh-Fr-rKL">
@@ -117,7 +115,7 @@
                                 <state key="normal" title="Button"/>
                                 <buttonConfiguration key="configuration" style="filled" title="Delete"/>
                                 <connections>
-                                    <action selector="Delete3:" destination="R4J-GF-moI" eventType="touchUpInside" id="crP-Bv-PKy"/>
+                                    <action selector="deleteButtonTapped:" destination="R4J-GF-moI" eventType="touchUpInside" id="Ocq-FL-t8d"/>
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="vkk-JL-HL4">
@@ -127,7 +125,7 @@
                                 <state key="normal" title="Button"/>
                                 <buttonConfiguration key="configuration" style="filled" title="Delete"/>
                                 <connections>
-                                    <action selector="Delete4:" destination="R4J-GF-moI" eventType="touchUpInside" id="D6h-eA-qta"/>
+                                    <action selector="deleteButtonTapped:" destination="R4J-GF-moI" eventType="touchUpInside" id="VXU-To-c0d"/>
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="rN3-8m-MPV">
@@ -137,8 +135,7 @@
                                 <state key="normal" title="Button"/>
                                 <buttonConfiguration key="configuration" style="filled" title="Edit"/>
                                 <connections>
-                                    <action selector="Edit1:" destination="R4J-GF-moI" eventType="touchUpInside" id="L6z-wg-VRV"/>
-                                    <action selector="editButtonTapped:" destination="R4J-GF-moI" eventType="touchUpInside" id="GL2-wi-oqe"/>
+                                    <action selector="editButtonTapped:" destination="R4J-GF-moI" eventType="touchUpInside" id="Hix-Np-WTW"/>
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="y8l-t8-QMG">
@@ -148,8 +145,7 @@
                                 <state key="normal" title="Button"/>
                                 <buttonConfiguration key="configuration" style="filled" title="Edit"/>
                                 <connections>
-                                    <action selector="Edit2:" destination="R4J-GF-moI" eventType="touchUpInside" id="CFh-CO-tmE"/>
-                                    <action selector="editButtonTapped:" destination="R4J-GF-moI" eventType="touchUpInside" id="7Bh-04-1cQ"/>
+                                    <action selector="editButtonTapped:" destination="R4J-GF-moI" eventType="touchUpInside" id="d72-yW-muz"/>
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="na8-gU-ZSr">
@@ -159,7 +155,7 @@
                                 <state key="normal" title="Button"/>
                                 <buttonConfiguration key="configuration" style="filled" title="Edit"/>
                                 <connections>
-                                    <action selector="Edit3:" destination="R4J-GF-moI" eventType="touchUpInside" id="K3e-VX-MXQ"/>
+                                    <action selector="editButtonTapped:" destination="R4J-GF-moI" eventType="touchUpInside" id="hSH-NY-3IR"/>
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="wB5-Uz-ZZf">
@@ -169,7 +165,7 @@
                                 <state key="normal" title="Button"/>
                                 <buttonConfiguration key="configuration" style="filled" title="Edit"/>
                                 <connections>
-                                    <action selector="Edit4:" destination="R4J-GF-moI" eventType="touchUpInside" id="v8Y-t4-Pci"/>
+                                    <action selector="editButtonTapped:" destination="R4J-GF-moI" eventType="touchUpInside" id="lkS-MX-LBN"/>
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="gSB-pv-1G1">
@@ -179,7 +175,7 @@
                                 <state key="normal" title="Button"/>
                                 <buttonConfiguration key="configuration" style="filled" title="Edit"/>
                                 <connections>
-                                    <action selector="Edit5:" destination="R4J-GF-moI" eventType="touchUpInside" id="OjW-Mw-hVD"/>
+                                    <action selector="editButtonTapped:" destination="R4J-GF-moI" eventType="touchUpInside" id="xkY-qF-dNr"/>
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="f3O-uk-jXW">
@@ -189,9 +185,7 @@
                                 <state key="normal" title="Button"/>
                                 <buttonConfiguration key="configuration" style="filled" title="View"/>
                                 <connections>
-                                    <action selector="V1:" destination="R4J-GF-moI" eventType="touchUpInside" id="0sx-zZ-AOi"/>
-                                    <action selector="View1:" destination="R4J-GF-moI" eventType="touchUpInside" id="TQY-Mj-GX4"/>
-                                    <action selector="viewButtonTapped:" destination="R4J-GF-moI" eventType="touchUpInside" id="kw1-nP-zUf"/>
+                                    <action selector="viewButtonTapped:" destination="R4J-GF-moI" eventType="touchUpInside" id="Mg8-JH-Rxj"/>
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="3kR-wf-xg2">
@@ -201,8 +195,7 @@
                                 <state key="normal" title="Button"/>
                                 <buttonConfiguration key="configuration" style="filled" title="View"/>
                                 <connections>
-                                    <action selector="V2:" destination="R4J-GF-moI" eventType="touchUpInside" id="J0y-Z4-jZw"/>
-                                    <action selector="viewButtonTapped:" destination="R4J-GF-moI" eventType="touchUpInside" id="hFF-70-Sp9"/>
+                                    <action selector="viewButtonTapped:" destination="R4J-GF-moI" eventType="touchUpInside" id="yW4-8M-98S"/>
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Idf-bv-mQo">
@@ -212,7 +205,7 @@
                                 <state key="normal" title="Button"/>
                                 <buttonConfiguration key="configuration" style="filled" title="View"/>
                                 <connections>
-                                    <action selector="V3:" destination="R4J-GF-moI" eventType="touchUpInside" id="6eW-7O-gNg"/>
+                                    <action selector="viewButtonTapped:" destination="R4J-GF-moI" eventType="touchUpInside" id="GKf-1M-cqX"/>
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="H7s-En-oam">
@@ -222,7 +215,7 @@
                                 <state key="normal" title="Button"/>
                                 <buttonConfiguration key="configuration" style="filled" title="View"/>
                                 <connections>
-                                    <action selector="V4:" destination="R4J-GF-moI" eventType="touchUpInside" id="bba-9F-QAE"/>
+                                    <action selector="viewButtonTapped:" destination="R4J-GF-moI" eventType="touchUpInside" id="H9c-Jb-jyO"/>
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="AWX-AF-BTi">
@@ -232,7 +225,7 @@
                                 <state key="normal" title="Button"/>
                                 <buttonConfiguration key="configuration" style="filled" title="View"/>
                                 <connections>
-                                    <action selector="V5:" destination="R4J-GF-moI" eventType="touchUpInside" id="cdF-Ry-HlH"/>
+                                    <action selector="viewButtonTapped:" destination="R4J-GF-moI" eventType="touchUpInside" id="usY-1n-GXM"/>
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="QB2-Or-vEx">
@@ -242,7 +235,7 @@
                                 <state key="normal" title="Button"/>
                                 <buttonConfiguration key="configuration" style="filled" title="Delete"/>
                                 <connections>
-                                    <action selector="Delete5:" destination="R4J-GF-moI" eventType="touchUpInside" id="9og-Vq-WQk"/>
+                                    <action selector="deleteButtonTapped:" destination="R4J-GF-moI" eventType="touchUpInside" id="o01-m9-8Jq"/>
                                 </connections>
                             </button>
                             <view tag="-1" contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="o5a-WV-92J">
@@ -287,7 +280,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="GNK-7b-Hvo" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="135.1145038167939" y="3.5211267605633805"/>
+            <point key="canvasLocation" x="372" y="-77"/>
         </scene>
     </scenes>
     <resources>
