@@ -1,151 +1,207 @@
-//
-//  FAQViewController.swift
-//  PolyTech
-//
-//  Created by BP-19-130-12 on 21/12/2025.
-//
 
 import UIKit
+import Firebase
 import FirebaseFirestore
-struct FAQItem {
-    let id: String
-    let title: String
-    let desc: String
-    var isExpanded: Bool = false
+import FirebaseAuth
+
+struct FAQSection {
+    let question: String
+    let answer: String
+    var isCollapsed: Bool
 }
 
 final class FAQViewController: UIViewController {
 
-    @IBOutlet weak var FaqTable: UITableViewCell!
-    @IBOutlet weak var searchBar: UISearchBar!
-    @IBOutlet weak var getHelpTapped: UIButton!
     @IBOutlet weak var tableView: UITableView!
-    
-    @IBAction func getHelpTapped(_ sender: UIButton) {
-        let storyboard = UIStoryboard(name: "HelpPage", bundle: nil)
-        let vc = storyboard.instantiateViewController(withIdentifier: "HelpPageVC")
-        navigationController?.pushViewController(vc, animated: true)
-    }
-    
-    private let db = Firestore.firestore()
 
-    private var allFAQs: [FAQItem] = []
-    private var shownFAQs: [FAQItem] = []
-    private var isSearching = false
+    private let db = Firestore.firestore()
+    private var sections: [FAQSection] = []
 
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        title = "FAQs"
-
         tableView.dataSource = self
         tableView.delegate = self
-        searchBar.delegate = self
 
-        // Dynamic height
+        // مهم عشان نفس ستايل الريبو
         tableView.rowHeight = UITableView.automaticDimension
-        tableView.estimatedRowHeight = 60
+        tableView.estimatedRowHeight = 80
+        tableView.backgroundColor = .systemGroupedBackground
 
-        fetchFAQs()
+        // تسجيل Cells
+        tableView.register(FAQQuestionCell.self, forCellReuseIdentifier: FAQQuestionCell.reuseId)
+        tableView.register(FAQAnswerCell.self, forCellReuseIdentifier: FAQAnswerCell.reuseId)
+
+        fetchFAQ()
     }
 
-    private func fetchFAQs() {
-        db.collection("FAQ").getDocuments { [weak self] snapshot, error in
-            guard let self = self else { return }
+    private func fetchFAQ() {
+        db.collection("FAQ")
+            .limit(to: 5)
+            .getDocuments { [weak self] snapshot, error in
+                guard let self = self else { return }
 
-            if let error = error {
-                print("🔥 Firestore error:", error.localizedDescription)
-                return
+                if let error = error {
+                    print("Firebase error:", error.localizedDescription)
+                    return
+                }
+
+                self.sections = snapshot?.documents.compactMap { doc in
+                    let data = doc.data()
+                    guard
+                        let title = data["Title"] as? String,
+                        let description = data["Description"] as? String
+                    else { return nil }
+
+                    return FAQSection(question: title, answer: description, isCollapsed: true)
+                } ?? []
+
+                DispatchQueue.main.async { self.tableView.reloadData() }
             }
-
-            guard let docs = snapshot?.documents else { return }
-
-            var temp: [FAQItem] = docs.compactMap { doc in
-                let data = doc.data()
-                let title = data["Title"] as? String ?? ""
-                let desc  = data["Description"] as? String ?? ""
-                return FAQItem(id: doc.documentID, title: title, desc: desc, isExpanded: false)
-            }
-
-           
-            temp.sort {
-                (Int($0.id) ?? 999999) < (Int($1.id) ?? 999999)
-            }
-
-            self.allFAQs = temp
-            self.shownFAQs = temp
-            self.tableView.reloadData()
-        }
-    }
-
-    private func updateChevron(for cell: UITableViewCell, expanded: Bool) {
-        let iconName = expanded ? "chevron.up" : "chevron.down"
-        let imageView = UIImageView(image: UIImage(systemName: iconName))
-        imageView.tintColor = .systemGray
-        cell.accessoryView = imageView
     }
 }
 
-extension FAQViewController: UITableViewDataSource, UITableViewDelegate {
+extension FAQViewController: UITableViewDataSource {
 
+    func numberOfSections(in tableView: UITableView) -> Int { sections.count }
+
+    // Row 0 = Question (دائمًا موجود)
+    // Row 1 = Answer (يظهر فقط إذا السكشن مفتوح)
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return shownFAQs.count
+        sections[section].isCollapsed ? 1 : 2
     }
 
     func tableView(_ tableView: UITableView,
                    cellForRowAt indexPath: IndexPath) -> UITableViewCell {
 
-        let cell = tableView.dequeueReusableCell(withIdentifier: "FAQCell", for: indexPath)
-
-        let item = shownFAQs[indexPath.row]
-        cell.textLabel?.text = item.title
-        cell.textLabel?.numberOfLines = 0
-
-        if item.isExpanded {
-            cell.detailTextLabel?.text = item.desc
-            cell.detailTextLabel?.numberOfLines = 0
+        if indexPath.row == 0 {
+            let cell = tableView.dequeueReusableCell(withIdentifier: FAQQuestionCell.reuseId,
+                                                     for: indexPath) as! FAQQuestionCell
+            let item = sections[indexPath.section]
+            cell.configure(title: item.question, collapsed: item.isCollapsed)
+            return cell
         } else {
-            cell.detailTextLabel?.text = nil
+            let cell = tableView.dequeueReusableCell(withIdentifier: FAQAnswerCell.reuseId,
+                                                     for: indexPath) as! FAQAnswerCell
+            cell.configure(text: sections[indexPath.section].answer)
+            return cell
         }
-
-        cell.selectionStyle = .none
-        updateChevron(for: cell, expanded: item.isExpanded)
-
-        return cell
-    }
-
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        shownFAQs[indexPath.row].isExpanded.toggle()
-
-
-        if let originalIndex = allFAQs.firstIndex(where: { $0.id == shownFAQs[indexPath.row].id }) {
-            allFAQs[originalIndex].isExpanded = shownFAQs[indexPath.row].isExpanded
-        }
-
-        tableView.reloadRows(at: [indexPath], with: .automatic)
     }
 }
 
-extension FAQViewController: UISearchBarDelegate {
+extension FAQViewController: UITableViewDelegate {
 
-    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-        let text = searchText.trimmingCharacters(in: .whitespacesAndNewlines)
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        tableView.deselectRow(at: indexPath, animated: true)
 
-        if text.isEmpty {
-            isSearching = false
-            shownFAQs = allFAQs
-        } else {
-            isSearching = true
-            shownFAQs = allFAQs.filter {
-                $0.title.localizedCaseInsensitiveContains(text) ||
-                $0.desc.localizedCaseInsensitiveContains(text)
-            }
-        }
+        // نفس الريبو: الضغط على السؤال (Row 0) يفتح/يسكر
+        guard indexPath.row == 0 else { return }
 
-        tableView.reloadData()
+        sections[indexPath.section].isCollapsed.toggle()
+
+        tableView.performBatchUpdates({
+            tableView.reloadSections(IndexSet(integer: indexPath.section), with: .automatic)
+        })
     }
 
-    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
-        searchBar.resignFirstResponder()
+    // عشان المسافات مثل grouped
+    func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat { 10 }
+    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? { UIView() }
+    func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat { 0.01 }
+    func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? { UIView() }
+}
+
+final class FAQQuestionCell: UITableViewCell {
+
+    static let reuseId = "FAQQuestionCell"
+
+    private let titleLabel = UILabel()
+    private let chevron = UIImageView(image: UIImage(systemName: "chevron.right"))
+
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+        super.init(style: style, reuseIdentifier: reuseIdentifier)
+        setup()
+    }
+
+    required init?(coder: NSCoder) {
+        super.init(coder: coder)
+        setup()
+    }
+
+    private func setup() {
+        selectionStyle = .default
+        accessoryType = .none
+        backgroundColor = .secondarySystemGroupedBackground
+
+        titleLabel.numberOfLines = 0
+        titleLabel.font = .systemFont(ofSize: 16, weight: .semibold)
+
+        chevron.tintColor = .secondaryLabel
+        chevron.contentMode = .scaleAspectFit
+
+        contentView.addSubview(titleLabel)
+        contentView.addSubview(chevron)
+
+        titleLabel.translatesAutoresizingMaskIntoConstraints = false
+        chevron.translatesAutoresizingMaskIntoConstraints = false
+
+        NSLayoutConstraint.activate([
+            titleLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 14),
+            titleLabel.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -14),
+            titleLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
+            titleLabel.trailingAnchor.constraint(equalTo: chevron.leadingAnchor, constant: -12),
+
+            chevron.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
+            chevron.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
+            chevron.widthAnchor.constraint(equalToConstant: 14),
+            chevron.heightAnchor.constraint(equalToConstant: 14)
+        ])
+    }
+
+    func configure(title: String, collapsed: Bool) {
+        titleLabel.text = title
+        UIView.animate(withDuration: 0.2) {
+            self.chevron.transform = collapsed ? .identity : CGAffineTransform(rotationAngle: .pi/2)
+        }
+    }
+}
+
+final class FAQAnswerCell: UITableViewCell {
+
+    static let reuseId = "FAQAnswerCell"
+
+    private let bodyLabel = UILabel()
+
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+        super.init(style: style, reuseIdentifier: reuseIdentifier)
+        setup()
+    }
+
+    required init?(coder: NSCoder) {
+        super.init(coder: coder)
+        setup()
+    }
+
+    private func setup() {
+        selectionStyle = .none
+        backgroundColor = .secondarySystemGroupedBackground
+
+        bodyLabel.numberOfLines = 0
+        bodyLabel.font = .systemFont(ofSize: 15, weight: .regular)
+        bodyLabel.textColor = .label
+
+        contentView.addSubview(bodyLabel)
+        bodyLabel.translatesAutoresizingMaskIntoConstraints = false
+
+        NSLayoutConstraint.activate([
+            bodyLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 10),
+            bodyLabel.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -14),
+            bodyLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
+            bodyLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16)
+        ])
+    }
+
+    func configure(text: String) {
+        bodyLabel.text = text
     }
 }
