@@ -183,7 +183,7 @@ class NewMaintenanceViewController: UIViewController {
         if let error = error {
             showAlert(error.localizedDescription)
         } else {
-            let alert = UIAlertController(title: "Success",
+        let alert = UIAlertController(title: "Success",
                                           message: successMessage,
                                           preferredStyle: .alert)
             alert.addAction(UIAlertAction(title: "OK", style: .default) { _ in
