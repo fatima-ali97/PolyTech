@@ -7,7 +7,8 @@
 
 import UIKit
 
-class DonutChartView: UIView {
+// CHANGED THIS - REVIEW IT PLEASE
+class DonutChartViewtwo: UIView {
     
     var dataEntries: [(value: CGFloat, color: UIColor)] = [] {
         didSet {
