@@ -65,16 +65,16 @@ class MaintenanceViewController: UIViewController {
     
     func openNewMaintenancePage() {
         let storyboard = UIStoryboard(name: "MalakStoryboard", bundle: nil)
-        guard let newMaintenanceVC = storyboard.instantiateViewController(withIdentifier: "NewMaintenance") as? NewMaintenanceViewController else {
-            print("NewMaintenanceViewController not found in MalakStoryboard")
-            return
-        }
+//        guard let newMaintenanceVC = storyboard.instantiateViewController(withIdentifier: "NewMaintenance") as? NewMaintenanceViewController else {
+//            print("NewMaintenanceViewController not found in MalakStoryboard")
+//            return
+//        }
         
-        if let nav = self.navigationController {
-            nav.pushViewController(newMaintenanceVC, animated: true)
-        } else {
-            present(newMaintenanceVC, animated: true)
-        }
+//        if let nav = self.navigationController {
+//            nav.pushViewController(newMaintenanceVC, animated: true)
+//        } else {
+//            present(newMaintenanceVC, animated: true)
+//        }
     }
     
     func showAlert(title: String, message: String) {

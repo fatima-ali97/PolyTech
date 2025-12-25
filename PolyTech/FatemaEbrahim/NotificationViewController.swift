@@ -12,7 +12,7 @@ class NotificationsViewController: UIViewController {
     private var listener: ListenerRegistration?
     
     // Replace with actual user ID from your auth system
-    private let currentUserId = "user_abc"
+    private let currentUserId = "7fg0EVpMQUPHR9kgBPEv7mFRgLt1"
     
     private let refreshControl = UIRefreshControl()
     private let emptyStateView = EmptyStateView()
@@ -28,7 +28,7 @@ class NotificationsViewController: UIViewController {
         loadNotifications()
         
         // Uncomment to add sample data for testing
-        // addSampleNotifications()
+         addSampleNotifications()
     }
     
     override func viewWillDisappear(_ animated: Bool) {
