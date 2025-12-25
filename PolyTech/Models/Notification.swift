@@ -52,7 +52,7 @@ struct NotificationModel: Codable {
               let type = NotificationType(rawValue: typeString),
               let isRead = dictionary["isRead"] as? Bool,
               let timestamp = dictionary["timestamp"] as? Timestamp else {
-            print("❌ Failed to parse notification - missing required fields")
+            print(" Failed to parse notification - missing required fields")
             print("   userId: \(dictionary["userId"] ?? "nil")")
             print("   title: \(dictionary["title"] ?? "nil")")
             print("   message: \(dictionary["message"] ?? "nil")")

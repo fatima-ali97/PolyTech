@@ -4,7 +4,6 @@
 //
 //  Created by BP-19-130-15 on 24/12/2025.
 //
-
 import UIKit
 
 class NotificationTableViewCell: UITableViewCell {
@@ -14,16 +13,14 @@ class NotificationTableViewCell: UITableViewCell {
     private let containerView: UIView = {
         let view = UIView()
         view.backgroundColor = .systemBackground
-        view.layer.cornerRadius = 12
-        view.layer.borderWidth = 1
-        view.layer.borderColor = UIColor.systemGray5.cgColor
+        view.layer.cornerRadius = 16
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
     }()
     
-    private let iconBackgroundView: UIView = {
+    private let iconContainerView: UIView = {
         let view = UIView()
-        view.layer.cornerRadius = 20
+        view.layer.cornerRadius = 30
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
     }()
@@ -36,18 +33,27 @@ class NotificationTableViewCell: UITableViewCell {
         return iv
     }()
     
-    private let titleLabel: UILabel = {
-        let label = UILabel()
-        label.font = .systemFont(ofSize: 16, weight: .semibold)
-        label.textColor = .label
-        label.translatesAutoresizingMaskIntoConstraints = false
-        return label
+    private let contentStackView: UIStackView = {
+        let stack = UIStackView()
+        stack.axis = .vertical
+        stack.spacing = 8
+        stack.translatesAutoresizingMaskIntoConstraints = false
+        return stack
     }()
     
-    private let messageLabel: UILabel = {
+    private let headerStackView: UIStackView = {
+        let stack = UIStackView()
+        stack.axis = .horizontal
+        stack.alignment = .center
+        stack.spacing = 8
+        stack.translatesAutoresizingMaskIntoConstraints = false
+        return stack
+    }()
+    
+    private let titleLabel: UILabel = {
         let label = UILabel()
-        label.font = .systemFont(ofSize: 14, weight: .regular)
-        label.textColor = .secondaryLabel
+        label.font = .systemFont(ofSize: 18, weight: .semibold)
+        label.textColor = .label
         label.numberOfLines = 2
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
@@ -55,19 +61,45 @@ class NotificationTableViewCell: UITableViewCell {
     
     private let timeLabel: UILabel = {
         let label = UILabel()
-        label.font = .systemFont(ofSize: 12, weight: .regular)
-        label.textColor = .tertiaryLabel
+        label.font = .systemFont(ofSize: 14, weight: .medium)
+        label.textColor = .secondaryLabel
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.setContentHuggingPriority(.required, for: .horizontal)
+        label.setContentCompressionResistancePriority(.required, for: .horizontal)
+        return label
+    }()
+    
+    private let timeIconImageView: UIImageView = {
+        let iv = UIImageView()
+        iv.image = UIImage(systemName: "mappin.circle.fill")
+        iv.contentMode = .scaleAspectFit
+        iv.tintColor = .systemBlue
+        iv.translatesAutoresizingMaskIntoConstraints = false
+        return iv
+    }()
+    
+    private let messageLabel: UILabel = {
+        let label = UILabel()
+        label.font = .systemFont(ofSize: 15, weight: .regular)
+        label.textColor = .secondaryLabel
+        label.numberOfLines = 2
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
     
-    private let unreadIndicator: UIView = {
-        let view = UIView()
-        view.backgroundColor = .systemBlue
-        view.layer.cornerRadius = 4
-        view.translatesAutoresizingMaskIntoConstraints = false
-        return view
+    private let actionButton: UIButton = {
+        let button = UIButton(type: .system)
+        button.titleLabel?.font = .systemFont(ofSize: 15, weight: .semibold)
+        button.layer.cornerRadius = 12
+        button.contentEdgeInsets = UIEdgeInsets(top: 12, left: 20, bottom: 12, right: 20)
+        button.translatesAutoresizingMaskIntoConstraints = false
+        return button
     }()
+    
+    // MARK: - Properties
+    
+    private var actionUrlString: String?
+    private var actionCallback: ((String) -> Void)?
     
     // MARK: - Initialization
     
@@ -93,12 +125,20 @@ class NotificationTableViewCell: UITableViewCell {
         selectionStyle = .none
         
         contentView.addSubview(containerView)
-        containerView.addSubview(iconBackgroundView)
-        iconBackgroundView.addSubview(iconImageView)
-        containerView.addSubview(titleLabel)
-        containerView.addSubview(messageLabel)
-        containerView.addSubview(timeLabel)
-        containerView.addSubview(unreadIndicator)
+        containerView.addSubview(iconContainerView)
+        iconContainerView.addSubview(iconImageView)
+        containerView.addSubview(contentStackView)
+        
+        // Add header with title and time
+        headerStackView.addArrangedSubview(titleLabel)
+        headerStackView.addArrangedSubview(timeIconImageView)
+        headerStackView.addArrangedSubview(timeLabel)
+        
+        contentStackView.addArrangedSubview(headerStackView)
+        contentStackView.addArrangedSubview(messageLabel)
+        contentStackView.addArrangedSubview(actionButton)
+        
+        actionButton.addTarget(self, action: #selector(actionButtonTapped), for: .touchUpInside)
         
         NSLayoutConstraint.activate([
             // Container view
@@ -107,89 +147,113 @@ class NotificationTableViewCell: UITableViewCell {
             containerView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
             containerView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -8),
             
-            // Icon background
-            iconBackgroundView.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: 12),
-            iconBackgroundView.topAnchor.constraint(equalTo: containerView.topAnchor, constant: 12),
-            iconBackgroundView.widthAnchor.constraint(equalToConstant: 40),
-            iconBackgroundView.heightAnchor.constraint(equalToConstant: 40),
+            // Icon container
+            iconContainerView.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: 16),
+            iconContainerView.topAnchor.constraint(equalTo: containerView.topAnchor, constant: 16),
+            iconContainerView.widthAnchor.constraint(equalToConstant: 60),
+            iconContainerView.heightAnchor.constraint(equalToConstant: 60),
             
             // Icon image
-            iconImageView.centerXAnchor.constraint(equalTo: iconBackgroundView.centerXAnchor),
-            iconImageView.centerYAnchor.constraint(equalTo: iconBackgroundView.centerYAnchor),
-            iconImageView.widthAnchor.constraint(equalToConstant: 20),
-            iconImageView.heightAnchor.constraint(equalToConstant: 20),
+            iconImageView.centerXAnchor.constraint(equalTo: iconContainerView.centerXAnchor),
+            iconImageView.centerYAnchor.constraint(equalTo: iconContainerView.centerYAnchor),
+            iconImageView.widthAnchor.constraint(equalToConstant: 32),
+            iconImageView.heightAnchor.constraint(equalToConstant: 32),
             
-            // Title label
-            titleLabel.leadingAnchor.constraint(equalTo: iconBackgroundView.trailingAnchor, constant: 12),
-            titleLabel.topAnchor.constraint(equalTo: containerView.topAnchor, constant: 12),
-            titleLabel.trailingAnchor.constraint(equalTo: unreadIndicator.leadingAnchor, constant: -8),
+            // Time icon
+            timeIconImageView.widthAnchor.constraint(equalToConstant: 16),
+            timeIconImageView.heightAnchor.constraint(equalToConstant: 16),
             
-            // Message label
-            messageLabel.leadingAnchor.constraint(equalTo: titleLabel.leadingAnchor),
-            messageLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 4),
-            messageLabel.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -12),
-            
-            // Time label
-            timeLabel.leadingAnchor.constraint(equalTo: titleLabel.leadingAnchor),
-            timeLabel.topAnchor.constraint(equalTo: messageLabel.bottomAnchor, constant: 6),
-            timeLabel.bottomAnchor.constraint(equalTo: containerView.bottomAnchor, constant: -12),
-            
-            // Unread indicator
-            unreadIndicator.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -12),
-            unreadIndicator.centerYAnchor.constraint(equalTo: titleLabel.centerYAnchor),
-            unreadIndicator.widthAnchor.constraint(equalToConstant: 8),
-            unreadIndicator.heightAnchor.constraint(equalToConstant: 8)
+            // Content stack
+            contentStackView.leadingAnchor.constraint(equalTo: iconContainerView.trailingAnchor, constant: 16),
+            contentStackView.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -16),
+            contentStackView.topAnchor.constraint(equalTo: containerView.topAnchor, constant: 20),
+            contentStackView.bottomAnchor.constraint(equalTo: containerView.bottomAnchor, constant: -20)
         ])
     }
     
     // MARK: - Configuration
     
-    func configure(with notification: NotificationModel) {
+    func configure(with notification: NotificationModel, actionCallback: ((String) -> Void)? = nil) {
         titleLabel.text = notification.title
         messageLabel.text = notification.message
         timeLabel.text = notification.displayTime
+        self.actionCallback = actionCallback
+        self.actionUrlString = notification.actionUrl
         
-        // Set icon
-        if let icon = UIImage(systemName: notification.iconName) {
-            iconImageView.image = icon
-        }
+        // Set icon based on notification type
+        configureIcon(for: notification.type)
         
-        // Set colors based on type
-        let colors = getColors(for: notification.type)
-        iconBackgroundView.backgroundColor = colors.background
-        iconImageView.tintColor = colors.icon
-        
-        // Show/hide unread indicator
-        unreadIndicator.isHidden = notification.isRead
-        
-        // Update container appearance for read/unread
-        if notification.isRead {
-            containerView.backgroundColor = .systemBackground
-            containerView.alpha = 0.7
+        // Configure action button if actionUrl exists
+        if let actionUrl = notification.actionUrl {
+            actionButton.isHidden = false
+            configureActionButton(for: notification.type, actionUrl: actionUrl)
         } else {
-            containerView.backgroundColor = .systemBackground
-            containerView.alpha = 1.0
+            actionButton.isHidden = true
         }
+        
+        // Update appearance for read/unread (optional - subtle difference)
+        containerView.alpha = notification.isRead ? 0.85 : 1.0
     }
     
-    private func getColors(for type: NotificationModel.NotificationType) -> (background: UIColor, icon: UIColor) {
-        switch type {
-        case .success:
-            return (.systemGreen.withAlphaComponent(0.2), .systemGreen)
-        case .error:
-            return (.systemRed.withAlphaComponent(0.2), .systemRed)
-        case .warning:
-            return (.systemOrange.withAlphaComponent(0.2), .systemOrange)
-        case .info:
-            return (.systemBlue.withAlphaComponent(0.2), .systemBlue)
-        case .message:
-            return (.systemPurple.withAlphaComponent(0.2), .systemPurple)
-        case .like:
-            return (.systemPink.withAlphaComponent(0.2), .systemPink)
-        case .comment:
-            return (.systemIndigo.withAlphaComponent(0.2), .systemIndigo)
-        case .follow:
-            return (.systemTeal.withAlphaComponent(0.2), .systemTeal)
+    private func configureIcon(for type: NotificationModel.NotificationType) {
+        let config: (icon: String, backgroundColor: UIColor) = {
+            switch type {
+            case .success:
+                return ("checkmark", UIColor(red: 0.2, green: 0.4, blue: 0.6, alpha: 1.0))
+            case .error:
+                return ("xmark", UIColor(red: 0.2, green: 0.4, blue: 0.6, alpha: 1.0))
+            case .warning:
+                return ("exclamationmark.triangle.fill", UIColor(red: 0.2, green: 0.4, blue: 0.6, alpha: 1.0))
+            case .info:
+                return ("mappin.and.ellipse", UIColor(red: 0.2, green: 0.4, blue: 0.6, alpha: 1.0))
+            case .message:
+                return ("envelope.fill", UIColor(red: 0.2, green: 0.4, blue: 0.6, alpha: 1.0))
+            case .like:
+                return ("heart.fill", UIColor(red: 0.2, green: 0.4, blue: 0.6, alpha: 1.0))
+            case .comment:
+                return ("checkmark", UIColor(red: 0.2, green: 0.4, blue: 0.6, alpha: 1.0))
+            case .follow:
+                return ("person.badge.plus.fill", UIColor(red: 0.2, green: 0.4, blue: 0.6, alpha: 1.0))
+            }
+        }()
+        
+        iconImageView.image = UIImage(systemName: config.icon)
+        iconContainerView.backgroundColor = config.backgroundColor
+    }
+    
+    private func configureActionButton(for type: NotificationModel.NotificationType, actionUrl: String) {
+        let config: (title: String, icon: String, backgroundColor: UIColor, textColor: UIColor) = {
+            switch type {
+            case .success:
+                return ("Rate The Service", "star.fill", UIColor(red: 0.2, green: 0.4, blue: 0.6, alpha: 1.0), .white)
+            case .info:
+                return ("Track Location", "mappin.circle.fill", UIColor(red: 0.2, green: 0.4, blue: 0.6, alpha: 1.0), .white)
+            case .error, .warning, .comment, .follow:
+                return ("View Request Details", "doc.text.fill", UIColor(red: 0.2, green: 0.4, blue: 0.6, alpha: 1.0), .white)
+            case .message:
+                return ("View Message", "envelope.fill", UIColor(red: 0.2, green: 0.4, blue: 0.6, alpha: 1.0), .white)
+            case .like:
+                return ("View Post", "heart.fill", UIColor(red: 0.2, green: 0.4, blue: 0.6, alpha: 1.0), .white)
+            }
+        }()
+        
+        // Configure button with icon
+        var configuration = UIButton.Configuration.filled()
+        configuration.title = config.title
+        configuration.image = UIImage(systemName: config.icon)
+        configuration.imagePlacement = .leading
+        configuration.imagePadding = 8
+        configuration.baseBackgroundColor = config.backgroundColor
+        configuration.baseForegroundColor = config.textColor
+        configuration.cornerStyle = .medium
+        configuration.contentInsets = NSDirectionalEdgeInsets(top: 12, leading: 16, bottom: 12, trailing: 16)
+        
+        actionButton.configuration = configuration
+    }
+    
+    @objc private func actionButtonTapped() {
+        if let actionUrl = actionUrlString {
+            actionCallback?(actionUrl)
         }
     }
     
@@ -198,7 +262,7 @@ class NotificationTableViewCell: UITableViewCell {
         
         if selected {
             UIView.animate(withDuration: 0.1) {
-                self.containerView.transform = CGAffineTransform(scaleX: 0.98, y: 0.98)
+                self.containerView.transform = CGAffineTransform(scaleX: 0.97, y: 0.97)
             }
         } else {
             UIView.animate(withDuration: 0.1) {

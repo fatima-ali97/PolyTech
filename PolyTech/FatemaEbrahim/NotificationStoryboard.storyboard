@@ -118,6 +118,7 @@
                         </constraints>
                     </view>
                     <connections>
+                        <outlet property="clearAllButton" destination="1uC-IO-qxY" id="3vT-dd-EcY"/>
                         <outlet property="tableView" destination="iWO-7I-7Ti" id="q4I-2j-ngo"/>
                     </connections>
                 </viewController>
