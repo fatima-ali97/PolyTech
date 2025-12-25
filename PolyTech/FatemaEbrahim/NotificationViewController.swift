@@ -123,11 +123,7 @@ class NotificationsViewController: UIViewController {
                     return
                 }
                 
-                
-                for document in documents {
-                    let data = document.data()
-                    if let notification = Notification(name: <#Notification.Name#>)
-                }
+              
                 
                 self.notifications = documents.compactMap { document in
                     NotificationModel(dictionary: document.data(), id: document.documentID)
