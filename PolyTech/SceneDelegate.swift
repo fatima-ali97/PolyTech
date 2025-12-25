@@ -20,7 +20,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
         let window = UIWindow(windowScene: windowScene)
 
-        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+        let storyboard = UIStoryboard(name: "Technicians", bundle: nil)
 
         guard let initialVC = storyboard.instantiateInitialViewController() else {
             fatalError("Main storyboard has no initial view controller")
