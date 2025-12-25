@@ -21,7 +21,9 @@ class NotificationsViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+        title = "Notifications"
+        navigationController?.navigationBar.prefersLargeTitles = true
+        view.backgroundColor = .background
         setupUI()
         setupTableView()
         setupEmptyState()
@@ -39,9 +41,7 @@ class NotificationsViewController: UIViewController {
     // MARK: - Setup
     
     private func setupUI() {
-        title = "Notifications"
-        navigationController?.navigationBar.prefersLargeTitles = true
-        view.backgroundColor = .systemGroupedBackground
+        
         
         // Add "Mark All Read" button
         let markAllButton = UIBarButtonItem(
@@ -58,7 +58,7 @@ class NotificationsViewController: UIViewController {
             target: self,
             action: #selector(clearAllNotifications)
         )
-        clearAllButton.tintColor = .systemRed
+        clearAllButton.tintColor = .error
         
         navigationItem.rightBarButtonItems = [markAllButton, clearAllButton]
     }
@@ -67,7 +67,7 @@ class NotificationsViewController: UIViewController {
         tableView.delegate = self
         tableView.dataSource = self
         tableView.separatorStyle = .none
-        tableView.backgroundColor = .systemGroupedBackground
+        tableView.backgroundColor = .background
         tableView.rowHeight = UITableView.automaticDimension
         tableView.estimatedRowHeight = 100
         
