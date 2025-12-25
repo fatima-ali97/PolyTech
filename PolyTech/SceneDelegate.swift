@@ -20,7 +20,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
         let window = UIWindow(windowScene: windowScene)
 
-        let storyboard = UIStoryboard(name: "Inventory", bundle: nil) //change this + make sure u select the "is initial storyboard"
+        let storyboard = UIStoryboard(name: "FAQ", bundle: nil) //change this + make sure u select the "is initial storyboard"
 
         guard let initialVC = storyboard.instantiateInitialViewController() else {
             fatalError("FAQ storyboard has no initial view controller")
