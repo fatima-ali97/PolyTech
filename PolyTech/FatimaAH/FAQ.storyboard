@@ -42,18 +42,18 @@
                                         <color key="textColor" white="0.66666666669999997" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <nil key="highlightedColor"/>
                                     </label>
-                                    <tableView clipsSubviews="YES" contentMode="scaleToFill" ambiguous="YES" bounces="NO" showsHorizontalScrollIndicator="NO" bouncesZoom="NO" dataMode="prototypes" style="plain" separatorStyle="none" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" estimatedSectionHeaderHeight="-1" sectionFooterHeight="28" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="MJ5-r0-gsW">
+                                    <tableView clipsSubviews="YES" contentMode="scaleToFill" bounces="NO" showsHorizontalScrollIndicator="NO" bouncesZoom="NO" dataMode="prototypes" style="plain" separatorStyle="none" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" estimatedSectionHeaderHeight="-1" sectionFooterHeight="28" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="MJ5-r0-gsW">
                                         <rect key="frame" x="0.0" y="231" width="393" height="536"/>
                                         <sections/>
                                     </tableView>
-                                    <searchBar contentMode="redraw" ambiguous="YES" text="" translatesAutoresizingMaskIntoConstraints="NO" id="pvR-Qi-Sa8">
+                                    <searchBar contentMode="redraw" text="" translatesAutoresizingMaskIntoConstraints="NO" id="pvR-Qi-Sa8">
                                         <rect key="frame" x="16" y="178" width="361" height="44"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="44" id="Awj-ov-vxQ"/>
                                         </constraints>
                                         <textInputTraits key="textInputTraits"/>
                                     </searchBar>
-                                    <button opaque="NO" contentMode="scaleToFill" ambiguous="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="XBD-u0-zEH">
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="XBD-u0-zEH">
                                         <rect key="frame" x="117" y="776" width="160" height="44"/>
                                         <constraints>
                                             <constraint firstAttribute="width" constant="160" id="GqS-P7-lZ5"/>
@@ -72,6 +72,8 @@
                                 <constraints>
                                     <constraint firstItem="pvR-Qi-Sa8" firstAttribute="leading" secondItem="QeL-LM-enD" secondAttribute="leading" constant="16" id="126-nG-7T4"/>
                                     <constraint firstItem="MJ5-r0-gsW" firstAttribute="trailing" secondItem="QeL-LM-enD" secondAttribute="trailing" id="78h-TW-W9Z"/>
+                                    <constraint firstItem="MJ5-r0-gsW" firstAttribute="top" secondItem="pvR-Qi-Sa8" secondAttribute="bottom" constant="12" id="KPP-8Q-izN"/>
+                                    <constraint firstItem="XBD-u0-zEH" firstAttribute="top" secondItem="MJ5-r0-gsW" secondAttribute="bottom" constant="-12" id="had-B5-Rbp"/>
                                     <constraint firstItem="QeL-LM-enD" firstAttribute="trailing" secondItem="pvR-Qi-Sa8" secondAttribute="trailing" constant="16" id="iem-Lc-Xdc"/>
                                     <constraint firstItem="MJ5-r0-gsW" firstAttribute="top" secondItem="pvR-Qi-Sa8" secondAttribute="bottom" constant="12" id="ioL-pE-ZGl"/>
                                     <constraint firstItem="pvR-Qi-Sa8" firstAttribute="top" secondItem="fJr-28-ybm" secondAttribute="bottom" constant="16" id="oXG-Oy-zyP"/>
@@ -85,9 +87,9 @@
                     </view>
                     <navigationItem key="navigationItem" id="MD3-Kh-ei1"/>
                     <connections>
-                        <outlet property="getHelpButton" destination="XBD-u0-zEH" id="puK-kq-QSz"/>
-                        <outlet property="searchBar" destination="pvR-Qi-Sa8" id="9Dn-Gg-OCa"/>
-                        <outlet property="tableView" destination="MJ5-r0-gsW" id="gZA-mo-Lg9"/>
+                        <outlet property="getHelpButton" destination="XBD-u0-zEH" id="ooR-5w-6ah"/>
+                        <outlet property="searchBar" destination="pvR-Qi-Sa8" id="Q8d-GG-Ixf"/>
+                        <outlet property="tableView" destination="MJ5-r0-gsW" id="wNy-RL-2hr"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Ief-a0-LHa" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
