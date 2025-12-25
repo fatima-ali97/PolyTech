@@ -3,12 +3,10 @@ import FirebaseFirestore
 
 class NewMaintenanceViewController: UIViewController {
 
-    // MARK: - State
     var isEditMode = false
     var documentId: String?
     var existingData: [String: Any]?
 
-    // MARK: - IBOutlets
     @IBOutlet weak var requestName: UITextField!
     @IBOutlet weak var category: UITextField!
     @IBOutlet weak var location: UITextField!
@@ -20,16 +18,15 @@ class NewMaintenanceViewController: UIViewController {
     @IBOutlet weak var categoryDropDown: UIImageView!
     @IBOutlet weak var urgencyDropDown: UIImageView!
 
-    // MARK: - Firebase
+
     let database = Firestore.firestore()
 
-    // MARK: - Pickers
     private let categoryPicker = UIPickerView()
     private let urgencyPicker = UIPickerView()
     private var selectedCategory: MaintenanceCategory?
     private var selectedUrgency: UrgencyLevel?
 
-    // MARK: - Enums
+
     enum MaintenanceCategory: String, CaseIterable {
         case osUpdate = "os_update"
         case classroomEquipment = "classroom_equipment"
@@ -55,7 +52,7 @@ class NewMaintenanceViewController: UIViewController {
         var displayName: String { rawValue.capitalized }
     }
 
-    // MARK: - Lifecycle
+
     override func viewDidLoad() {
         super.viewDidLoad()
         setupBackBtn()
@@ -64,7 +61,6 @@ class NewMaintenanceViewController: UIViewController {
         configureEditMode()
     }
 
-    // MARK: - Edit Mode
     private func configureEditMode() {
         if isEditMode {
             pageTitle.text = "Edit Maintenance Request"
@@ -134,7 +130,7 @@ class NewMaintenanceViewController: UIViewController {
         }
     }
 
-    // MARK: - Setup
+
     private func setupBackBtn() {
         Backbtn.isUserInteractionEnabled = true
         Backbtn.addGestureRecognizer(
@@ -182,7 +178,7 @@ class NewMaintenanceViewController: UIViewController {
         urgency.becomeFirstResponder()
     }
 
-    // MARK: - Alerts
+
     private func handleResult(error: Error?, successMessage: String) {
         if let error = error {
             showAlert(error.localizedDescription)
@@ -206,7 +202,6 @@ class NewMaintenanceViewController: UIViewController {
     }
 }
 
-// MARK: - Picker Delegates
 extension NewMaintenanceViewController: UIPickerViewDelegate, UIPickerViewDataSource {
 
     func numberOfComponents(in pickerView: UIPickerView) -> Int { 1 }
