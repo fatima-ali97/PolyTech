@@ -86,6 +86,21 @@
                                     </tableViewCell>
                                 </prototypes>
                             </tableView>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="1uC-IO-qxY">
+                                <rect key="frame" x="20" y="718" width="353" height="36"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="36" id="f1B-OY-hDw"/>
+                                </constraints>
+                                <color key="tintColor" red="0.086274509799999996" green="0.1647058824" blue="0.2666666667" alpha="1" colorSpace="calibratedRGB"/>
+                                <state key="normal" title="Button"/>
+                                <buttonConfiguration key="configuration" style="plain" title="Clear All Notifications">
+                                    <backgroundConfiguration key="background" cornerRadius="10">
+                                        <color key="backgroundColor" name="Primary"/>
+                                    </backgroundConfiguration>
+                                    <fontDescription key="titleFontDescription" type="system" weight="semibold" pointSize="16"/>
+                                    <color key="baseForegroundColor" name="OnPrimary"/>
+                                </buttonConfiguration>
+                            </button>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="vDu-zF-Fre"/>
                         <color key="backgroundColor" name="Background"/>
@@ -95,8 +110,11 @@
                             <constraint firstItem="Hcp-n6-fPF" firstAttribute="trailing" secondItem="vDu-zF-Fre" secondAttribute="trailing" id="9bq-fM-WH1"/>
                             <constraint firstItem="iWO-7I-7Ti" firstAttribute="top" secondItem="Hcp-n6-fPF" secondAttribute="bottom" constant="26" id="KOM-LX-XYU"/>
                             <constraint firstItem="vDu-zF-Fre" firstAttribute="bottom" secondItem="iWO-7I-7Ti" secondAttribute="bottom" constant="35" id="XaL-9I-8r2"/>
+                            <constraint firstItem="1uC-IO-qxY" firstAttribute="leading" secondItem="vDu-zF-Fre" secondAttribute="leading" constant="20" id="Ypv-5B-ikf"/>
                             <constraint firstItem="Hcp-n6-fPF" firstAttribute="top" secondItem="vDu-zF-Fre" secondAttribute="top" id="aN1-JY-54G"/>
+                            <constraint firstItem="1uC-IO-qxY" firstAttribute="bottom" secondItem="vDu-zF-Fre" secondAttribute="bottom" constant="-30" id="jfe-Zd-Tic"/>
                             <constraint firstItem="iWO-7I-7Ti" firstAttribute="trailing" secondItem="Hcp-n6-fPF" secondAttribute="trailing" constant="-8" id="wDi-lA-Wqv"/>
+                            <constraint firstItem="vDu-zF-Fre" firstAttribute="trailing" secondItem="1uC-IO-qxY" secondAttribute="trailing" constant="20" id="xb2-96-iiY"/>
                         </constraints>
                     </view>
                     <connections>
@@ -105,7 +123,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Ief-a0-LHa" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1235.8778625954199" y="170.42253521126761"/>
+            <point key="canvasLocation" x="1143" y="129"/>
         </scene>
     </scenes>
     <resources>

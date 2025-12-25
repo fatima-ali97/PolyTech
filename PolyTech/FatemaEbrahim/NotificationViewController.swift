@@ -2,7 +2,7 @@ import UIKit
 import FirebaseFirestore
 
 class NotificationsViewController: UIViewController {
-
+    
     // MARK: - IBOutlets
     @IBOutlet weak var tableView: UITableView!
     
@@ -12,7 +12,7 @@ class NotificationsViewController: UIViewController {
     private var listener: ListenerRegistration?
     
     // Replace with actual user ID from your auth system
-    private let currentUserId = "7fg0EVpMQUPHR9kgBPEv7mFRgLt1"
+    private let currentUserId = "zvyu1FR9kfabqzzb4uHRop3hbgb2"
     
     private let refreshControl = UIRefreshControl()
     private let emptyStateView = EmptyStateView()
@@ -21,16 +21,14 @@ class NotificationsViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        title = "Notifications"
-        navigationController?.navigationBar.prefersLargeTitles = true
-        view.backgroundColor = .background
+        
         setupUI()
         setupTableView()
         setupEmptyState()
         loadNotifications()
         
         // Uncomment to add sample data for testing
-         //addSampleNotifications()
+        // addSampleNotifications()
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -41,7 +39,9 @@ class NotificationsViewController: UIViewController {
     // MARK: - Setup
     
     private func setupUI() {
-        
+        title = "Notifications"
+        navigationController?.navigationBar.prefersLargeTitles = true
+        view.backgroundColor = .background
         
         // Add "Mark All Read" button
         let markAllButton = UIBarButtonItem(
@@ -58,7 +58,7 @@ class NotificationsViewController: UIViewController {
             target: self,
             action: #selector(clearAllNotifications)
         )
-        clearAllButton.tintColor = .error
+        clearAllButton.tintColor = .primary
         
         navigationItem.rightBarButtonItems = [markAllButton, clearAllButton]
     }
@@ -71,7 +71,7 @@ class NotificationsViewController: UIViewController {
         tableView.rowHeight = UITableView.automaticDimension
         tableView.estimatedRowHeight = 100
         
-        
+        // Register cell programmatically if not using storyboard
         tableView.register(NotificationTableViewCell.self, forCellReuseIdentifier: "NotificationCell")
         
         // Add refresh control
@@ -81,7 +81,6 @@ class NotificationsViewController: UIViewController {
     
     private func setupEmptyState() {
         emptyStateView.configure(
-            icon: nil,
             title: "No notifications for now",
             message: "Once a request status gets updated, we will notify you immediately."
         )
@@ -92,15 +91,15 @@ class NotificationsViewController: UIViewController {
         NSLayoutConstraint.activate([
             emptyStateView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             emptyStateView.centerYAnchor.constraint(equalTo: view.centerYAnchor),
-            emptyStateView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 40),
-            emptyStateView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -40)
+            emptyStateView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
+            emptyStateView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20)
         ])
     }
     
     // MARK: - Data Loading
     
     private func loadNotifications() {
-        // Real-time listener for notifications
+        
         listener = db.collection("Notifications")
             .whereField("userId", isEqualTo: currentUserId)
             .order(by: "timestamp", descending: true)
@@ -108,29 +107,22 @@ class NotificationsViewController: UIViewController {
                 guard let self = self else { return }
                 
                 if let error = error {
-                    print("Error fetching notifications: \(error.localizedDescription)")
                     self.showError("Failed to load notifications")
+                    print(error)
                     return
                 }
-                var fetchedNotifications: [NotificationModel] = []
                 
-                
-                
-               
                 guard let documents = querySnapshot?.documents else {
-                    print("No notifications found")
                     self.updateEmptyState()
                     return
                 }
                 
                 
-                for document in documents {
-                    let data = document.data()
-                    if let notification = Notification(name: <#Notification.Name#>)
-                }
+                
                 
                 self.notifications = documents.compactMap { document in
-                    NotificationModel(dictionary: document.data(), id: document.documentID)
+                    let notification = NotificationModel(dictionary: document.data(), id: document.documentID)
+                    return notification
                 }
                 
                 DispatchQueue.main.async {
@@ -142,7 +134,6 @@ class NotificationsViewController: UIViewController {
     }
     
     @objc private func refreshNotifications() {
-        // Refresh is handled automatically by the real-time listener
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
             self.refreshControl.endRefreshing()
         }
@@ -167,7 +158,7 @@ class NotificationsViewController: UIViewController {
         let batch = db.batch()
         
         for notification in unreadNotifications {
-            let docRef = db.collection("notifications").document(notification.id)
+            let docRef = db.collection("Notifications").document(notification.id)
             batch.updateData(["isRead": true], forDocument: docRef)
         }
         
@@ -202,7 +193,7 @@ class NotificationsViewController: UIViewController {
         let batch = db.batch()
         
         for notification in notifications {
-            let docRef = db.collection("notifications").document(notification.id)
+            let docRef = db.collection("Notifications").document(notification.id)
             batch.deleteDocument(docRef)
         }
         
@@ -219,7 +210,7 @@ class NotificationsViewController: UIViewController {
     private func markAsRead(notification: NotificationModel) {
         guard !notification.isRead else { return }
         
-        db.collection("notifications")
+        db.collection("Notifications")
             .document(notification.id)
             .updateData(["isRead": true]) { error in
                 if let error = error {
@@ -231,7 +222,7 @@ class NotificationsViewController: UIViewController {
     private func deleteNotification(at indexPath: IndexPath) {
         let notification = notifications[indexPath.row]
         
-        db.collection("notifications")
+        db.collection("Notifications")
             .document(notification.id)
             .delete { [weak self] error in
                 if let error = error {
@@ -257,66 +248,6 @@ class NotificationsViewController: UIViewController {
         
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
             toast.dismiss(animated: true)
-        }
-    }
-    
-    // MARK: - Sample Data (for testing)
-    
-    private func addSampleNotifications() {
-        let sampleNotifications: [[String: Any]] = [
-            [
-                "userId": currentUserId,
-                "title": "New Message",
-                "message": "John Doe sent you a message",
-                "type": "message",
-                "iconName": "envelope.fill",
-                "isRead": false,
-                "timestamp": Timestamp(date: Date().addingTimeInterval(-300))
-            ],
-            [
-                "userId": currentUserId,
-                "title": "Success!",
-                "message": "Your profile was updated successfully",
-                "type": "success",
-                "iconName": "checkmark.circle.fill",
-                "isRead": false,
-                "timestamp": Timestamp(date: Date().addingTimeInterval(-3600))
-            ],
-            [
-                "userId": currentUserId,
-                "title": "New Follower",
-                "message": "Jane Smith started following you",
-                "type": "follow",
-                "iconName": "person.badge.plus.fill",
-                "isRead": true,
-                "timestamp": Timestamp(date: Date().addingTimeInterval(-7200))
-            ],
-            [
-                "userId": currentUserId,
-                "title": "Warning",
-                "message": "Your storage is almost full",
-                "type": "warning",
-                "iconName": "exclamationmark.triangle.fill",
-                "isRead": true,
-                "timestamp": Timestamp(date: Date().addingTimeInterval(-86400))
-            ],
-            [
-                "userId": currentUserId,
-                "title": "You got a like!",
-                "message": "Sarah Johnson liked your post",
-                "type": "like",
-                "iconName": "heart.fill",
-                "isRead": false,
-                "timestamp": Timestamp(date: Date().addingTimeInterval(-1800))
-            ]
-        ]
-        
-        for notification in sampleNotifications {
-            db.collection("notifications").addDocument(data: notification) { error in
-                if let error = error {
-                    print("Error adding sample notification: \(error.localizedDescription)")
-                }
-            }
         }
     }
 }
@@ -395,14 +326,7 @@ extension NotificationsViewController: UITableViewDelegate {
 
 class EmptyStateView: UIView {
     
-    private let iconImageView: UIImageView = {
-        let iv = UIImageView()
-        iv.contentMode = .scaleAspectFit
-        iv.tintColor = .systemGray3
-        iv.translatesAutoresizingMaskIntoConstraints = false
-        return iv
-    }()
-    
+   
     private let titleLabel: UILabel = {
         let label = UILabel()
         label.font = .systemFont(ofSize: 20, weight: .semibold)
@@ -433,17 +357,11 @@ class EmptyStateView: UIView {
     }
     
     private func setupUI() {
-        addSubview(iconImageView)
         addSubview(titleLabel)
         addSubview(messageLabel)
         
         NSLayoutConstraint.activate([
-            iconImageView.centerXAnchor.constraint(equalTo: centerXAnchor),
-            iconImageView.topAnchor.constraint(equalTo: topAnchor),
-            iconImageView.widthAnchor.constraint(equalToConstant: 80),
-            iconImageView.heightAnchor.constraint(equalToConstant: 80),
             
-            titleLabel.topAnchor.constraint(equalTo: iconImageView.bottomAnchor, constant: 20),
             titleLabel.leadingAnchor.constraint(equalTo: leadingAnchor),
             titleLabel.trailingAnchor.constraint(equalTo: trailingAnchor),
             
@@ -454,8 +372,8 @@ class EmptyStateView: UIView {
         ])
     }
     
-    func configure(icon: UIImage?, title: String, message: String) {
-        iconImageView.image = icon
+    func configure( title: String, message: String) {
+        
         titleLabel.text = title
         messageLabel.text = message
     }
