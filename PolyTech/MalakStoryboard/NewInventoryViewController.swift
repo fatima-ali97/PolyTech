@@ -35,7 +35,7 @@ class NewInventoryViewController: UIViewController {
             showFields()
         } else {
             pageTitle.text = "New Inventory Request"
-            savebtn.setTitle("Save", for: .normal)
+            savebtn.setTitle("Save Changes", for: .normal)
         }
     }
     
