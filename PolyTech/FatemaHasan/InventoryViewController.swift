@@ -2,100 +2,84 @@ import UIKit
 import Firebase
 import FirebaseFirestore
 import FirebaseAuth
-class InventoryViewController: UIViewController {
 
+class InventoryViewController: UIViewController {
+    
+    let db = Firestore.firestore()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
     }
-  //View Buttons
-    @IBAction func View1(_ sender: UIButton) {
-        showAlert(title: "Details", message: "Showing inventory details.")
+    
+    @IBAction func viewButtonTapped(_ sender: UIButton) {
+        let documentId = "item\(sender.tag)"
+        fetchInventoryDetails(documentId: documentId)
     }
     
-    @IBAction func V2(_ sender: UIButton) {
-        showAlert(title: "Details", message: "Showing inventory details.")
+    @IBAction func editButtonTapped(_ sender: UIButton) {
+        openNewInventoryPage()
     }
     
-    @IBAction func V3(_ sender: UIButton) {
-        showAlert(title: "Details", message: "Showing inventory details.")
+    @IBAction func deleteButtonTapped(_ sender: UIButton) {
+        showAlert(title: "Success", message: "Request is removed successfully.")
     }
     
-    @IBAction func V4(_ sender: UIButton) {
-        showAlert(title: "Details", message: "Showing inventory details.")
+    func fetchInventoryDetails(documentId: String) {
+        let docRef = db.collection("Inventory").document(documentId)
+        docRef.getDocument { snapshot, error in
+            if let error = error {
+                print("Error fetching inventory: \(error.localizedDescription)")
+                return
+            }
+            
+            guard let data = snapshot?.data() else {
+                print("No inventory data found for \(documentId)")
+                return
+            }
+            
+            DispatchQueue.main.async {
+                self.showInventoryDetailsPopup(data: data)
+            }
+        }
     }
     
-    @IBAction func V5(_ sender: UIButton) {
-        showAlert(title: "Details", message: "Showing inventory details.")
-    }
-    //Edit Buttons
-
-    @IBAction func Edit1(_ sender: UIButton) {
-        performSegue(withIdentifier: "goToEdit", sender: self)
-    }
-    
-    @IBAction func Edit2(_ sender: UIButton) {
-        performSegue(withIdentifier: "goToEdit", sender: self)
-    }
-    
-    @IBAction func Edit3(_ sender: UIButton) {
-        performSegue(withIdentifier: "goToEdit", sender: self)
-    }
-    
-    @IBAction func Edit4(_ sender: UIButton) {
-        performSegue(withIdentifier: "goToEdit", sender: self)
-    }
-    
-    
-    @IBAction func Edit5(_ sender: UIButton) {
-        performSegue(withIdentifier: "goToEdit", sender: self)
+    func showInventoryDetailsPopup(data: [String: Any]) {
+        let requestName = data["requestName"] as? String ?? "N/A"
+        let itemName = data["itemName"] as? String ?? "N/A"
+        let category = data["category"] as? String ?? "N/A"
+        let location = data["location"] as? String ?? "N/A"
+        let reason = data["reason"] as? String ?? "N/A"
+        
+        let message = """
+        Request Name: \(requestName)
+        Item Name: \(itemName)
+        Category: \(category)
+        Location: \(location)
+        Reason: \(reason)
+        """
+        
+        let alert = UIAlertController(title: "Inventory Details", message: message, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "OK", style: .default))
+        present(alert, animated: true)
     }
     
-    //Delete Buttons
-    @IBAction func Delete1(_ sender: UIButton) {
-        showAlert(
-            title: "Success",
-            message: "Request is removed successfully."
-        )
-    }
-    
-    @IBAction func Delete2(_ sender: UIButton) {
-        showAlert(
-            title: "Success",
-            message: "Request is removed successfully."
-        )
-    }
-    
-    @IBAction func Delete3(_ sender: UIButton) {
-        showAlert(
-            title: "Success",
-            message: "Request is removed successfully."
-        )
-    }
-    
-    @IBAction func Delete4(_ sender: UIButton) {
-        showAlert(
-            title: "Success",
-            message: "Request is removed successfully."
-        )
-    }
-    
-    @IBAction func Delete5(_ sender: UIButton) {
-        showAlert(
-            title: "Success",
-            message: "Request is removed successfully."
-        )
+    func openNewInventoryPage() {
+        let storyboard = UIStoryboard(name: "MalakStoryboard", bundle: nil)
+        guard let newInventoryVC = storyboard.instantiateViewController(withIdentifier: "NewInventory") as? NewInventoryViewController else {
+            print("NewInventoryViewController not found in MalakStoryboard")
+            return
+        }
+        
+        if let nav = self.navigationController {
+            nav.pushViewController(newInventoryVC, animated: true)
+        } else {
+            present(newInventoryVC, animated: true)
+        }
     }
     
     func showAlert(title: String, message: String) {
-        let alert = UIAlertController(
-            title: title,
-            message: message,
-            preferredStyle: .alert
-        )
-
-        let ok = UIAlertAction(title: "OK", style: .default)
-        alert.addAction(ok)
-
+        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "OK", style: .default))
         present(alert, animated: true)
     }
 }
