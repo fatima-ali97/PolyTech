@@ -20,6 +20,7 @@ struct NotificationModel: Codable {
     var actionUrl: String?
     var metadata: [String: String]?
     
+    //TODO: change this
     enum NotificationType: String, Codable {
         case success = "success"
         case error = "error"
@@ -58,7 +59,7 @@ struct NotificationModel: Codable {
               let typeString = dictionary["type"] as? String,
               let type = NotificationType(rawValue: typeString),
               let iconName = dictionary["iconName"] as? String,
-              let isRead = dictionary["isRead"] as? Bool,
+              let isRead = dictionary["isRead"] as? Int,
               let timestamp = dictionary["timestamp"] as? Timestamp else {
             return nil
         }
@@ -69,7 +70,7 @@ struct NotificationModel: Codable {
         self.message = message
         self.type = type
         self.iconName = iconName
-        self.isRead = isRead
+        self.isRead = isRead != 0 // 0=false, 1=true
         self.timestamp = timestamp
         self.actionUrl = dictionary["actionUrl"] as? String
         self.metadata = dictionary["metadata"] as? [String: String]
