@@ -5,15 +5,12 @@ import FirebaseAuth
 
 class InventoryViewController: UIViewController {
 
-    // MARK: - Firestore
     let db = Firestore.firestore()
 
-    // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
     }
 
-    // MARK: - Button Actions
     @IBAction func viewButtonTapped(_ sender: UIButton) {
         if sender.tag == 0 {
             showAlert(title: "Error", message: "Button tag is not set. Cannot load inventory item.")
@@ -31,7 +28,6 @@ class InventoryViewController: UIViewController {
         showAlert(title: "Success", message: "Request is removed successfully.")
     }
 
-    // MARK: - Fetch Inventory
     func fetchInventoryDetails(documentId: String) {
         let docRef = db.collection("Inventory").document(documentId)
 
@@ -52,7 +48,6 @@ class InventoryViewController: UIViewController {
         }
     }
 
-    // MARK: - Show Inventory Details
     func showInventoryDetailsPopup(data: [String: Any]) {
         let requestName = data["requestName"] as? String ?? "N/A"
         let itemName = data["itemName"] as? String ?? "N/A"
@@ -73,7 +68,6 @@ class InventoryViewController: UIViewController {
         present(alert, animated: true)
     }
 
-    // MARK: - Navigation to Edit Page
     func openEditInventoryPage() {
         let storyboard = UIStoryboard(name: "MalakStoryboard", bundle: nil)
 
@@ -84,7 +78,6 @@ class InventoryViewController: UIViewController {
             return
         }
 
-        // Just navigate, do not pass any data
         if let navController = navigationController {
             navController.pushViewController(editInventoryVC, animated: true)
         } else {
@@ -92,7 +85,6 @@ class InventoryViewController: UIViewController {
         }
     }
 
-    // MARK: - Alert Helper
     func showAlert(title: String, message: String) {
         let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: "OK", style: .default))
