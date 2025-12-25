@@ -128,8 +128,7 @@
                                 <state key="normal" title="Button"/>
                                 <buttonConfiguration key="configuration" style="filled" title="View Details"/>
                                 <connections>
-                                    <action selector="ViewDetails:" destination="qbR-nc-I13" eventType="touchUpInside" id="lOY-xV-Lhy"/>
-                                    <action selector="ViewLessbtn:" destination="qbR-nc-I13" eventType="touchUpInside" id="dJJ-5b-6Sy"/>
+                                    <action selector="viewDetailsButtonTapped:" destination="qbR-nc-I13" eventType="touchUpInside" id="MYN-dI-FGP"/>
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="HbK-du-XyR">
@@ -139,7 +138,7 @@
                                 <state key="normal" title="Button"/>
                                 <buttonConfiguration key="configuration" style="filled" title="View Details"/>
                                 <connections>
-                                    <action selector="ViewDetails1:" destination="qbR-nc-I13" eventType="touchUpInside" id="SIM-7M-N1C"/>
+                                    <action selector="viewDetailsButtonTapped:" destination="qbR-nc-I13" eventType="touchUpInside" id="rCi-wJ-J0U"/>
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="j0W-HG-yg2">
@@ -149,7 +148,7 @@
                                 <state key="normal" title="Button"/>
                                 <buttonConfiguration key="configuration" style="filled" title="View Details"/>
                                 <connections>
-                                    <action selector="ViewDetails2:" destination="qbR-nc-I13" eventType="touchUpInside" id="7TN-QD-c4L"/>
+                                    <action selector="viewDetailsButtonTapped:" destination="qbR-nc-I13" eventType="touchUpInside" id="KMK-1j-6FX"/>
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="dtS-SQ-0AH">
@@ -159,7 +158,7 @@
                                 <state key="normal" title="Button"/>
                                 <buttonConfiguration key="configuration" style="filled" title="View Details"/>
                                 <connections>
-                                    <action selector="ViewDetails3:" destination="qbR-nc-I13" eventType="touchUpInside" id="KYm-S5-aFe"/>
+                                    <action selector="viewDetailsButtonTapped:" destination="qbR-nc-I13" eventType="touchUpInside" id="XU1-kv-jAN"/>
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="xoR-yz-aYT">
@@ -169,7 +168,7 @@
                                 <state key="normal" title="Button"/>
                                 <buttonConfiguration key="configuration" style="filled" title="View Details"/>
                                 <connections>
-                                    <action selector="ViewDetails4:" destination="qbR-nc-I13" eventType="touchUpInside" id="CnU-qT-XbM"/>
+                                    <action selector="viewDetailsButtonTapped:" destination="qbR-nc-I13" eventType="touchUpInside" id="eQx-sk-ZIV"/>
                                 </connections>
                             </button>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Request History" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="tul-5K-KQI">
