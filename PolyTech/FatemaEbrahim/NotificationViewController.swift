@@ -5,7 +5,7 @@ class NotificationsViewController: UIViewController {
 
     // MARK: - IBOutlets
     @IBOutlet weak var tableView: UITableView!
-    @IBOutlet weak var clearAllButton: UIButton! // Connect this in Storyboard
+    @IBOutlet weak var clearAllButton: UIButton!
     
     // MARK: - Properties
     private var notifications: [NotificationModel] = []
@@ -13,7 +13,7 @@ class NotificationsViewController: UIViewController {
     private var listener: ListenerRegistration?
     
     // Replace with actual user ID from your auth system
-    private let currentUserId = "7fgOEVpMQUPHR9kgBPEv7mFRgLt1"  // Note: Letter 'O' not zero
+    private let currentUserId = "zvyu1FR9kfabqzzb4uHRop3hbgb2"
     
     private let refreshControl = UIRefreshControl()
     private let emptyStateView = EmptyStateView()
@@ -121,19 +121,6 @@ class NotificationsViewController: UIViewController {
                     self.updateEmptyState()
                     return
                 }
-                
-<<<<<<< HEAD
-                print("📦 Fetched \(documents.count) notification documents")
-                
-                // Debug: Print all documents
-                for (index, document) in documents.enumerated() {
-                    print("📄 Document \(index + 1):")
-                    print("   ID: \(document.documentID)")
-                    print("   Data: \(document.data())")
-                }
-=======
-              
->>>>>>> master
                 
                 self.notifications = documents.compactMap { document in
                     let notification = NotificationModel(dictionary: document.data(), id: document.documentID)
