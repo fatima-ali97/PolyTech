@@ -1,99 +1,93 @@
 import UIKit
+import Firebase
+import FirebaseFirestore
+import FirebaseAuth
 
 class InventoryViewController: UIViewController {
+
+    let db = Firestore.firestore()
 
     override func viewDidLoad() {
         super.viewDidLoad()
     }
-  //View Buttons
-    @IBAction func View1(_ sender: UIButton) {
-        showAlert(title: "Details", message: "Showing inventory details.")
-    }
-    
-    @IBAction func V2(_ sender: UIButton) {
-        showAlert(title: "Details", message: "Showing inventory details.")
-    }
-    
-    @IBAction func V3(_ sender: UIButton) {
-        showAlert(title: "Details", message: "Showing inventory details.")
-    }
-    
-    @IBAction func V4(_ sender: UIButton) {
-        showAlert(title: "Details", message: "Showing inventory details.")
-    }
-    
-    @IBAction func V5(_ sender: UIButton) {
-        showAlert(title: "Details", message: "Showing inventory details.")
-    }
-    //Edit Buttons
 
-    @IBAction func Edit1(_ sender: UIButton) {
-        performSegue(withIdentifier: "goToEdit", sender: self)
+    @IBAction func viewButtonTapped(_ sender: UIButton) {
+        fetchUserInventoryDetails()
     }
-    
-    @IBAction func Edit2(_ sender: UIButton) {
-        performSegue(withIdentifier: "goToEdit", sender: self)
+
+    @IBAction func editButtonTapped(_ sender: UIButton) {
+        openEditInventoryPage()
     }
-    
-    @IBAction func Edit3(_ sender: UIButton) {
-        performSegue(withIdentifier: "goToEdit", sender: self)
+
+    @IBAction func deleteButtonTapped(_ sender: UIButton) {
+        showAlert(title: "Success", message: "Request is removed successfully.")
     }
-    
-    @IBAction func Edit4(_ sender: UIButton) {
-        performSegue(withIdentifier: "goToEdit", sender: self)
+
+    func fetchUserInventoryDetails() {
+        let userIDs = [
+            "7fg0EVpMQUPHR9kgBPEv7mFRgLt1",
+            "njeKzS3LdubCZC8tAgrPmGlQtgh1v",
+            "uHdeNxV47CZUp6SwM3s1X1GAP3t1",
+            "zvyu1FR9kfabqzzb4uHRop3hbgb2"
+        ]
+
+        db.collection("Inventory")
+            .whereField("userId", in: userIDs)
+            .getDocuments { snapshot, error in
+                if let error = error {
+                    self.showAlert(title: "Firebase Error", message: error.localizedDescription)
+                    return
+                }
+
+                guard let documents = snapshot?.documents, !documents.isEmpty else {
+                    self.showAlert(title: "No Data", message: "No inventory found for these users.")
+                    return
+                }
+
+                // For simplicity, show the first document
+                let data = documents[0].data()
+                self.showInventoryDetailsPopup(data: data)
+            }
     }
-    
-    
-    @IBAction func Edit5(_ sender: UIButton) {
-        performSegue(withIdentifier: "goToEdit", sender: self)
+
+    func showInventoryDetailsPopup(data: [String: Any]) {
+        let requestName = data["requestName"] as? String ?? "N/A"
+        let itemName = data["itemName"] as? String ?? "N/A"
+        let category = data["category"] as? String ?? "N/A"
+        let location = data["location"] as? String ?? "N/A"
+
+        let message = """
+        Request Name: \(requestName)
+        Item Name: \(itemName)
+        Category: \(category)
+        Location: \(location)
+        """
+
+        let alert = UIAlertController(title: "Inventory Details", message: message, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "OK", style: .default))
+        present(alert, animated: true)
     }
-    
-    //Delete Buttons
-    @IBAction func Delete1(_ sender: UIButton) {
-        showAlert(
-            title: "Success",
-            message: "Request is removed successfully."
-        )
+
+    func openEditInventoryPage() {
+        let storyboard = UIStoryboard(name: "MalakStoryboard", bundle: nil)
+
+        guard let editInventoryVC = storyboard.instantiateViewController(
+            withIdentifier: "NewInventory"
+        ) as? NewInventoryViewController else {
+            print("NewInventoryViewController not found")
+            return
+        }
+
+        if let navController = navigationController {
+            navController.pushViewController(editInventoryVC, animated: true)
+        } else {
+            present(editInventoryVC, animated: true)
+        }
     }
-    
-    @IBAction func Delete2(_ sender: UIButton) {
-        showAlert(
-            title: "Success",
-            message: "Request is removed successfully."
-        )
-    }
-    
-    @IBAction func Delete3(_ sender: UIButton) {
-        showAlert(
-            title: "Success",
-            message: "Request is removed successfully."
-        )
-    }
-    
-    @IBAction func Delete4(_ sender: UIButton) {
-        showAlert(
-            title: "Success",
-            message: "Request is removed successfully."
-        )
-    }
-    
-    @IBAction func Delete5(_ sender: UIButton) {
-        showAlert(
-            title: "Success",
-            message: "Request is removed successfully."
-        )
-    }
-    
+
     func showAlert(title: String, message: String) {
-        let alert = UIAlertController(
-            title: title,
-            message: message,
-            preferredStyle: .alert
-        )
-
-        let ok = UIAlertAction(title: "OK", style: .default)
-        alert.addAction(ok)
-
+        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "OK", style: .default))
         present(alert, animated: true)
     }
 }
