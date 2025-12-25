@@ -5,22 +5,14 @@ import FirebaseAuth
 
 class InventoryViewController: UIViewController {
 
-    // MARK: - Firestore
     let db = Firestore.firestore()
 
-    // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
     }
 
-    // MARK: - Button Actions
     @IBAction func viewButtonTapped(_ sender: UIButton) {
-        if sender.tag == 0 {
-            showAlert(title: "Error", message: "Button tag is not set. Cannot load inventory item.")
-            return
-        }
-        let documentId = "item\(sender.tag)"
-        fetchInventoryDetails(documentId: documentId)
+        fetchUserInventoryDetails()
     }
 
     @IBAction func editButtonTapped(_ sender: UIButton) {
@@ -31,41 +23,44 @@ class InventoryViewController: UIViewController {
         showAlert(title: "Success", message: "Request is removed successfully.")
     }
 
-    // MARK: - Fetch Inventory
-    func fetchInventoryDetails(documentId: String) {
-        let docRef = db.collection("Inventory").document(documentId)
+    func fetchUserInventoryDetails() {
+        let userIDs = [
+            "7fg0EVpMQUPHR9kgBPEv7mFRgLt1",
+            "njeKzS3LdubCZC8tAgrPmGlQtgh1v",
+            "uHdeNxV47CZUp6SwM3s1X1GAP3t1",
+            "zvyu1FR9kfabqzzb4uHRop3hbgb2"
+        ]
 
-        docRef.getDocument { snapshot, error in
-            DispatchQueue.main.async {
+        db.collection("Inventory")
+            .whereField("userId", in: userIDs)
+            .getDocuments { snapshot, error in
                 if let error = error {
                     self.showAlert(title: "Firebase Error", message: error.localizedDescription)
                     return
                 }
 
-                guard let snapshot = snapshot, snapshot.exists, let data = snapshot.data() else {
-                    self.showAlert(title: "Not Found", message: "Document '\(documentId)' does not exist.")
+                guard let documents = snapshot?.documents, !documents.isEmpty else {
+                    self.showAlert(title: "No Data", message: "No inventory found for these users.")
                     return
                 }
 
+                // For simplicity, show the first document
+                let data = documents[0].data()
                 self.showInventoryDetailsPopup(data: data)
             }
-        }
     }
 
-    // MARK: - Show Inventory Details
     func showInventoryDetailsPopup(data: [String: Any]) {
         let requestName = data["requestName"] as? String ?? "N/A"
         let itemName = data["itemName"] as? String ?? "N/A"
         let category = data["category"] as? String ?? "N/A"
         let location = data["location"] as? String ?? "N/A"
-        let reason = data["reason"] as? String ?? "N/A"
 
         let message = """
         Request Name: \(requestName)
         Item Name: \(itemName)
         Category: \(category)
         Location: \(location)
-        Reason: \(reason)
         """
 
         let alert = UIAlertController(title: "Inventory Details", message: message, preferredStyle: .alert)
@@ -73,7 +68,6 @@ class InventoryViewController: UIViewController {
         present(alert, animated: true)
     }
 
-    // MARK: - Navigation to Edit Page
     func openEditInventoryPage() {
         let storyboard = UIStoryboard(name: "MalakStoryboard", bundle: nil)
 
@@ -84,7 +78,6 @@ class InventoryViewController: UIViewController {
             return
         }
 
-        // Just navigate, do not pass any data
         if let navController = navigationController {
             navController.pushViewController(editInventoryVC, animated: true)
         } else {
@@ -92,7 +85,6 @@ class InventoryViewController: UIViewController {
         }
     }
 
-    // MARK: - Alert Helper
     func showAlert(title: String, message: String) {
         let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: "OK", style: .default))
