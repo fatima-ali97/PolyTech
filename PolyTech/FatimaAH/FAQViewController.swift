@@ -47,7 +47,7 @@ final class FAQViewController: UIViewController {
         tableView.separatorStyle = .none
         tableView.backgroundColor = .clear
         tableView.rowHeight = UITableView.automaticDimension
-        tableView.estimatedRowHeight = 80
+        tableView.estimatedRowHeight = 0
 
         tableView.register(FAQCell.self, forCellReuseIdentifier: FAQCell.reuseID)
 
