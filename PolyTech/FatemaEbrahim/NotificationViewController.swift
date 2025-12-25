@@ -122,6 +122,7 @@ class NotificationsViewController: UIViewController {
                     return
                 }
                 
+<<<<<<< HEAD
                 print("📦 Fetched \(documents.count) notification documents")
                 
                 // Debug: Print all documents
@@ -130,6 +131,9 @@ class NotificationsViewController: UIViewController {
                     print("   ID: \(document.documentID)")
                     print("   Data: \(document.data())")
                 }
+=======
+              
+>>>>>>> master
                 
                 self.notifications = documents.compactMap { document in
                     let notification = NotificationModel(dictionary: document.data(), id: document.documentID)

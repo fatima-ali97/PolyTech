@@ -39,12 +39,12 @@ class TechnicianDashboardViewController: UIViewController {
         let colorInProgress = UIColor(red: 0.35, green: 0.67, blue: 0.93, alpha: 1.0)
         let colorPending = UIColor(red: 0.56, green: 0.62, blue: 0.67, alpha: 1.0)
 
-        chart.dataEntries = [
-            (value: 749, color: colorCompleted),
-            (value: 342, color: colorInProgress),
-            (value: 156, color: colorPending)
-        ]
-        
+//        chart.dataEntries = [
+//            (value: 749, color: colorCompleted),
+//            (value: 342, color: colorInProgress),
+//            (value: 156, color: colorPending)
+//        ]
+//        
         chart.backgroundColor = .clear
     }
     
