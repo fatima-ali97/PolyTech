@@ -1,12 +1,14 @@
 import UIKit
 import FirebaseFirestore
 
-class NewMaintenanceViewController: UIViewController, UINavigationControllerDelegate {
-    
+class NewMaintenanceViewController: UIViewController {
+
+    // MARK: - State
     var isEditMode = false
     var documentId: String?
     var existingData: [String: Any]?
-    
+
+    // MARK: - IBOutlets
     @IBOutlet weak var requestName: UITextField!
     @IBOutlet weak var category: UITextField!
     @IBOutlet weak var location: UITextField!
@@ -17,14 +19,17 @@ class NewMaintenanceViewController: UIViewController, UINavigationControllerDele
     @IBOutlet weak var pageTitle: UILabel!
     @IBOutlet weak var categoryDropDown: UIImageView!
     @IBOutlet weak var urgencyDropDown: UIImageView!
-    
+
+    // MARK: - Firebase
     let database = Firestore.firestore()
-    
+
+    // MARK: - Pickers
     private let categoryPicker = UIPickerView()
     private let urgencyPicker = UIPickerView()
     private var selectedCategory: MaintenanceCategory?
     private var selectedUrgency: UrgencyLevel?
-    
+
+    // MARK: - Enums
     enum MaintenanceCategory: String, CaseIterable {
         case osUpdate = "os_update"
         case classroomEquipment = "classroom_equipment"
@@ -32,7 +37,7 @@ class NewMaintenanceViewController: UIViewController, UINavigationControllerDele
         case airConditioner = "air_conditioner"
         case pcHardware = "pc_hardware"
         case serverDowntime = "server_downtime"
-        
+
         var displayName: String {
             switch self {
             case .osUpdate: return "OS Update"
@@ -44,104 +49,56 @@ class NewMaintenanceViewController: UIViewController, UINavigationControllerDele
             }
         }
     }
-    
+
     enum UrgencyLevel: String, CaseIterable {
-        case low
-        case medium
-        case high
-        
-        var displayName: String {
-            rawValue.capitalized
-        }
+        case low, medium, high
+        var displayName: String { rawValue.capitalized }
     }
-    
-    
+
+    // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
-        
         setupBackBtn()
         setupPickers()
         setupDropdownTap()
-        
+        configureEditMode()
+    }
+
+    // MARK: - Edit Mode
+    private func configureEditMode() {
         if isEditMode {
             pageTitle.text = "Edit Maintenance Request"
             savebtn.setTitle("Edit", for: .normal)
-            showFields()
+            populateFields()
         } else {
             pageTitle.text = "New Maintenance Request"
             savebtn.setTitle("Save", for: .normal)
         }
     }
-    
-    private func setupBackBtn() {
-        Backbtn.isUserInteractionEnabled = true
-        Backbtn.addGestureRecognizer(
-            UITapGestureRecognizer(target: self, action: #selector(backTapped))
-        )
-    }
-    
-    private func setupPickers() {
-        categoryPicker.delegate = self
-        categoryPicker.dataSource = self
-        categoryPicker.tag = 1
-        category.inputView = categoryPicker
-        
-        urgencyPicker.delegate = self
-        urgencyPicker.dataSource = self
-        urgencyPicker.tag = 2
-        urgency.inputView = urgencyPicker
-    }
-    
-    private func setupDropdownTap() {
-        categoryDropDown.isUserInteractionEnabled = true
-        urgencyDropDown.isUserInteractionEnabled = true
-        
-        categoryDropDown.addGestureRecognizer(
-            UITapGestureRecognizer(target: self, action: #selector(openCategoryPicker))
-        )
-        
-        urgencyDropDown.addGestureRecognizer(
-            UITapGestureRecognizer(target: self, action: #selector(openUrgencyPicker))
-        )
-    }
-    
-    private func showFields() {
+
+    private func populateFields() {
         guard let data = existingData else { return }
-        
+
         requestName.text = data["requestName"] as? String
-        location.text = data["location"] as? String
         requestName.isEnabled = false
-        
+        location.text = data["location"] as? String
+
         if let categoryRaw = data["category"] as? String,
            let cat = MaintenanceCategory(rawValue: categoryRaw) {
             selectedCategory = cat
             category.text = cat.displayName
         }
-        
+
         if let urgencyRaw = data["urgency"] as? String,
            let urg = UrgencyLevel(rawValue: urgencyRaw) {
             selectedUrgency = urg
             urgency.text = urg.displayName
         }
-        
-    }
-    
-    
-    @objc func backTapped() {
-        navigationController?.popViewController(animated: true)
-    }
-    
-    @objc private func openCategoryPicker() {
-        category.becomeFirstResponder()
-    }
-    
-    @objc private func openUrgencyPicker() {
-        urgency.becomeFirstResponder()
     }
 
-    
-    
+    // MARK: - Actions
     @IBAction func Savebtn(_ sender: UIButton) {
+
         guard
             let requestNameText = requestName.text, !requestNameText.isEmpty,
             let locationText = location.text, !locationText.isEmpty,
@@ -151,78 +108,116 @@ class NewMaintenanceViewController: UIViewController, UINavigationControllerDele
             showAlert("Please fill in all fields")
             return
         }
-        
-    
-            var data: [String: Any] = [
-                "requestName": requestNameText,
-                "category": categoryEnum.rawValue,
-                "location": locationText,
-                "urgency": urgencyEnum.rawValue,
-                "updatedAt": Timestamp()
-            ]
 
-            
-            if isEditMode, let documentId = documentId {
-                database.collection("maintenanceRequest")
-                    .document(documentId)
-                    .updateData(data) { [weak self] error in
-                        self?.handleResult(error: error, successMessage: "Maintenance request updated successfully")
-                    }
-            } else {
-                var newData = data
-                newData["createdAt"] = Timestamp()
-                database.collection("maintenanceRequest").addDocument(data: newData) { [weak self] error in
-                    self?.handleResult(error: error, successMessage: "Maintenance request saved successfully")
+        var data: [String: Any] = [
+            "requestName": requestNameText,
+            "category": categoryEnum.rawValue,
+            "location": locationText,
+            "urgency": urgencyEnum.rawValue,
+            "updatedAt": Timestamp()
+        ]
+
+        if isEditMode, let documentId = documentId {
+            database.collection("maintenanceRequest")
+                .document(documentId)
+                .updateData(data) { [weak self] error in
+                    self?.handleResult(error: error,
+                                       successMessage: "Maintenance request updated successfully")
                 }
-            }
-        }
-        
-        
-        
-        
-    }
-    
-   
-}
-    
-    
-    func handleResult(error: Error?, successMessage: String) {
-        if let error = error {
-            let alert = UIAlertController(title: "Error", message: error.localizedDescription, preferredStyle: .alert)
-            alert.addAction(UIAlertAction(title: "OK", style: .default))
-            present(alert, animated: true)
         } else {
-            let alert = UIAlertController(title: "Success", message: successMessage, preferredStyle: .alert)
+            data["createdAt"] = Timestamp()
+            database.collection("maintenanceRequest")
+                .addDocument(data: data) { [weak self] error in
+                    self?.handleResult(error: error,
+                                       successMessage: "Maintenance request saved successfully")
+                }
+        }
+    }
+
+    // MARK: - Setup
+    private func setupBackBtn() {
+        Backbtn.isUserInteractionEnabled = true
+        Backbtn.addGestureRecognizer(
+            UITapGestureRecognizer(target: self,
+                                   action: #selector(backTapped))
+        )
+    }
+
+    @objc private func backTapped() {
+        navigationController?.popViewController(animated: true)
+    }
+
+    private func setupPickers() {
+        categoryPicker.delegate = self
+        categoryPicker.dataSource = self
+        categoryPicker.tag = 1
+        category.inputView = categoryPicker
+
+        urgencyPicker.delegate = self
+        urgencyPicker.dataSource = self
+        urgencyPicker.tag = 2
+        urgency.inputView = urgencyPicker
+    }
+
+    private func setupDropdownTap() {
+        categoryDropDown.isUserInteractionEnabled = true
+        urgencyDropDown.isUserInteractionEnabled = true
+
+        categoryDropDown.addGestureRecognizer(
+            UITapGestureRecognizer(target: self,
+                                   action: #selector(openCategoryPicker))
+        )
+
+        urgencyDropDown.addGestureRecognizer(
+            UITapGestureRecognizer(target: self,
+                                   action: #selector(openUrgencyPicker))
+        )
+    }
+
+    @objc private func openCategoryPicker() {
+        category.becomeFirstResponder()
+    }
+
+    @objc private func openUrgencyPicker() {
+        urgency.becomeFirstResponder()
+    }
+
+    // MARK: - Alerts
+    private func handleResult(error: Error?, successMessage: String) {
+        if let error = error {
+            showAlert(error.localizedDescription)
+        } else {
+            let alert = UIAlertController(title: "Success",
+                                          message: successMessage,
+                                          preferredStyle: .alert)
             alert.addAction(UIAlertAction(title: "OK", style: .default) { _ in
                 self.navigationController?.popViewController(animated: true)
             })
             present(alert, animated: true)
         }
     }
-    
-    func showAlert(_ message: String) {
-        let alert = UIAlertController(
-            title: "Error",
-            message: message,
-            preferredStyle: .alert
-        )
+
+    private func showAlert(_ message: String) {
+        let alert = UIAlertController(title: "Error",
+                                      message: message,
+                                      preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: "OK", style: .default))
         present(alert, animated: true)
     }
-    
-    
+}
 
+// MARK: - Picker Delegates
 extension NewMaintenanceViewController: UIPickerViewDelegate, UIPickerViewDataSource {
-    
+
     func numberOfComponents(in pickerView: UIPickerView) -> Int { 1 }
-    
+
     func pickerView(_ pickerView: UIPickerView,
                     numberOfRowsInComponent component: Int) -> Int {
         pickerView.tag == 1
         ? MaintenanceCategory.allCases.count
         : UrgencyLevel.allCases.count
     }
-    
+
     func pickerView(_ pickerView: UIPickerView,
                     titleForRow row: Int,
                     forComponent component: Int) -> String? {
@@ -230,11 +225,11 @@ extension NewMaintenanceViewController: UIPickerViewDelegate, UIPickerViewDataSo
         ? MaintenanceCategory.allCases[row].displayName
         : UrgencyLevel.allCases[row].displayName
     }
-    
+
     func pickerView(_ pickerView: UIPickerView,
                     didSelectRow row: Int,
                     inComponent component: Int) {
-        
+
         if pickerView.tag == 1 {
             let cat = MaintenanceCategory.allCases[row]
             selectedCategory = cat
