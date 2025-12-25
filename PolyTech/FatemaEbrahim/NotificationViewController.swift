@@ -12,7 +12,7 @@ class NotificationsViewController: UIViewController {
     private var listener: ListenerRegistration?
     
     // Replace with actual user ID from your auth system
-    private let currentUserId = "user_abc"
+    private let currentUserId = "7fg0EVpMQUPHR9kgBPEv7mFRgLt1"
     
     private let refreshControl = UIRefreshControl()
     private let emptyStateView = EmptyStateView()
@@ -21,14 +21,16 @@ class NotificationsViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+        title = "Notifications"
+        navigationController?.navigationBar.prefersLargeTitles = true
+        view.backgroundColor = .background
         setupUI()
         setupTableView()
         setupEmptyState()
         loadNotifications()
         
         // Uncomment to add sample data for testing
-        // addSampleNotifications()
+         //addSampleNotifications()
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -39,9 +41,7 @@ class NotificationsViewController: UIViewController {
     // MARK: - Setup
     
     private func setupUI() {
-        title = "Notifications"
-        navigationController?.navigationBar.prefersLargeTitles = true
-        view.backgroundColor = .systemGroupedBackground
+        
         
         // Add "Mark All Read" button
         let markAllButton = UIBarButtonItem(
@@ -58,7 +58,7 @@ class NotificationsViewController: UIViewController {
             target: self,
             action: #selector(clearAllNotifications)
         )
-        clearAllButton.tintColor = .systemRed
+        clearAllButton.tintColor = .error
         
         navigationItem.rightBarButtonItems = [markAllButton, clearAllButton]
     }
@@ -67,11 +67,11 @@ class NotificationsViewController: UIViewController {
         tableView.delegate = self
         tableView.dataSource = self
         tableView.separatorStyle = .none
-        tableView.backgroundColor = .systemGroupedBackground
+        tableView.backgroundColor = .background
         tableView.rowHeight = UITableView.automaticDimension
         tableView.estimatedRowHeight = 100
         
-        // Register cell programmatically if not using storyboard
+        
         tableView.register(NotificationTableViewCell.self, forCellReuseIdentifier: "NotificationCell")
         
         // Add refresh control
@@ -81,9 +81,9 @@ class NotificationsViewController: UIViewController {
     
     private func setupEmptyState() {
         emptyStateView.configure(
-            icon: UIImage(systemName: "bell.slash.fill"),
-            title: "No Notifications",
-            message: "You're all caught up! Check back later for updates."
+            icon: nil,
+            title: "No notifications for now",
+            message: "Once a request status gets updated, we will notify you immediately."
         )
         emptyStateView.isHidden = true
         view.addSubview(emptyStateView)
@@ -101,7 +101,7 @@ class NotificationsViewController: UIViewController {
     
     private func loadNotifications() {
         // Real-time listener for notifications
-        listener = db.collection("notifications")
+        listener = db.collection("Notifications")
             .whereField("userId", isEqualTo: currentUserId)
             .order(by: "timestamp", descending: true)
             .addSnapshotListener { [weak self] querySnapshot, error in
@@ -112,11 +112,21 @@ class NotificationsViewController: UIViewController {
                     self.showError("Failed to load notifications")
                     return
                 }
+                var fetchedNotifications: [NotificationModel] = []
                 
+                
+                
+               
                 guard let documents = querySnapshot?.documents else {
                     print("No notifications found")
                     self.updateEmptyState()
                     return
+                }
+                
+                
+                for document in documents {
+                    let data = document.data()
+                    if let notification = Notification(name: <#Notification.Name#>)
                 }
                 
                 self.notifications = documents.compactMap { document in
