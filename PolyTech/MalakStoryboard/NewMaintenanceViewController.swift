@@ -1,9 +1,7 @@
 import UIKit
 import FirebaseFirestore
-import FirebaseStorage
 
-
-class NewMaintenanceViewController: UIViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
+class NewMaintenanceViewController: UIViewController, UINavigationControllerDelegate {
     
     var isEditMode = false
     var documentId: String?
@@ -21,13 +19,11 @@ class NewMaintenanceViewController: UIViewController, UIImagePickerControllerDel
     @IBOutlet weak var urgencyDropDown: UIImageView!
     
     let database = Firestore.firestore()
-    let storage = Storage.storage()
     
     private let categoryPicker = UIPickerView()
     private let urgencyPicker = UIPickerView()
     private var selectedCategory: MaintenanceCategory?
     private var selectedUrgency: UrgencyLevel?
-    private var selectedImage: UIImage?
     
     enum MaintenanceCategory: String, CaseIterable {
         case osUpdate = "os_update"
@@ -66,7 +62,6 @@ class NewMaintenanceViewController: UIViewController, UIImagePickerControllerDel
         setupBackBtn()
         setupPickers()
         setupDropdownTap()
-        setupImagePicker()
         
         if isEditMode {
             pageTitle.text = "Edit Maintenance Request"
@@ -129,18 +124,8 @@ class NewMaintenanceViewController: UIViewController, UIImagePickerControllerDel
             urgency.text = urg.displayName
         }
         
-        if data["imageUrl"] != nil {
-            imageUpload.text = "Image uploaded successfully"
-        }
     }
     
-    private func setupImagePicker() {
-        imageUpload.isUserInteractionEnabled = true
-        imageUpload.placeholder = "Upload Image"
-        
-        let tap = UITapGestureRecognizer(target: self, action: #selector(openImagePicker))
-        imageUpload.addGestureRecognizer(tap)
-    }
     
     @objc func backTapped() {
         navigationController?.popViewController(animated: true)
@@ -153,29 +138,7 @@ class NewMaintenanceViewController: UIViewController, UIImagePickerControllerDel
     @objc private func openUrgencyPicker() {
         urgency.becomeFirstResponder()
     }
-    
-    @objc private func openImagePicker() {
-        let picker = UIImagePickerController()
-        picker.delegate = self
-        picker.sourceType = .photoLibrary
-        picker.allowsEditing = true
-        present(picker, animated: true)
-    }
-    
-    func imagePickerController(_ picker: UIImagePickerController,
-                               didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
-        
-        if let image = info[.editedImage] as? UIImage ??
-            info[.originalImage] as? UIImage {
-            selectedImage = image
-            imageUpload.text = "Image Has Been Selected"
-        }
-        picker.dismiss(animated: true)
-    }
-    
-    func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
-        picker.dismiss(animated: true)
-    }
+
     
     
     @IBAction func Savebtn(_ sender: UIButton) {
@@ -189,9 +152,7 @@ class NewMaintenanceViewController: UIViewController, UIImagePickerControllerDel
             return
         }
         
-        uploadImage { [weak self] imageUrl in
-            guard let self = self else { return }
-            
+    
             var data: [String: Any] = [
                 "requestName": requestNameText,
                 "category": categoryEnum.rawValue,
@@ -199,10 +160,7 @@ class NewMaintenanceViewController: UIViewController, UIImagePickerControllerDel
                 "urgency": urgencyEnum.rawValue,
                 "updatedAt": Timestamp()
             ]
-            
-            if let imageUrl = imageUrl {
-                data["imageUrl"] = imageUrl
-            }
+
             
             if isEditMode, let documentId = documentId {
                 database.collection("maintenanceRequest")
@@ -224,29 +182,8 @@ class NewMaintenanceViewController: UIViewController, UIImagePickerControllerDel
         
     }
     
-    func uploadImage(completion: @escaping (String?) -> Void) {
-        
-        guard let image = selectedImage,
-              let imageData = image.jpegData(compressionQuality: 0.7) else {
-            completion(nil)
-            return
-        }
-        
-        let imageId = UUID().uuidString
-        let ref = storage.reference()
-            .child("maintenance_images/\(imageId).jpg")
-        
-        ref.putData(imageData, metadata: nil) { _, error in
-            if error != nil {
-                completion(nil)
-                return
-            }
-            
-            ref.downloadURL { url, _ in
-                completion(url?.absoluteString)
-            }
-        }
-    }
+   
+}
     
     
     func handleResult(error: Error?, successMessage: String) {
@@ -274,7 +211,6 @@ class NewMaintenanceViewController: UIViewController, UIImagePickerControllerDel
     }
     
     
-}
 
 extension NewMaintenanceViewController: UIPickerViewDelegate, UIPickerViewDataSource {
     
