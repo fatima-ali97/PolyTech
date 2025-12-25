@@ -19,10 +19,9 @@ final class FAQViewController: UIViewController {
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var getHelpButton: UIButton!
 
-    // Original data (never changed)
+    
     private var sections: [FAQSection] = []
 
-    // Data shown in table (filtered or not)
     private var visibleSections: [FAQSection] = []
 
     private var isSearching: Bool {
