@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="23727" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="dhO-EU-Z1t">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="23727" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina6_12" orientation="portrait" appearance="light"/>
     <dependencies>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23721"/>
@@ -9,58 +9,73 @@
     </dependencies>
     <scenes>
         <!--Home View Controller-->
-        <scene sceneID="nkz-RQ-hrb">
+        <scene sceneID="TBp-H6-9Nt">
             <objects>
-                <viewController storyboardIdentifier="StudentHomeViewController" modalPresentationStyle="fullScreen" id="dhO-EU-Z1t" customClass="HomeViewController" customModule="PolyTech" sceneMemberID="viewController">
-                    <view key="view" contentMode="scaleToFill" id="5Ot-Jr-1EV">
+                <viewController storyboardIdentifier="StudentHomeViewController" modalPresentationStyle="fullScreen" useStoryboardIdentifierAsRestorationIdentifier="YES" id="aJo-nb-W87" customClass="HomeViewController" customModule="PolyTech" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="FHw-Vl-4X2">
                         <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Welcome To PolyTech " textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="NC5-Gs-Sxh">
-                                <rect key="frame" x="90" y="276" width="222" height="90"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <fontDescription key="fontDescription" name="HelveticaNeue-Bold" family="Helvetica Neue" pointSize="36"/>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="Welcome To PolyTech " textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Ult-cM-160">
+                                <rect key="frame" x="94" y="299" width="204" height="75"/>
+                                <fontDescription key="fontDescription" name="HelveticaNeue-Bold" family="Helvetica Neue" pointSize="31"/>
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="z2U-jf-Wxh">
-                                <rect key="frame" x="132" y="436" width="122" height="39"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                            <button opaque="NO" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="MLk-fZ-OjQ">
+                                <rect key="frame" x="135" y="435" width="122" height="39"/>
+                                <color key="tintColor" red="0.1058823466" green="0.1607843041" blue="0.2588235438" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                                 <state key="normal" title="Button"/>
                                 <buttonConfiguration key="configuration" style="filled" title="FAQ &amp; Guide" cornerStyle="capsule"/>
                                 <connections>
-                                    <action selector="faqButtonTapped:" destination="dhO-EU-Z1t" eventType="touchUpInside" id="EUj-pe-qBo"/>
+                                    <action selector="faqButtonTapped:" destination="aJo-nb-W87" eventType="touchUpInside" id="6ba-Yp-LI0"/>
                                 </connections>
                             </button>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Submit a request, and we'll handle the rest." textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="JUC-Hy-JZ4">
-                                <rect key="frame" x="36" y="383" width="330" height="20"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="Submit a request, and we'll handle the rest." textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="vf4-Mq-kn9">
+                                <rect key="frame" x="31" y="382" width="330" height="20"/>
                                 <color key="tintColor" systemColor="underPageBackgroundColor"/>
                                 <fontDescription key="fontDescription" name="HelveticaNeue" family="Helvetica Neue" pointSize="17"/>
                                 <color key="textColor" systemColor="systemGray2Color"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="bell.badge.fill" catalog="system" translatesAutoresizingMaskIntoConstraints="NO" id="JnH-6r-ZXZ">
-                                <rect key="frame" x="316" y="66.333333333333258" width="42" height="32"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" image="bell.badge.fill" catalog="system" translatesAutoresizingMaskIntoConstraints="NO" id="eBD-qM-svk">
+                                <rect key="frame" x="325" y="65.333333333333371" width="36" height="40.333333333333371"/>
                                 <color key="tintColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="42" id="KLd-wE-5r8"/>
+                                </constraints>
                             </imageView>
-                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="ellipsis.message.fill" catalog="system" translatesAutoresizingMaskIntoConstraints="NO" id="5le-zy-0vc">
-                                <rect key="frame" x="16" y="67.666666666666742" width="42" height="32"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" image="ellipsis.message.fill" catalog="system" translatesAutoresizingMaskIntoConstraints="NO" id="fL6-kr-i57">
+                                <rect key="frame" x="31" y="66.666666666666629" width="36" height="39"/>
                                 <color key="tintColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                             </imageView>
                         </subviews>
-                        <viewLayoutGuide key="safeArea" id="7as-QE-qj4"/>
+                        <viewLayoutGuide key="safeArea" id="9jU-Ol-ugN"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <constraints>
+                            <constraint firstItem="fL6-kr-i57" firstAttribute="centerX" secondItem="9jU-Ol-ugN" secondAttribute="centerX" id="3O9-NY-kfL"/>
+                            <constraint firstItem="vf4-Mq-kn9" firstAttribute="top" secondItem="FHw-Vl-4X2" secondAttribute="top" constant="383" id="MOe-JO-Hdd"/>
+                            <constraint firstItem="Ult-cM-160" firstAttribute="top" secondItem="fL6-kr-i57" secondAttribute="bottom" constant="57.666666666666629" id="SPL-Q6-5Ec"/>
+                            <constraint firstItem="Ult-cM-160" firstAttribute="leading" secondItem="9jU-Ol-ugN" secondAttribute="leading" constant="9.6666666666666572" id="XkU-Fs-Dt7"/>
+                            <constraint firstItem="vf4-Mq-kn9" firstAttribute="centerX" secondItem="Ult-cM-160" secondAttribute="centerX" id="Xxf-bG-6af"/>
+                            <constraint firstItem="eBD-qM-svk" firstAttribute="top" secondItem="FHw-Vl-4X2" secondAttribute="topMargin" constant="-51.000000000000071" id="bPx-iG-Hdb"/>
+                            <constraint firstItem="vf4-Mq-kn9" firstAttribute="top" secondItem="Ult-cM-160" secondAttribute="bottom" constant="17" id="eXO-ca-1gg"/>
+                            <constraint firstAttribute="trailingMargin" secondItem="eBD-qM-svk" secondAttribute="trailing" constant="20" id="hPR-oA-iHg"/>
+                            <constraint firstItem="MLk-fZ-OjQ" firstAttribute="top" secondItem="vf4-Mq-kn9" secondAttribute="bottom" constant="33" id="vMX-Se-KUJ"/>
+                            <constraint firstItem="MLk-fZ-OjQ" firstAttribute="leading" secondItem="9jU-Ol-ugN" secondAttribute="leading" constant="132" id="vzV-fe-XBE"/>
+                        </constraints>
                     </view>
                     <toolbarItems/>
-                    <navigationItem key="navigationItem" largeTitleDisplayMode="never" id="beH-bD-cZK"/>
+                    <navigationItem key="navigationItem" largeTitleDisplayMode="never" id="KJI-qu-0RO"/>
                     <simulatedToolbarMetrics key="simulatedBottomBarMetrics"/>
+                    <connections>
+                        <outlet property="FAQbtn" destination="MLk-fZ-OjQ" id="XAc-Tl-djW"/>
+                        <outlet property="Notificationbtn" destination="eBD-qM-svk" id="qcK-Qd-Oc6"/>
+                    </connections>
                 </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="M9K-AI-owx" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="67Y-5h-OIe" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="6737" y="-585"/>
+            <point key="canvasLocation" x="8089.3129770992364" y="-176.05633802816902"/>
         </scene>
     </scenes>
     <color key="tintColor" red="0.1058823466" green="0.1607843041" blue="0.2588235438" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
