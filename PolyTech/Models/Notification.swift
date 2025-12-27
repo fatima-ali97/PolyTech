@@ -1,10 +1,3 @@
-//
-//  Notificatoin.swift
-//  PolyTech
-//
-//  Created by BP-19-130-15 on 24/12/2025.
-//
-
 import Foundation
 import FirebaseFirestore
 
@@ -15,21 +8,21 @@ struct NotificationModel: Codable {
     var message: String
     var type: NotificationType
     var iconName: String
+    var iconType: String
     var isRead: Bool
     var timestamp: Timestamp
+    var room: String
     var actionUrl: String?
     var metadata: [String: String]?
     
-    //TODO: change this
     enum NotificationType: String, Codable {
         case success = "success"
         case error = "error"
-        case warning = "warning"
+        case fail = "fail"
         case info = "info"
         case message = "message"
-        case like = "like"
-        case comment = "comment"
-        case follow = "follow"
+        case accept = "accept"
+        case location = "location"
     }
     
     // Computed property for display date
@@ -51,16 +44,24 @@ struct NotificationModel: Codable {
         }
     }
     
-    // Convert Firestore document to model
+    // Convert Firestore document to model -iconName is OPTIONAL
     init?(dictionary: [String: Any], id: String) {
         guard let userId = dictionary["userId"] as? String,
               let title = dictionary["title"] as? String,
               let message = dictionary["message"] as? String,
               let typeString = dictionary["type"] as? String,
+              let iconType = dictionary["iconType"] as? String,
               let type = NotificationType(rawValue: typeString),
-              let iconName = dictionary["iconName"] as? String,
-              let isRead = dictionary["isRead"] as? Int,
+              let room = dictionary["room"] as? String,
+              let isRead = dictionary["isRead"] as? Bool,
               let timestamp = dictionary["timestamp"] as? Timestamp else {
+            print(" Failed to parse notification - missing required fields")
+            print("   userId: \(dictionary["userId"] ?? "nil")")
+            print("   title: \(dictionary["title"] ?? "nil")")
+            print("   message: \(dictionary["message"] ?? "nil")")
+            print("   type: \(dictionary["type"] ?? "nil")")
+            print("   isRead: \(dictionary["isRead"] ?? "nil")")
+            print("   timestamp: \(dictionary["timestamp"] ?? "nil")")
             return nil
         }
         
@@ -69,11 +70,36 @@ struct NotificationModel: Codable {
         self.title = title
         self.message = message
         self.type = type
-        self.iconName = iconName
-        self.isRead = isRead != 0 // 0=false, 1=true
+        // Make iconName optional with a default based on type
+        self.iconName = dictionary["iconName"] as? String ?? NotificationModel.defaultIcon(for: type)
+        self.isRead = isRead
         self.timestamp = timestamp
+        self.iconType = iconType
+        self.room = room
         self.actionUrl = dictionary["actionUrl"] as? String
         self.metadata = dictionary["metadata"] as? [String: String]
+    }
+    
+    // Helper function to get default icon based on notification type
+    private static func defaultIcon(for type: NotificationType) -> String {
+        switch type {
+        case .success:
+            return "checkmark.circle.fill"
+        case .error:
+            return "xmark.circle.fill"
+        case .fail:
+           // return "exclamationmark.triangle.fill"
+            return "xmark.circle.fill"
+        case .info:
+            return "info.circle.fill"
+        case .message:
+            return "envelope.fill"
+        
+        case .accept:
+            return "checkmark.circle.fill"
+        case .location:
+            return "location.fill"
+        }
     }
     
     // Convert model to Firestore dictionary
@@ -85,7 +111,9 @@ struct NotificationModel: Codable {
             "type": type.rawValue,
             "iconName": iconName,
             "isRead": isRead,
-            "timestamp": timestamp
+            "timestamp": timestamp,
+            "iconType": iconType,
+            "room": room
         ]
         
         if let actionUrl = actionUrl {
