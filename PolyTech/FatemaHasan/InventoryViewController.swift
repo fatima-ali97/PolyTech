@@ -6,7 +6,7 @@ import FirebaseAuth
 class InventoryViewController: UIViewController {
 
     let db = Firestore.firestore()
-
+    var selectedItem: InventoryItem?
     override func viewDidLoad() {
         super.viewDidLoad()
     }
@@ -17,7 +17,13 @@ class InventoryViewController: UIViewController {
 
     @IBAction func editButtonTapped(_ sender: UIButton) {
         print("EDIT BUTTON TAPPED")
-        openEditInventoryPage()
+
+        guard let item = selectedItem else {
+            showAlert(title: "Error", message: "Please view inventory first")
+            return
+        }
+
+        openEditInventoryPage(with: item)
     }
 
     @IBAction func deleteButtonTapped(_ sender: UIButton) {
