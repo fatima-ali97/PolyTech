@@ -17,22 +17,12 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         guard let windowScene = scene as? UIWindowScene else { return }
 
         let window = UIWindow(windowScene: windowScene)
-<<<<<<< HEAD
         
         // Initialize your custom tab bar controller
         let tabBarController = CustomTabBarController()
         
         window.rootViewController = tabBarController
-=======
 
-        let storyboard = UIStoryboard(name: "FAQ", bundle: nil) //change this + make sure u select the "is initial storyboard"
-
-        guard let initialVC = storyboard.instantiateInitialViewController() else {
-            fatalError("FAQ storyboard has no initial view controller")
-        }
-
-        window.rootViewController = initialVC
->>>>>>> master
         self.window = window
         window.makeKeyAndVisible()
         
