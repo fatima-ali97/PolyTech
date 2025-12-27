@@ -33,7 +33,7 @@ final class FAQViewController: UIViewController {
         super.viewDidLoad()
 
         setupUI()
-        buildFAQDataSameAsYourScreenshot()
+        FAQData()
         visibleSections = sections
 
         tableView.reloadData()
@@ -55,7 +55,7 @@ final class FAQViewController: UIViewController {
         getHelpButton.clipsToBounds = true
     }
 
-    private func buildFAQDataSameAsYourScreenshot() {
+    private func FAQData() {
 
         let generalRows: [FAQRow] = [
             FAQRow(
@@ -133,7 +133,7 @@ If you forgot your password completely, contact IT Help.
     }
 
     @IBAction func getHelpTapped(_ sender: UIButton) {
-        let sb = UIStoryboard(name: "HelpPage", bundle: nil)
+        let sb = UIStoryboard(name: "   GetHelp", bundle: nil)
         let vc = sb.instantiateViewController(withIdentifier: "HelpPageVC")
         navigationController?.pushViewController(vc, animated: true)
     }
