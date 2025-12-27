@@ -198,7 +198,7 @@ class NotificationTableViewCell: UITableViewCell {
         titleLabel.text = notification.title
         messageLabel.text = notification.message
         timeLabel.text = notification.displayTime
-        locationLabel.text = notification.room 
+        locationLabel.text = notification.room
         self.actionCallback = actionCallback
         self.actionUrlString = notification.actionUrl
         

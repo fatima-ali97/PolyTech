@@ -84,8 +84,9 @@
                                     </tableViewCell>
                                 </prototypes>
                             </tableView>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="1uC-IO-qxY">
+                            <button opaque="NO" contentMode="scaleToFill" restorationIdentifier="clearAllButton" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="1uC-IO-qxY">
                                 <rect key="frame" x="20" y="718" width="353" height="36"/>
+                                <accessibility key="accessibilityConfiguration" identifier="clearAllButton"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="36" id="f1B-OY-hDw"/>
                                 </constraints>
@@ -116,13 +117,52 @@
                         </constraints>
                     </view>
                     <connections>
-                        <outlet property="clearAllButton" destination="1uC-IO-qxY" id="3vT-dd-EcY"/>
-                        <outlet property="tableView" destination="iWO-7I-7Ti" id="q4I-2j-ngo"/>
+                        <outlet property="tableView" destination="iWO-7I-7Ti" id="P8X-2e-p66"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Ief-a0-LHa" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="1143" y="129"/>
+        </scene>
+        <!--View Controller-->
+        <scene sceneID="xJ1-jN-82n">
+            <objects>
+                <viewController useStoryboardIdentifierAsRestorationIdentifier="YES" id="DZ7-qn-VGW" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="AjK-ds-2y1">
+                        <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Hn5-Pg-9XA">
+                                <rect key="frame" x="20" y="718" width="353" height="36"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="36" id="ic5-ep-uId"/>
+                                </constraints>
+                                <color key="tintColor" red="0.086274509799999996" green="0.1647058824" blue="0.2666666667" alpha="1" colorSpace="calibratedRGB"/>
+                                <state key="normal" title="Button"/>
+                                <buttonConfiguration key="configuration" style="plain" title="Clear All Notifications">
+                                    <backgroundConfiguration key="background" cornerRadius="10">
+                                        <color key="backgroundColor" name="Primary"/>
+                                    </backgroundConfiguration>
+                                    <fontDescription key="titleFontDescription" type="system" weight="semibold" pointSize="16"/>
+                                    <color key="baseForegroundColor" name="OnPrimary"/>
+                                </buttonConfiguration>
+                            </button>
+                        </subviews>
+                        <viewLayoutGuide key="safeArea" id="XIr-aZ-dFY"/>
+                        <color key="backgroundColor" name="Background"/>
+                        <constraints>
+                            <constraint firstItem="Hn5-Pg-9XA" firstAttribute="bottom" secondItem="XIr-aZ-dFY" secondAttribute="bottom" constant="-30" id="H4O-19-MYT"/>
+                            <constraint firstItem="Hn5-Pg-9XA" firstAttribute="leading" secondItem="XIr-aZ-dFY" secondAttribute="leading" constant="20" id="c5h-8m-91w"/>
+                            <constraint firstItem="XIr-aZ-dFY" firstAttribute="trailing" secondItem="Hn5-Pg-9XA" secondAttribute="trailing" constant="20" id="kzl-vC-pBB"/>
+                        </constraints>
+                    </view>
+                    <connections>
+                        <outlet property="clearAllButton" destination="Hn5-Pg-9XA" id="eNB-HX-mcd"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="XSJ-ls-bO7" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="279" y="100"/>
         </scene>
     </scenes>
     <resources>

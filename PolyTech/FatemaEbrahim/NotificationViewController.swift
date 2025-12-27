@@ -468,7 +468,7 @@ class EmptyStateView: UIView {
 //            titleLabel.topAnchor.constraint(equalTo: iconImageView.bottomAnchor, constant: 20),
 //            titleLabel.leadingAnchor.constraint(equalTo: leadingAnchor),
 //            titleLabel.trailingAnchor.constraint(equalTo: trailingAnchor),
-//            
+//
             messageLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 12),
             messageLabel.leadingAnchor.constraint(equalTo: leadingAnchor),
             messageLabel.trailingAnchor.constraint(equalTo: trailingAnchor),
