@@ -56,11 +56,13 @@
                                     </imageView>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Bahrain Polytechnic" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="TXd-Ax-Ims">
                                         <rect key="frame" x="42" y="0.0" width="150.33333333333334" height="26"/>
+                                        <gestureRecognizers/>
                                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                         <nil key="textColor"/>
                                         <nil key="highlightedColor"/>
                                     </label>
                                 </subviews>
+                                <gestureRecognizers/>
                             </stackView>
                             <stackView opaque="NO" contentMode="scaleToFill" fixedFrame="YES" spacing="20" translatesAutoresizingMaskIntoConstraints="NO" id="RMI-s7-Gm2">
                                 <rect key="frame" x="25" y="364" width="299" height="26"/>
@@ -79,6 +81,7 @@
                                         <nil key="highlightedColor"/>
                                     </label>
                                 </subviews>
+                                <gestureRecognizers/>
                             </stackView>
                             <stackView opaque="NO" contentMode="scaleToFill" fixedFrame="YES" spacing="16" translatesAutoresizingMaskIntoConstraints="NO" id="Cru-W9-SJh">
                                 <rect key="frame" x="25" y="424" width="167.66666666666666" height="26"/>
@@ -97,6 +100,7 @@
                                         <nil key="highlightedColor"/>
                                     </label>
                                 </subviews>
+                                <gestureRecognizers/>
                             </stackView>
                             <stackView opaque="NO" contentMode="scaleToFill" fixedFrame="YES" spacing="16" translatesAutoresizingMaskIntoConstraints="NO" id="3Hu-zm-1G5">
                                 <rect key="frame" x="25" y="484" width="202.33333333333334" height="26"/>
@@ -117,6 +121,7 @@
                                         <nil key="highlightedColor"/>
                                     </label>
                                 </subviews>
+                                <gestureRecognizers/>
                             </stackView>
                             <stackView opaque="NO" contentMode="scaleToFill" fixedFrame="YES" spacing="18" translatesAutoresizingMaskIntoConstraints="NO" id="zsf-cw-zUE">
                                 <rect key="frame" x="25" y="311" width="204.33333333333334" height="26"/>
@@ -130,11 +135,13 @@
                                     </imageView>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="@bahrainpolytechnic" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="edE-Vc-Oqm">
                                         <rect key="frame" x="44" y="0.0" width="160.33333333333334" height="26"/>
+                                        <gestureRecognizers/>
                                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                         <nil key="textColor"/>
                                         <nil key="highlightedColor"/>
                                     </label>
                                 </subviews>
+                                <gestureRecognizers/>
                             </stackView>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="vDu-zF-Fre"/>
@@ -146,6 +153,10 @@
                             <constraint firstItem="2Ky-P6-fyC" firstAttribute="top" secondItem="vDu-zF-Fre" secondAttribute="top" constant="299" id="mAu-Nw-onB"/>
                         </constraints>
                     </view>
+                    <connections>
+                        <outlet property="openLinkedIn" destination="TXd-Ax-Ims" id="VCp-8h-Hhc"/>
+                        <outlet property="openLinkedin" destination="h44-nK-Tj4" id="heu-Qa-bnP"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Ief-a0-LHa" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
