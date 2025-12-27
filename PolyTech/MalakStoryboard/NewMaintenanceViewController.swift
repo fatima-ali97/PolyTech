@@ -1,7 +1,11 @@
 import UIKit
 import FirebaseFirestore
+//import Cloudinary
 
 class NewMaintenanceViewController: UIViewController {
+    
+//    let config = CLDConfiguration(cloudName: "dwvlnmbtv")
+//    let cloudinary = CLDCloudinary(configuration: config)
 
     var isEditMode = false
     var documentId: String?
