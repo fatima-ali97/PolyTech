@@ -1,8 +1,14 @@
 import UIKit
 
+// MARK: - Protocol to hide tab bar in specific view controllers
+protocol TabBarHideable {
+    var hidesTabBar: Bool { get }
+}
+
 // MARK: - Tab Bar Controller Protocol
 protocol TabBarControllerProtocol: UITabBarController {
     func didTapTabBarButton(_ index: Int)
+    func hideCustomTabBar(_ hide: Bool, animated: Bool)
 }
 
 extension TabBarControllerProtocol {
@@ -22,9 +28,36 @@ class CustomTabBarController: UITabBarController, TabBarControllerProtocol {
         setupCustomTabBar()
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        updateTabBarVisibility()
+    }
+    
+    func hideCustomTabBar(_ hide: Bool, animated: Bool = true) {
+        guard let customTabBarView = customTabBarView else { return }
+        
+        let duration = animated ? 0.3 : 0.0
+        UIView.animate(withDuration: duration) {
+            customTabBarView.alpha = hide ? 0 : 1
+            customTabBarView.transform = hide ? CGAffineTransform(translationX: 0, y: 100) : .identity
+        }
+    }
+    
+    private func updateTabBarVisibility() {
+        guard let selectedVC = selectedViewController else { return }
+        
+        // Check if the current view controller (or its children) conforms to TabBarHideable
+        if let navController = selectedVC as? UINavigationController {
+            let shouldHide = navController.viewControllers.contains { ($0 as? TabBarHideable)?.hidesTabBar ?? false }
+            hideCustomTabBar(shouldHide)
+        } else if let hideable = selectedVC as? TabBarHideable {
+            hideCustomTabBar(hideable.hidesTabBar)
+        }
+    }
+    
     private func setupViewControllers() {
         let homeVC = createNavControllerFromStoryboard(
-            storyboardName: "NotificationStoryboard",
+            storyboardName: "HomePage",
             title: "Home",
             image: UIImage(systemName: "house.fill")
         )
@@ -103,7 +136,7 @@ class TabBarView: UIView {
     private let buttonHeight: CGFloat = 48
     
     private let primaryColor = UIColor(red: 254/255, green: 152/255, blue: 155/255, alpha: 1.0)
-    //private let backgroundColor = UIColor.systemBackground
+    // private let backgroundColor = UIColor.systemBackground
     
     override init(frame: CGRect) {
         super.init(frame: frame)
