@@ -12,7 +12,15 @@ class NotificationTableViewCell: UITableViewCell {
     
     private let containerView: UIView = {
         let view = UIView()
-        view.backgroundColor = .systemBackground
+        
+        // HERE
+        view.backgroundColor =  .clear
+        
+        // 1. Set the border width (thickness)
+        view.layer.borderWidth = 0.8
+
+        // 2. Set the border color
+        view.layer.borderColor = UIColor.systemGray.cgColor
         view.layer.cornerRadius = 16
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
@@ -20,7 +28,7 @@ class NotificationTableViewCell: UITableViewCell {
     
     private let iconContainerView: UIView = {
         let view = UIView()
-        view.layer.cornerRadius = 30
+        view.layer.cornerRadius = 10
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
     }()
@@ -28,7 +36,7 @@ class NotificationTableViewCell: UITableViewCell {
     private let iconImageView: UIImageView = {
         let iv = UIImageView()
         iv.contentMode = .scaleAspectFit
-        iv.tintColor = .white
+        iv.tintColor = .onPrimary
         iv.translatesAutoresizingMaskIntoConstraints = false
         return iv
     }()
@@ -52,9 +60,9 @@ class NotificationTableViewCell: UITableViewCell {
     
     private let titleLabel: UILabel = {
         let label = UILabel()
-        label.font = .systemFont(ofSize: 18, weight: .semibold)
-        label.textColor = .label
-        label.numberOfLines = 2
+        label.font = .systemFont(ofSize: 16, weight: .semibold)
+        label.textColor = .onBackground
+        label.numberOfLines = 3
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
@@ -62,7 +70,16 @@ class NotificationTableViewCell: UITableViewCell {
     private let timeLabel: UILabel = {
         let label = UILabel()
         label.font = .systemFont(ofSize: 14, weight: .medium)
-        label.textColor = .secondaryLabel
+        label.textColor = .secondary
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.setContentHuggingPriority(.required, for: .horizontal)
+        label.setContentCompressionResistancePriority(.required, for: .horizontal)
+        return label
+    }()
+    private let locationLabel: UILabel = {
+        let label = UILabel()
+        label.font = .systemFont(ofSize: 14, weight: .medium)
+        label.textColor = .secondary
         label.translatesAutoresizingMaskIntoConstraints = false
         label.setContentHuggingPriority(.required, for: .horizontal)
         label.setContentCompressionResistancePriority(.required, for: .horizontal)
@@ -71,9 +88,9 @@ class NotificationTableViewCell: UITableViewCell {
     
     private let timeIconImageView: UIImageView = {
         let iv = UIImageView()
-        iv.image = UIImage(systemName: "mappin.circle.fill")
+        iv.image = UIImage(systemName: "mappin")
         iv.contentMode = .scaleAspectFit
-        iv.tintColor = .systemBlue
+        iv.tintColor = .primary
         iv.translatesAutoresizingMaskIntoConstraints = false
         return iv
     }()
@@ -81,17 +98,20 @@ class NotificationTableViewCell: UITableViewCell {
     private let messageLabel: UILabel = {
         let label = UILabel()
         label.font = .systemFont(ofSize: 15, weight: .regular)
-        label.textColor = .secondaryLabel
+        label.textColor = .secondary
         label.numberOfLines = 2
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
     
+    
+    //TODO: CHANGE STYLIING
     private let actionButton: UIButton = {
         let button = UIButton(type: .system)
         button.titleLabel?.font = .systemFont(ofSize: 15, weight: .semibold)
+        // button.contentMode = .scaleAspectFit
         button.layer.cornerRadius = 12
-        button.contentEdgeInsets = UIEdgeInsets(top: 12, left: 20, bottom: 12, right: 20)
+        //button.contentEdgeInsets = UIEdgeInsets(top: 12, left: 20, bottom: 12, right: 20)
         button.translatesAutoresizingMaskIntoConstraints = false
         return button
     }()
@@ -122,7 +142,7 @@ class NotificationTableViewCell: UITableViewCell {
     
     private func setupUI() {
         backgroundColor = .clear
-        selectionStyle = .none
+        //selectionStyle = .none
         
         contentView.addSubview(containerView)
         containerView.addSubview(iconContainerView)
@@ -132,10 +152,11 @@ class NotificationTableViewCell: UITableViewCell {
         // Add header with title and time
         headerStackView.addArrangedSubview(titleLabel)
         headerStackView.addArrangedSubview(timeIconImageView)
-        headerStackView.addArrangedSubview(timeLabel)
+        headerStackView.addArrangedSubview(locationLabel)
         
         contentStackView.addArrangedSubview(headerStackView)
         contentStackView.addArrangedSubview(messageLabel)
+        contentStackView.addArrangedSubview(timeLabel)
         contentStackView.addArrangedSubview(actionButton)
         
         actionButton.addTarget(self, action: #selector(actionButtonTapped), for: .touchUpInside)
@@ -160,8 +181,8 @@ class NotificationTableViewCell: UITableViewCell {
             iconImageView.heightAnchor.constraint(equalToConstant: 32),
             
             // Time icon
-            timeIconImageView.widthAnchor.constraint(equalToConstant: 16),
-            timeIconImageView.heightAnchor.constraint(equalToConstant: 16),
+            timeIconImageView.widthAnchor.constraint(equalToConstant: 20),
+            timeIconImageView.heightAnchor.constraint(equalToConstant: 20),
             
             // Content stack
             contentStackView.leadingAnchor.constraint(equalTo: iconContainerView.trailingAnchor, constant: 16),
@@ -177,6 +198,7 @@ class NotificationTableViewCell: UITableViewCell {
         titleLabel.text = notification.title
         messageLabel.text = notification.message
         timeLabel.text = notification.displayTime
+        locationLabel.text = notification.room 
         self.actionCallback = actionCallback
         self.actionUrlString = notification.actionUrl
         
@@ -191,8 +213,12 @@ class NotificationTableViewCell: UITableViewCell {
             actionButton.isHidden = true
         }
         
-        // Update appearance for read/unread (optional - subtle difference)
-        containerView.alpha = notification.isRead ? 0.85 : 1.0
+        // Update appearance for read/unread
+        //containerView.backgroundColor = notification.isRead ? .outline : .primary
+        
+        
+        
+        //containerView.alpha = notification.isRead ? 0.8 : 1
     }
     
     private func configureIcon(for type: NotificationModel.NotificationType) {
@@ -202,17 +228,15 @@ class NotificationTableViewCell: UITableViewCell {
                 return ("checkmark", UIColor(red: 0.2, green: 0.4, blue: 0.6, alpha: 1.0))
             case .error:
                 return ("xmark", UIColor(red: 0.2, green: 0.4, blue: 0.6, alpha: 1.0))
-            case .warning:
-                return ("exclamationmark.triangle.fill", UIColor(red: 0.2, green: 0.4, blue: 0.6, alpha: 1.0))
+            case .fail:
+                return ("xmark", UIColor(red: 0.2, green: 0.4, blue: 0.6, alpha: 1.0))
             case .info:
                 return ("mappin.and.ellipse", UIColor(red: 0.2, green: 0.4, blue: 0.6, alpha: 1.0))
             case .message:
                 return ("envelope.fill", UIColor(red: 0.2, green: 0.4, blue: 0.6, alpha: 1.0))
-            case .like:
-                return ("heart.fill", UIColor(red: 0.2, green: 0.4, blue: 0.6, alpha: 1.0))
-            case .comment:
+          case .accept:
                 return ("checkmark", UIColor(red: 0.2, green: 0.4, blue: 0.6, alpha: 1.0))
-            case .follow:
+            case .location:
                 return ("person.badge.plus.fill", UIColor(red: 0.2, green: 0.4, blue: 0.6, alpha: 1.0))
             }
         }()
@@ -225,29 +249,37 @@ class NotificationTableViewCell: UITableViewCell {
         let config: (title: String, icon: String, backgroundColor: UIColor, textColor: UIColor) = {
             switch type {
             case .success:
-                return ("Rate The Service", "star.fill", UIColor(red: 0.2, green: 0.4, blue: 0.6, alpha: 1.0), .white)
+                return ("Rate The Service", "hand.thumbsup.fill", UIColor(red: 0.2, green: 0.4, blue: 0.6, alpha: 1.0), .white)
             case .info:
                 return ("Track Location", "mappin.circle.fill", UIColor(red: 0.2, green: 0.4, blue: 0.6, alpha: 1.0), .white)
-            case .error, .warning, .comment, .follow:
+            case .error, .fail, .accept, .location:
                 return ("View Request Details", "doc.text.fill", UIColor(red: 0.2, green: 0.4, blue: 0.6, alpha: 1.0), .white)
             case .message:
                 return ("View Message", "envelope.fill", UIColor(red: 0.2, green: 0.4, blue: 0.6, alpha: 1.0), .white)
-            case .like:
-                return ("View Post", "heart.fill", UIColor(red: 0.2, green: 0.4, blue: 0.6, alpha: 1.0), .white)
             }
         }()
         
         // Configure button with icon
+      
+
         var configuration = UIButton.Configuration.filled()
         configuration.title = config.title
+        
         configuration.image = UIImage(systemName: config.icon)
         configuration.imagePlacement = .leading
-        configuration.imagePadding = 8
-        configuration.baseBackgroundColor = config.backgroundColor
+        configuration.imagePadding = 12
+        configuration.baseBackgroundColor = UIColor(named: "#fbfbfb")
         configuration.baseForegroundColor = config.textColor
         configuration.cornerStyle = .medium
-        configuration.contentInsets = NSDirectionalEdgeInsets(top: 12, leading: 16, bottom: 12, trailing: 16)
+        configuration.contentInsets = NSDirectionalEdgeInsets(top: 10, leading: 12, bottom: 10, trailing: 12)
         
+        // change font size
+        configuration.titleTextAttributesTransformer =
+           UIConfigurationTextAttributesTransformer { incoming in
+             var outgoing = incoming
+               outgoing.font = UIFont.systemFont(ofSize: 14, weight: .bold)
+             return outgoing
+         }
         actionButton.configuration = configuration
     }
     

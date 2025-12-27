@@ -8,20 +8,21 @@ struct NotificationModel: Codable {
     var message: String
     var type: NotificationType
     var iconName: String
+    var iconType: String
     var isRead: Bool
     var timestamp: Timestamp
+    var room: String
     var actionUrl: String?
     var metadata: [String: String]?
     
     enum NotificationType: String, Codable {
         case success = "success"
         case error = "error"
-        case warning = "warning"
+        case fail = "fail"
         case info = "info"
         case message = "message"
-        case like = "like"
-        case comment = "comment"
-        case follow = "follow"
+        case accept = "accept"
+        case location = "location"
     }
     
     // Computed property for display date
@@ -43,13 +44,15 @@ struct NotificationModel: Codable {
         }
     }
     
-    // Convert Firestore document to model - WITH OPTIONAL iconName
+    // Convert Firestore document to model -iconName is OPTIONAL
     init?(dictionary: [String: Any], id: String) {
         guard let userId = dictionary["userId"] as? String,
               let title = dictionary["title"] as? String,
               let message = dictionary["message"] as? String,
               let typeString = dictionary["type"] as? String,
+              let iconType = dictionary["iconType"] as? String,
               let type = NotificationType(rawValue: typeString),
+              let room = dictionary["room"] as? String,
               let isRead = dictionary["isRead"] as? Bool,
               let timestamp = dictionary["timestamp"] as? Timestamp else {
             print(" Failed to parse notification - missing required fields")
@@ -71,6 +74,8 @@ struct NotificationModel: Codable {
         self.iconName = dictionary["iconName"] as? String ?? NotificationModel.defaultIcon(for: type)
         self.isRead = isRead
         self.timestamp = timestamp
+        self.iconType = iconType
+        self.room = room
         self.actionUrl = dictionary["actionUrl"] as? String
         self.metadata = dictionary["metadata"] as? [String: String]
     }
@@ -82,17 +87,17 @@ struct NotificationModel: Codable {
             return "checkmark.circle.fill"
         case .error:
             return "xmark.circle.fill"
-        case .warning:
-            return "exclamationmark.triangle.fill"
+        case .fail:
+           // return "exclamationmark.triangle.fill"
+            return "xmark.circle.fill"
         case .info:
             return "info.circle.fill"
         case .message:
             return "envelope.fill"
-        case .like:
-            return "heart.fill"
-        case .comment:
-            return "bubble.left.fill"
-        case .follow:
+        
+        case .accept:
+            return "checkmark.circle.fill"
+        case .location:
             return "location.fill"
         }
     }
@@ -106,7 +111,9 @@ struct NotificationModel: Codable {
             "type": type.rawValue,
             "iconName": iconName,
             "isRead": isRead,
-            "timestamp": timestamp
+            "timestamp": timestamp,
+            "iconType": iconType,
+            "room": room
         ]
         
         if let actionUrl = actionUrl {
