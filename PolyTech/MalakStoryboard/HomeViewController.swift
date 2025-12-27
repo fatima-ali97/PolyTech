@@ -14,20 +14,18 @@ class HomeViewController: UIViewController {
         super.viewDidLoad()
         setupNotificationButton()
     }
-    
-    // MARK: - Setup Methods
+
     private func setupNotificationButton() {
-        // Make sure user interaction is enabled
+
         Notificationbtn.isUserInteractionEnabled = true
-        
-        // Add tap gesture recognizer
+
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(notificationTapped))
         Notificationbtn.addGestureRecognizer(tapGesture)
     }
     
     @objc func notificationTapped() {
-        // Explicitly load the storyboard that contains NotificationsViewController
-        let storyboard = UIStoryboard(name: "NotificationStoryboard", bundle: nil) // Replace "Main" with your storyboard name
+
+        let storyboard = UIStoryboard(name: "NotificationStoryboard", bundle: nil)
         guard let vc = storyboard.instantiateViewController(withIdentifier: "NotificationsViewController") as? NotificationsViewController else {
             print("NotificationsViewController not found in storyboard")
             return
@@ -38,24 +36,19 @@ class HomeViewController: UIViewController {
     
     
     @IBAction func faqButtonTapped(_ sender: UIButton) {
-        //        print("FAQ button tapped!") // debug log
-        //
-        //        guard let vc = storyboard?.instantiateViewController(
-        //            withIdentifier: "FAQViewController"
-        //        ) as? FAQViewController else {
-        //            print("Error: FAQViewController not found in storyboard!")
-        //            return
-        //        }
-        //
-        //        navigationController?.pushViewController(vc, animated: true)
-        //    }
+        print("FAQ button tapped!") // Debugging log
         
-        let storyboard = UIStoryboard(name: "FAQ", bundle: nil) // Replace "Main" with your storyboard name
-        guard let vc = storyboard.instantiateViewController(withIdentifier: "FAQViewController") as? NotificationsViewController else {
+        let storyboard = UIStoryboard(name: "FAQ", bundle: nil) // Replace "FAQ" with your actual storyboard name
+        
+        guard let vc = storyboard.instantiateViewController(withIdentifier: "FAQViewController") as? FAQViewController else {
             print("FAQViewController not found in storyboard")
             return
         }
         
+        // Confirm if the controller is correctly instantiated
+        print("FAQViewController successfully instantiated")
+        
         navigationController?.pushViewController(vc, animated: true)
     }
-}
+    }
+
