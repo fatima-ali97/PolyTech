@@ -11,7 +11,7 @@
         <!--View Controller-->
         <scene sceneID="LKG-uD-irb">
             <objects>
-                <viewController id="5P6-f2-nPW" customClass="FAQViewController" customModule="PolyTech" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="FAQViewController" id="5P6-f2-nPW" customClass="FAQViewController" customModule="PolyTech" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="thZ-yU-2WX">
                         <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
