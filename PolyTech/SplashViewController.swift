@@ -1,13 +1,13 @@
 //
-//  HelpPageViewController.swift
+//  TempFaqViewController.swift
 //  PolyTech
 //
-//  Created by BP-19-130-12 on 21/12/2025.
+//  Created by BP-19-130-15 on 23/12/2025.
 //
 
 import UIKit
 
-class HelpPageViewController: UIViewController {
+class TempFaqViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
