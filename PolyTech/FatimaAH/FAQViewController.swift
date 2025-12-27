@@ -33,7 +33,7 @@ final class FAQViewController: UIViewController {
         super.viewDidLoad()
 
         setupUI()
-        buildFAQDataSameAsYourScreenshot()
+        FAQData()
         visibleSections = sections
 
         tableView.reloadData()
@@ -55,7 +55,7 @@ final class FAQViewController: UIViewController {
         getHelpButton.clipsToBounds = true
     }
 
-    private func buildFAQDataSameAsYourScreenshot() {
+    private func FAQData() {
 
         let generalRows: [FAQRow] = [
             FAQRow(
@@ -133,7 +133,7 @@ If you forgot your password completely, contact IT Help.
     }
 
     @IBAction func getHelpTapped(_ sender: UIButton) {
-        let sb = UIStoryboard(name: "HelpPage", bundle: nil)
+        let sb = UIStoryboard(name: "   GetHelp", bundle: nil)
         let vc = sb.instantiateViewController(withIdentifier: "HelpPageVC")
         navigationController?.pushViewController(vc, animated: true)
     }
@@ -297,7 +297,6 @@ final class FAQSectionHeaderView: UIView {
         onTap?()
     }
 }
-
 final class FAQCell: UITableViewCell {
 
     static let reuseID = "FAQCell"
@@ -308,6 +307,8 @@ final class FAQCell: UITableViewCell {
     private let chevron = UIImageView(image: UIImage(systemName: "chevron.down"))
 
     private var answerTopConstraint: NSLayoutConstraint!
+    private var collapsedBottomConstraint: NSLayoutConstraint!
+    private var expandedBottomConstraint: NSLayoutConstraint!
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -320,6 +321,8 @@ final class FAQCell: UITableViewCell {
     }
 
     private func setup() {
+        selectionStyle = .none
+        backgroundColor = .clear
         contentView.backgroundColor = .clear
 
         cardView.backgroundColor = .white
@@ -363,20 +366,36 @@ final class FAQCell: UITableViewCell {
 
             answerLabel.leadingAnchor.constraint(equalTo: cardView.leadingAnchor, constant: 14),
             answerLabel.trailingAnchor.constraint(equalTo: cardView.trailingAnchor, constant: -14),
-            answerLabel.bottomAnchor.constraint(equalTo: cardView.bottomAnchor, constant: -12),
         ])
 
-        answerTopConstraint = answerLabel.topAnchor.constraint(equalTo: questionLabel.bottomAnchor, constant: 10)
+        answerTopConstraint = answerLabel.topAnchor.constraint(equalTo: questionLabel.bottomAnchor, constant: 0)
         answerTopConstraint.isActive = true
+
+        collapsedBottomConstraint = questionLabel.bottomAnchor.constraint(equalTo: cardView.bottomAnchor, constant: -12)
+        collapsedBottomConstraint.isActive = true
+
+        expandedBottomConstraint = answerLabel.bottomAnchor.constraint(equalTo: cardView.bottomAnchor, constant: -12)
+        expandedBottomConstraint.isActive = false
+
+        answerLabel.isHidden = true
     }
 
     func configure(question: String, answer: String, expanded: Bool) {
         questionLabel.text = question
         answerLabel.text = answer
-        answerLabel.isHidden = !expanded
 
-        UIView.animate(withDuration: 0.2) {
-            self.chevron.transform = expanded ? CGAffineTransform(rotationAngle: .pi) : .identity
+        if expanded {
+            answerLabel.isHidden = false
+            answerTopConstraint.constant = 10
+            collapsedBottomConstraint.isActive = false
+            expandedBottomConstraint.isActive = true
+            chevron.transform = CGAffineTransform(rotationAngle: .pi)
+        } else {
+            answerLabel.isHidden = true
+            answerTopConstraint.constant = 0
+            expandedBottomConstraint.isActive = false
+            collapsedBottomConstraint.isActive = true
+            chevron.transform = .identity
         }
     }
 }

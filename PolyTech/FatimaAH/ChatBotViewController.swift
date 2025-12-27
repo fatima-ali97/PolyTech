@@ -69,7 +69,6 @@ final class ChatBotViewController: UIViewController {
     private func normalize(_ text: String) -> String {
         let trimmed = text.trimmingCharacters(in: .whitespacesAndNewlines)
         let lower = trimmed.lowercased()
-        // remove punctuation/symbols: "MoOdLe!!!" -> "moodle"
         let cleaned = lower.components(separatedBy: CharacterSet.alphanumerics.inverted).joined()
         return cleaned
     }
@@ -78,7 +77,7 @@ final class ChatBotViewController: UIViewController {
         let trimmed = input.trimmingCharacters(in: .whitespacesAndNewlines)
         let normalized = normalize(input)
 
-        // 1) Number input (still works even with spaces: " 1 ")
+      
         if let choice = Int(trimmed) {
             switch choice {
             case 0:

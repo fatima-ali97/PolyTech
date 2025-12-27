@@ -49,6 +49,9 @@
                                 <color key="tintColor" red="0.086274509799999996" green="0.1647058824" blue="0.2666666667" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                                 <state key="normal" title="Button"/>
                                 <buttonConfiguration key="configuration" style="filled" title="Get Help" cornerStyle="capsule"/>
+                                <connections>
+                                    <action selector="getHelpTapped:" destination="5P6-f2-nPW" eventType="touchUpInside" id="o5K-aZ-KMX"/>
+                                </connections>
                             </button>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="nxx-X3-iNT"/>
