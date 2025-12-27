@@ -24,7 +24,7 @@ class CustomTabBarController: UITabBarController, TabBarControllerProtocol {
     
     private func setupViewControllers() {
         let homeVC = createNavControllerFromStoryboard(
-            storyboardName: "NewInventory", // add the HomePage storyboard
+            storyboardName: "Main", // add the HomePage storyboard
             title: "Home",
             image: UIImage(systemName: "house.fill")
         )
