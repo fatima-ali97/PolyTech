@@ -36,7 +36,7 @@ class CustomTabBarController: UITabBarController, TabBarControllerProtocol {
         )
         
         let inventoryVC = createNavControllerFromStoryboard(
-            storyboardName: "InvStoryboard",
+            storyboardName: "Inventory",
             title: "Inventory",
             image: UIImage(systemName: "shippingbox.fill")
         )
