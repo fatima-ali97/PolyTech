@@ -21,6 +21,7 @@ class MaintenanceViewController: UIViewController {
     }
 
     @IBAction func editButtonTapped(_ sender: UIButton) {
+        print("EDIT BUTTON TAPPED")
         openEditMaintenancePage()
     }
 
