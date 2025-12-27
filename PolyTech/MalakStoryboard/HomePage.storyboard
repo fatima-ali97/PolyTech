@@ -45,6 +45,11 @@
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <color key="tintColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                             </imageView>
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="ellipsis.message.fill" catalog="system" translatesAutoresizingMaskIntoConstraints="NO" id="5le-zy-0vc">
+                                <rect key="frame" x="16" y="67.666666666666742" width="42" height="32"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <color key="tintColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                            </imageView>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="7as-QE-qj4"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
@@ -61,6 +66,7 @@
     <color key="tintColor" red="0.1058823466" green="0.1607843041" blue="0.2588235438" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
     <resources>
         <image name="bell.badge.fill" catalog="system" width="117" height="128"/>
+        <image name="ellipsis.message.fill" catalog="system" width="128" height="114"/>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>
