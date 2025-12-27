@@ -50,13 +50,6 @@
                                 </subviews>
                                 <color key="backgroundColor" red="0.9970703125" green="0.9848632812" blue="0.923828125" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                             </stackView>
-                            <navigationBar contentMode="scaleToFill" semanticContentAttribute="playback" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="7cL-PY-i6F">
-                                <rect key="frame" x="0.0" y="118" width="393" height="44"/>
-                                <color key="barTintColor" red="0.086274509799999996" green="0.1647058824" blue="0.25882352939999997" alpha="1" colorSpace="calibratedRGB"/>
-                                <items>
-                                    <navigationItem title="ChatBot " id="L4K-YP-h8n"/>
-                                </items>
-                            </navigationBar>
                             <stackView opaque="NO" contentMode="scaleToFill" ambiguous="YES" spacing="177" translatesAutoresizingMaskIntoConstraints="NO" id="8vG-ce-K53">
                                 <rect key="frame" x="0.0" y="736" width="393" height="36"/>
                                 <subviews>
@@ -85,13 +78,8 @@
                         <viewLayoutGuide key="safeArea" id="bI2-AV-tPg"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
-                            <constraint firstItem="7cL-PY-i6F" firstAttribute="top" secondItem="UYr-vR-axS" secondAttribute="topMargin" constant="-44" id="Bbp-2i-9Fy"/>
-                            <constraint firstAttribute="trailing" secondItem="7cL-PY-i6F" secondAttribute="trailing" id="CZh-zg-zsQ"/>
-                            <constraint firstItem="7cL-PY-i6F" firstAttribute="leading" secondItem="UYr-vR-axS" secondAttribute="leading" id="Dea-b8-9Ha"/>
                             <constraint firstItem="bI2-AV-tPg" firstAttribute="bottom" secondItem="8vG-ce-K53" secondAttribute="bottom" constant="12" id="Ne9-lx-kFJ"/>
-                            <constraint firstItem="7cL-PY-i6F" firstAttribute="top" secondItem="bI2-AV-tPg" secondAttribute="top" id="kfS-E1-KfI"/>
                             <constraint firstItem="k6p-9i-IEt" firstAttribute="top" secondItem="bI2-AV-tPg" secondAttribute="top" constant="44" id="vT6-ug-HJ2"/>
-                            <constraint firstItem="7cL-PY-i6F" firstAttribute="centerX" secondItem="bI2-AV-tPg" secondAttribute="centerX" id="xll-Vm-mCx"/>
                         </constraints>
                     </view>
                     <connections>
@@ -106,7 +94,7 @@
     </scenes>
     <resources>
         <namedColor name="AccentColor">
-            <color red="1" green="0.79199999570846558" blue="0.15700000524520874" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.16500000655651093" green="0.27500000596046448" blue="0.3880000114440918" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
