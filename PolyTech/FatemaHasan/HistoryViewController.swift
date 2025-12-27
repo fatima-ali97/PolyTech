@@ -16,49 +16,48 @@ class HistoryViewController: UIViewController {
     @IBAction func viewDetailsButtonTapped(_ sender: UIButton) {
         fetchHistoryForUserIDs()
     }
-    /*
-         // Reusable function to open Feedback page
-         func openFeedbackPage() {
-             let storyboard = UIStoryboard(name: "Feedback", bundle: nil)
-             guard let feedbackVC = storyboard.instantiateViewController(
-                 withIdentifier: "FeedbackViewController"
-             ) as? FeedbackViewController else {
-                 print("FeedbackViewController not found")
-                 return
-             }
-             if let navController = self.navigationController {
-                 navController.pushViewController(feedbackVC, animated: true)
-             } else {
-                 present(feedbackVC, animated: true)
-             }
-         }
+  
+    func openFeedbackPage() {
+        let storyboard = UIStoryboard(name: "Ali", bundle: nil)
+        guard let feedbackVC = storyboard.instantiateViewController(
+            withIdentifier: "ServiceFeedbackViewController"
+        ) as? ServiceFeedbackViewController else {
+            print("ServiceFeedbackViewController not found")
+            return
+        }
 
-         // MARK: - Actions for buttons
-         @IBAction func feedbackButtonTapped(_ sender: UIButton) {
-             openFeedbackPage()
-         }
+        if let navController = self.navigationController {
+            navController.pushViewController(feedbackVC, animated: true)
+        } else {
+            present(feedbackVC, animated: true)
+        }
+    }
 
-         @IBAction func Feedback1(_ sender: UIButton) {
-             openFeedbackPage()
-         }
+    // MARK: - Actions for buttons
+    @IBAction func feedbackButtonTapped(_ sender: UIButton) {
+        openFeedbackPage()
+    }
 
-         @IBAction func Feedback2(_ sender: UIButton) {
-             openFeedbackPage()
-         }
+    @IBAction func Feedback1(_ sender: UIButton) {
+        openFeedbackPage()
+    }
 
-         @IBAction func Feedback3(_ sender: UIButton) {
-             openFeedbackPage()
-         }
+    @IBAction func Feedback2(_ sender: UIButton) {
+        openFeedbackPage()
+    }
 
-         @IBAction func Feedback4(_ sender: UIButton) {
-             openFeedbackPage()
-         }
+    @IBAction func Feedback3(_ sender: UIButton) {
+        openFeedbackPage()
+    }
 
-         @IBAction func Feedback5(_ sender: UIButton) {
-             openFeedbackPage()
-         }
-     
- */
+    @IBAction func Feedback4(_ sender: UIButton) {
+        openFeedbackPage()
+    }
+
+    @IBAction func Feedback5(_ sender: UIButton) {
+        openFeedbackPage()
+    }
+
 
     func fetchHistoryForUserIDs() {
         let userIDs = [

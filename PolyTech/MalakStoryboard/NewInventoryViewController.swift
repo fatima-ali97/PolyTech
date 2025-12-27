@@ -77,7 +77,6 @@ class NewInventoryViewController: UIViewController {
         }
     }
 
-    
     @IBAction func saveBtn(_ sender: UIButton) {
         // Reset all borders first
         resetFieldBorders()
@@ -146,8 +145,6 @@ class NewInventoryViewController: UIViewController {
             field?.layer.borderWidth = 0
         }
     }
-    
-    
     
 
     private func setupBackBtn() {

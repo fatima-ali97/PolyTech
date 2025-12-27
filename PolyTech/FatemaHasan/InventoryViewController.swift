@@ -16,6 +16,7 @@ class InventoryViewController: UIViewController {
     }
 
     @IBAction func editButtonTapped(_ sender: UIButton) {
+        print("EDIT BUTTON TAPPED")
         openEditInventoryPage()
     }
 
@@ -68,22 +69,29 @@ class InventoryViewController: UIViewController {
         present(alert, animated: true)
     }
 
-    func openEditInventoryPage() {
+    func openEditInventoryPage(with item: InventoryItem) {
         let storyboard = UIStoryboard(name: "MalakStoryboard", bundle: nil)
 
-        guard let editInventoryVC = storyboard.instantiateViewController(
+        guard let vc = storyboard.instantiateViewController(
             withIdentifier: "NewInventory"
         ) as? NewInventoryViewController else {
-            print("NewInventoryViewController not found")
             return
         }
 
-        if let navController = navigationController {
-            navController.pushViewController(editInventoryVC, animated: true)
-        } else {
-            present(editInventoryVC, animated: true)
-        }
+        vc.isEditMode = true
+        vc.documentId = item.documentId
+        vc.existingData = [
+            "requestName": item.requestName,
+            "itemName": item.itemName,
+            "category": item.category,
+            "quantity": item.quantity,
+            "location": item.location,
+            "reason": item.reason
+        ]
+
+        navigationController?.pushViewController(vc, animated: true)
     }
+
 
     func showAlert(title: String, message: String) {
         let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
