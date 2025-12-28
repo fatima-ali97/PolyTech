@@ -75,12 +75,16 @@ class TasksViewController: UIViewController, UITableViewDataSource, UITableViewD
     func filterTasks(by filter: TaskFilter) {
         self.currentFilter = filter
 
+        var filteredResults: [TaskModel] = []
+        
         switch filter {
         case .all:
-            tasks = allTasksFromFirebase
+            filteredResults = allTasksFromFirebase
         case .pending, .inProgress, .completed:
-            tasks = allTasksFromFirebase.filter { $0.status == filter.rawValue }
+            filteredResults = allTasksFromFirebase.filter { $0.status == filter.rawValue }
         }
+
+        self.tasks = filteredResults.sorted(by: { $0.dueDate > $1.dueDate })
 
         updateNoTasksLabel()
         tableView.reloadData()
