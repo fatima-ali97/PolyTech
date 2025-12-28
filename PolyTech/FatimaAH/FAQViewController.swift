@@ -39,6 +39,7 @@ struct FAQSection {
         visibleSections = sections
         setupBackBtn()
         tableView.reloadData()
+        SetUpGetHelpBtn()
     }
 
     
@@ -63,7 +64,25 @@ struct FAQSection {
     
     
     
-    
+     private func SetUpGetHelpBtn() {
+
+         getHelpButton.isUserInteractionEnabled = true
+
+         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(helpBtnTapped))
+         getHelpButton.addGestureRecognizer(tapGesture)
+     }
+     @objc func helpBtnTapped() {
+
+         let storyboard = UIStoryboard(name: "GetHelp", bundle: nil)
+         guard let vc = storyboard.instantiateViewController(withIdentifier: "HelpPageViewController") as? HelpPageViewController else {
+             print("HelpPageViewController not found in storyboard")
+             return
+         }
+         
+         navigationController?.pushViewController(vc, animated: true)
+     }
+     
+     
     
     private func setupUI() {
         searchBar.delegate = self
@@ -158,11 +177,11 @@ If you forgot your password completely, contact IT Help.
         ]
     }
 
-    @IBAction func getHelpTapped(_ sender: UIButton) {
-        let sb = UIStoryboard(name: "GetHelp", bundle: nil)
-        let vc = sb.instantiateViewController(withIdentifier: "HelpPageViewController")
-        navigationController?.pushViewController(vc, animated: true)
-    }
+//    @IBAction func getHelpTapped(_ sender: UIButton) {
+//        let sb = UIStoryboard(name: "GetHelp", bundle: nil)
+//        let vc = sb.instantiateViewController(withIdentifier: "HelpPageViewController")
+//        navigationController?.pushViewController(vc, animated: true)
+//    }
 
     private func toggleSectionCollapse(_ sectionIndex: Int) {
         guard visibleSections.indices.contains(sectionIndex) else { return }
