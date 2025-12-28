@@ -19,13 +19,13 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
         let window = UIWindow(windowScene: windowScene)
         
-        // ⚠️ TEMPORARY: Force logout for testing - REMOVE THIS IN PRODUCTION
-        #if DEBUG
-        UserDefaults.standard.set(false, forKey: "isLoggedIn")
-        UserDefaults.standard.removeObject(forKey: "userId")
-        UserDefaults.standard.removeObject(forKey: "userRole")
-        print("🔧 DEBUG: Force logged out for testing")
-        #endif
+//        // ⚠️ TEMPORARY: Force logout for testing - REMOVE THIS IN PRODUCTION
+//        #if DEBUG
+//        UserDefaults.standard.set(false, forKey: "isLoggedIn")
+//        UserDefaults.standard.removeObject(forKey: "userId")
+//        UserDefaults.standard.removeObject(forKey: "userRole")
+//        print("🔧 DEBUG: Force logged out for testing")
+//       #endif
         
         // Check if user is logged in
         let isLoggedIn = isUserLoggedIn()
