@@ -74,24 +74,23 @@
                                     </button>
                                 </subviews>
                             </stackView>
-                            <button opaque="NO" contentMode="scaleToFill" ambiguous="YES" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Rbc-vM-2Wy">
-                                <rect key="frame" x="0.0" y="118" width="56" height="34"/>
-                                <state key="normal" title="Button"/>
-                                <buttonConfiguration key="configuration" style="plain" image="arrow.backward" catalog="system">
-                                    <color key="baseForegroundColor" systemColor="labelColor"/>
-                                </buttonConfiguration>
-                            </button>
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="arrow.backward" catalog="system" translatesAutoresizingMaskIntoConstraints="NO" id="xll-7S-yPf">
+                                <rect key="frame" x="10" y="128" width="40" height="16"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <color key="tintColor" systemColor="viewFlipsideBackgroundColor"/>
+                                <preferredSymbolConfiguration key="preferredSymbolConfiguration" weight="bold"/>
+                            </imageView>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="bI2-AV-tPg"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
-                            <constraint firstItem="Rbc-vM-2Wy" firstAttribute="leading" secondItem="bI2-AV-tPg" secondAttribute="leading" constant="49" id="38C-tp-bAv"/>
                             <constraint firstItem="bI2-AV-tPg" firstAttribute="bottom" secondItem="8vG-ce-K53" secondAttribute="bottom" constant="12" id="Ne9-lx-kFJ"/>
                             <constraint firstItem="k6p-9i-IEt" firstAttribute="top" secondItem="bI2-AV-tPg" secondAttribute="top" constant="44" id="vT6-ug-HJ2"/>
                         </constraints>
                     </view>
                     <connections>
-                        <outlet property="backButton" destination="Rbc-vM-2Wy" id="pNF-bS-PPH"/>
+                        <outlet property="backButton" destination="xll-7S-yPf" id="Sx5-Gk-xIx"/>
+                        <outlet property="inputContainerView" destination="Neu-8z-Cd8" id="lLZ-lo-qEZ"/>
                         <outlet property="messageTextField" destination="Neu-8z-Cd8" id="Q9l-Vb-zNM"/>
                         <outlet property="sendButton" destination="ztm-zW-fKz" id="DXQ-6E-cKJ"/>
                         <outlet property="tableView" destination="16A-vn-hmW" id="DVp-e1-0IB"/>
@@ -105,13 +104,13 @@
     <resources>
         <image name="arrow.backward" catalog="system" width="128" height="95"/>
         <namedColor name="AccentColor">
-            <color red="1" green="0.79199999570846558" blue="0.15700000524520874" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.16500000655651093" green="0.27500000596046448" blue="0.3880000114440918" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
-        <systemColor name="labelColor">
-            <color white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-        </systemColor>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
+        <systemColor name="viewFlipsideBackgroundColor">
+            <color red="0.12156862745098039" green="0.12941176470588237" blue="0.14117647058823529" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
     </resources>
 </document>

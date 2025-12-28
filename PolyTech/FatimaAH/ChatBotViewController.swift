@@ -10,8 +10,8 @@ final class ChatBotViewController: UIViewController {
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var messageTextField: UITextField!
     @IBOutlet weak var sendButton: UIButton!
-    @IBOutlet weak var backButton: UIButton!
     @IBOutlet weak var inputContainerView: UIView!
+    @IBOutlet weak var backButton: UIImageView!
 
     private var messages: [Message] = []
 
@@ -48,7 +48,6 @@ final class ChatBotViewController: UIViewController {
 
         tableView.dataSource = self
         tableView.delegate = self
-
         tableView.keyboardDismissMode = .interactive
         tableView.separatorStyle = .none
         tableView.estimatedRowHeight = UITableView.automaticDimension
@@ -63,11 +62,19 @@ final class ChatBotViewController: UIViewController {
         sendButton.layer.cornerRadius = 10
         sendButton.clipsToBounds = true
 
+        setupBackImageTap()
+
         messages = [Message(text: menuText, isUser: false)]
         reloadAndScrollToBottom()
     }
 
-    @IBAction func backTapped(_ sender: UIButton) {
+    private func setupBackImageTap() {
+        backButton.isUserInteractionEnabled = true
+        let tap = UITapGestureRecognizer(target: self, action: #selector(backImageTapped))
+        backButton.addGestureRecognizer(tap)
+    }
+
+    @objc private func backImageTapped() {
         navigationController?.popViewController(animated: true)
     }
 
