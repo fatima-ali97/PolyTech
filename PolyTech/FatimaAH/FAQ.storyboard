@@ -20,7 +20,7 @@
                                 <rect key="frame" x="0.0" y="74" width="393" height="44"/>
                                 <color key="barTintColor" red="0.086274509803921567" green="0.16470588235294117" blue="0.25882352941176467" alpha="1" colorSpace="calibratedRGB"/>
                                 <items>
-                                    <navigationItem title="FAQ" id="I5N-br-OFN"/>
+                                    <navigationItem title="Title" id="X6m-vO-Ee1"/>
                                 </items>
                             </navigationBar>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Find important inforamtion and useful help guide." lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="fJr-28-ybm">
