@@ -11,7 +11,7 @@
         <!--Home View Controller-->
         <scene sceneID="TBp-H6-9Nt">
             <objects>
-                <viewController storyboardIdentifier="StudentHomeViewController" modalPresentationStyle="fullScreen" useStoryboardIdentifierAsRestorationIdentifier="YES" id="aJo-nb-W87" customClass="HomeViewController" customModule="PolyTech" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="HomeViewController" modalPresentationStyle="fullScreen" useStoryboardIdentifierAsRestorationIdentifier="YES" id="aJo-nb-W87" customClass="HomeViewController" customModule="PolyTech" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="FHw-Vl-4X2">
                         <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
