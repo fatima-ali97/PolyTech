@@ -148,18 +148,22 @@ class NewInventoryViewController: UIViewController {
     
 
     private func setupBackBtn() {
-        Backbtn.isUserInteractionEnabled = true
-        Backbtn.addGestureRecognizer(
-            UITapGestureRecognizer(target: self, action: #selector(backTapped))
-        )
-    }
 
-    @objc private func backTapped() {
-        if let nav = navigationController {
-            nav.popViewController(animated: true)
-        } else {
-            dismiss(animated: true)
+        Backbtn.isUserInteractionEnabled = true
+
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(backBtnTapped))
+        Backbtn.addGestureRecognizer(tapGesture)
+    }
+    
+    @objc func backBtnTapped() {
+
+        let storyboard = UIStoryboard(name: "Inventory", bundle: nil)
+        guard let vc = storyboard.instantiateViewController(withIdentifier: "InventoryViewController") as? InventoryViewController else {
+            print("InventoryViewController not found in storyboard")
+            return
         }
+        
+        navigationController?.pushViewController(vc, animated: true)
     }
 
 
