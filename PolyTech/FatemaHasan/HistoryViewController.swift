@@ -1,113 +1,116 @@
 import UIKit
-import Firebase
 import FirebaseFirestore
 import FirebaseAuth
 
-class HistoryViewController: UIViewController {
+class HistoryViewController: UIViewController,
+                             UITableViewDelegate,
+                             UITableViewDataSource {
+
+    @IBOutlet weak var tableView: UITableView!
 
     let db = Firestore.firestore()
+    var historyList: [HistoryItem] = []
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        setupTableView()
+        fetchHistory()
     }
 
-    @IBOutlet weak var Search: UISearchBar!
-
-    @IBAction func viewDetailsButtonTapped(_ sender: UIButton) {
-        fetchHistoryForUserIDs()
-    }
-  
-    func openFeedbackPage() {
-        let storyboard = UIStoryboard(name: "Ali", bundle: nil)
-        guard let feedbackVC = storyboard.instantiateViewController(
-            withIdentifier: "ServiceFeedbackViewController"
-        ) as? ServiceFeedbackViewController else {
-            print("ServiceFeedbackViewController not found")
-            return
-        }
-
-        if let navController = self.navigationController {
-            navController.pushViewController(feedbackVC, animated: true)
-        } else {
-            present(feedbackVC, animated: true)
-        }
+    private func setupTableView() {
+        tableView.delegate = self
+        tableView.dataSource = self
+        tableView.separatorStyle = .none
     }
 
-    // MARK: - Actions for buttons
-    @IBAction func feedbackButtonTapped(_ sender: UIButton) {
-        openFeedbackPage()
-    }
+    
+    private func fetchHistory() {
+        guard let userId = Auth.auth().currentUser?.uid else { return }
 
-    @IBAction func Feedback1(_ sender: UIButton) {
-        openFeedbackPage()
-    }
+        db.collection("inventoryRequest")
+            .whereField("userId", isEqualTo: userId)
+            .order(by: "createdAt", descending: true)
+            .addSnapshotListener { snapshot, error in
 
-    @IBAction func Feedback2(_ sender: UIButton) {
-        openFeedbackPage()
-    }
-
-    @IBAction func Feedback3(_ sender: UIButton) {
-        openFeedbackPage()
-    }
-
-    @IBAction func Feedback4(_ sender: UIButton) {
-        openFeedbackPage()
-    }
-
-    @IBAction func Feedback5(_ sender: UIButton) {
-        openFeedbackPage()
-    }
-
-
-    func fetchHistoryForUserIDs() {
-        let userIDs = [
-            "7fg0EVpMQUPHR9kgBPEv7mFRgLt1",
-            "njeKzS3LdubCZC8tAgrPmGlQtgh1v",
-            "uHdeNxV47CZUp6SwM3s1X1GAP3t1",
-            "zvyu1FR9kfabqzzb4uHRop3hbgb2"
-        ]
-
-        // Fetch documents for all user IDs
-        db.collection("history")
-            .whereField("userId", in: userIDs)
-            .getDocuments { snapshot, error in
                 if let error = error {
-                    self.showAlert(title: "Error", message: error.localizedDescription)
+                    print("Error fetching history:", error.localizedDescription)
                     return
                 }
 
-                guard let documents = snapshot?.documents, !documents.isEmpty else {
-                    self.showAlert(title: "No Data", message: "No history found for the specified users.")
-                    return
-                }
+                self.historyList = snapshot?.documents.compactMap { doc in
+                    let data = doc.data()
+                    return HistoryItem(
+                        id: doc.documentID,
+                        requestName: data["requestName"] as? String ?? "N/A",
+                        itemName: data["itemName"] as? String ?? "N/A",
+                        category: data["category"] as? String ?? "N/A",
+                        quantity: data["quantity"] as? Int ?? 0,
+                        location: data["location"] as? String ?? "N/A",
+                        reason: data["reason"] as? String ?? "N/A"
+                    )
+                } ?? []
 
-                // For simplicity, show the first document
-                let data = documents[0].data()
-                self.showHistoryDetailsPopup(data: data)
+                self.tableView.reloadData()
             }
     }
 
-    func showHistoryDetailsPopup(data: [String: Any]) {
-        let requestName = data["requestName"] as? String ?? "N/A"
-        let itemName = data["itemName"] as? String ?? "N/A"
-        let category = data["category"] as? String ?? "N/A"
-        let location = data["location"] as? String ?? "N/A"
 
+    private func showDetails(item: HistoryItem) {
         let message = """
-        Request Name: \(requestName)
-        Item Name: \(itemName)
-        Category: \(category)
-        Location: \(location)
+        Request Name: \(item.requestName)
+        Item Name: \(item.itemName)
+        Category: \(item.category)
+        Quantity: \(item.quantity)
+        Location: \(item.location)
+        Reason: \(item.reason)
         """
 
-        let alert = UIAlertController(title: "History Details", message: message, preferredStyle: .alert)
+        let alert = UIAlertController(
+            title: "Request Details",
+            message: message,
+            preferredStyle: .alert
+        )
         alert.addAction(UIAlertAction(title: "OK", style: .default))
-        self.present(alert, animated: true)
+        present(alert, animated: true)
     }
 
-    func showAlert(title: String, message: String) {
-        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: "OK", style: .default))
-        self.present(alert, animated: true)
+    private func openFeedbackPage() {
+        let storyboard = UIStoryboard(name: "Ali", bundle: nil)
+        let vc = storyboard.instantiateViewController(
+            withIdentifier: "ServiceFeedbackViewController"
+        )
+        navigationController?.pushViewController(vc, animated: true)
+    }
+
+    func tableView(_ tableView: UITableView,
+                   numberOfRowsInSection section: Int) -> Int {
+        historyList.count
+    }
+
+    func tableView(_ tableView: UITableView,
+                   cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+
+        let cell = tableView.dequeueReusableCell(
+            withIdentifier: "HistoryCell",
+            for: indexPath
+        ) as! HistoryCell
+
+        let item = historyList[indexPath.row]
+        cell.requestLabel.text = item.requestName
+
+        cell.onDetailsTapped = { [weak self] in
+            self?.showDetails(item: item)
+        }
+
+        cell.onFeedbackTapped = { [weak self] in
+            self?.openFeedbackPage()
+        }
+
+        return cell
+    }
+
+    func tableView(_ tableView: UITableView,
+                   heightForRowAt indexPath: IndexPath) -> CGFloat {
+        140
     }
 }
