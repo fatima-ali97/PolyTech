@@ -78,7 +78,6 @@ class NewInventoryViewController: UIViewController {
     }
 
     @IBAction func saveBtn(_ sender: UIButton) {
-        // Reset all borders first
         resetFieldBorders()
         
         // Collect all fields in a tuple: (field, error message)
