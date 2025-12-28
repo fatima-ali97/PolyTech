@@ -13,8 +13,8 @@ class NotificationsViewController: UIViewController {
     private var listener: ListenerRegistration?
     
     // TODO: Replace with actual user ID from your auth system
-    private let currentUserId = "4gEMMK7yMPfJv3Xghk0iFefRBvH3"
-    
+    //private let currentUserId = "4gEMMK7yMPfJv3Xghk0iFefRBvH3"
+    private let currentUserId = UserDefaults.standard.string(forKey: "userId")
     private let refreshControl = UIRefreshControl()
     private let emptyStateView = EmptyStateView()
     
