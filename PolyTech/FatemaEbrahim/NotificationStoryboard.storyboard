@@ -16,18 +16,6 @@
                         <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <navigationBar contentMode="scaleToFill" translucent="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Hcp-n6-fPF">
-                                <rect key="frame" x="0.0" y="118" width="393" height="44"/>
-                                <color key="backgroundColor" name="AccentColor"/>
-                                <color key="tintColor" name="OnPrimary"/>
-                                <color key="barTintColor" name="Primary"/>
-                                <textAttributes key="titleTextAttributes">
-                                    <color key="textColor" name="OnPrimary"/>
-                                </textAttributes>
-                                <items>
-                                    <navigationItem title="Notification" largeTitleDisplayMode="always" id="IEk-jl-Tsp"/>
-                                </items>
-                            </navigationBar>
                             <tableView hidden="YES" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="none" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" estimatedSectionHeaderHeight="-1" sectionFooterHeight="28" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="iWO-7I-7Ti">
                                 <rect key="frame" x="8" y="188" width="377" height="561"/>
                                 <prototypes>
@@ -104,15 +92,12 @@
                         <viewLayoutGuide key="safeArea" id="vDu-zF-Fre"/>
                         <color key="backgroundColor" name="Background"/>
                         <constraints>
-                            <constraint firstItem="Hcp-n6-fPF" firstAttribute="leading" secondItem="vDu-zF-Fre" secondAttribute="leading" id="5Ee-qs-gAB"/>
-                            <constraint firstItem="iWO-7I-7Ti" firstAttribute="leading" secondItem="Hcp-n6-fPF" secondAttribute="leading" constant="8" id="5xg-ul-KRY"/>
-                            <constraint firstItem="Hcp-n6-fPF" firstAttribute="trailing" secondItem="vDu-zF-Fre" secondAttribute="trailing" id="9bq-fM-WH1"/>
-                            <constraint firstItem="iWO-7I-7Ti" firstAttribute="top" secondItem="Hcp-n6-fPF" secondAttribute="bottom" constant="26" id="KOM-LX-XYU"/>
                             <constraint firstItem="vDu-zF-Fre" firstAttribute="bottom" secondItem="iWO-7I-7Ti" secondAttribute="bottom" constant="35" id="XaL-9I-8r2"/>
                             <constraint firstItem="1uC-IO-qxY" firstAttribute="leading" secondItem="vDu-zF-Fre" secondAttribute="leading" constant="20" id="Ypv-5B-ikf"/>
-                            <constraint firstItem="Hcp-n6-fPF" firstAttribute="top" secondItem="vDu-zF-Fre" secondAttribute="top" id="aN1-JY-54G"/>
+                            <constraint firstItem="iWO-7I-7Ti" firstAttribute="centerX" secondItem="1uC-IO-qxY" secondAttribute="centerX" id="a5l-Ru-yWy"/>
+                            <constraint firstItem="iWO-7I-7Ti" firstAttribute="top" secondItem="vDu-zF-Fre" secondAttribute="top" constant="70" id="acC-zN-WsO"/>
+                            <constraint firstItem="iWO-7I-7Ti" firstAttribute="leading" secondItem="vDu-zF-Fre" secondAttribute="leading" constant="8" id="bM4-G2-5DH"/>
                             <constraint firstItem="1uC-IO-qxY" firstAttribute="bottom" secondItem="vDu-zF-Fre" secondAttribute="bottom" constant="-30" id="jfe-Zd-Tic"/>
-                            <constraint firstItem="iWO-7I-7Ti" firstAttribute="trailing" secondItem="Hcp-n6-fPF" secondAttribute="trailing" constant="-8" id="wDi-lA-Wqv"/>
                             <constraint firstItem="vDu-zF-Fre" firstAttribute="trailing" secondItem="1uC-IO-qxY" secondAttribute="trailing" constant="20" id="xb2-96-iiY"/>
                         </constraints>
                     </view>
@@ -162,13 +147,10 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="XSJ-ls-bO7" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="279" y="100"/>
+            <point key="canvasLocation" x="291" y="149"/>
         </scene>
     </scenes>
     <resources>
-        <namedColor name="AccentColor">
-            <color red="0.16500000655651093" green="0.27500000596046448" blue="0.3880000114440918" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-        </namedColor>
         <namedColor name="Background">
             <color red="0.97299998998641968" green="0.97600001096725464" blue="0.98000001907348633" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>

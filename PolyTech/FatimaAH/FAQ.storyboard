@@ -20,9 +20,15 @@
                                 <rect key="frame" x="0.0" y="74" width="393" height="44"/>
                                 <color key="barTintColor" red="0.086274509803921567" green="0.16470588235294117" blue="0.25882352941176467" alpha="1" colorSpace="calibratedRGB"/>
                                 <items>
-                                    <navigationItem title="FAQ" id="I5N-br-OFN"/>
+                                    <navigationItem title="Title" id="X6m-vO-Ee1"/>
                                 </items>
                             </navigationBar>
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="arrow.backward" catalog="system" translatesAutoresizingMaskIntoConstraints="NO" id="cmf-tX-8gk">
+                                <rect key="frame" x="10" y="88" width="40" height="16"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <preferredSymbolConfiguration key="preferredSymbolConfiguration" weight="bold"/>
+                            </imageView>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Find important inforamtion and useful help guide." lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="fJr-28-ybm">
                                 <rect key="frame" x="10" y="140" width="378" height="41"/>
                                 <constraints>
@@ -40,8 +46,8 @@
                                 <rect key="frame" x="0.0" y="237" width="393" height="455"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                             </tableView>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="XBD-u0-zEH">
-                                <rect key="frame" x="116.66666666666669" y="700" width="160" height="44"/>
+                            <button opaque="NO" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="XBD-u0-zEH">
+                                <rect key="frame" x="116.66666666666652" y="694" width="160" height="44"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="160" id="GqS-P7-lZ5"/>
                                     <constraint firstAttribute="height" constant="44" id="oEv-IZ-0aF"/>
@@ -75,6 +81,7 @@
                         </constraints>
                     </view>
                     <connections>
+                        <outlet property="BackBtn" destination="cmf-tX-8gk" id="qHn-Jx-zgf"/>
                         <outlet property="getHelpButton" destination="XBD-u0-zEH" id="CFx-dd-EEQ"/>
                         <outlet property="searchBar" destination="pvR-Qi-Sa8" id="iAg-kl-nJ0"/>
                         <outlet property="tableView" destination="kD8-27-O8W" id="7Au-Op-900"/>
@@ -87,6 +94,7 @@
     </scenes>
     <color key="tintColor" red="0.08770751953" green="0.166015625" blue="0.2661132812" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
     <resources>
+        <image name="arrow.backward" catalog="system" width="128" height="95"/>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>

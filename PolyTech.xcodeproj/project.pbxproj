@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		7809E6582F01074200FC8CBE /* FirebaseMessaging in Frameworks */ = {isa = PBXBuildFile; productRef = 7809E6572F01074200FC8CBE /* FirebaseMessaging */; };
 		DF2F10562EE1D07F00AD77A4 /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = DF2F10552EE1D07F00AD77A4 /* FirebaseAnalytics */; };
 		DF2F10582EE1D07F00AD77A4 /* FirebaseAnalyticsCore in Frameworks */ = {isa = PBXBuildFile; productRef = DF2F10572EE1D07F00AD77A4 /* FirebaseAnalyticsCore */; };
 		DF2F105A2EE1D07F00AD77A4 /* FirebaseAnalyticsIdentitySupport in Frameworks */ = {isa = PBXBuildFile; productRef = DF2F10592EE1D07F00AD77A4 /* FirebaseAnalyticsIdentitySupport */; };
@@ -47,6 +48,7 @@
 			files = (
 				DF2F10562EE1D07F00AD77A4 /* FirebaseAnalytics in Frameworks */,
 				DF2F10612EE1D16F00AD77A4 /* FirebaseAuth in Frameworks */,
+				7809E6582F01074200FC8CBE /* FirebaseMessaging in Frameworks */,
 				DF2F10582EE1D07F00AD77A4 /* FirebaseAnalyticsCore in Frameworks */,
 				DF2F105C2EE1D07F00AD77A4 /* FirebaseCore in Frameworks */,
 				DF2F105F2EE1D14A00AD77A4 /* FirebaseFirestore in Frameworks */,
@@ -107,6 +109,7 @@
 				DF2F105B2EE1D07F00AD77A4 /* FirebaseCore */,
 				DF2F105E2EE1D14A00AD77A4 /* FirebaseFirestore */,
 				DF2F10602EE1D16F00AD77A4 /* FirebaseAuth */,
+				7809E6572F01074200FC8CBE /* FirebaseMessaging */,
 			);
 			productName = PolyTech;
 			productReference = D44297B62EDC95B400CBB48D /* PolyTech.app */;
@@ -175,6 +178,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = PolyTech/PolyTech.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -202,6 +206,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = PolyTech/PolyTech.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -378,6 +383,11 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		7809E6572F01074200FC8CBE /* FirebaseMessaging */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = DF2F10542EE1D07F00AD77A4 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseMessaging;
+		};
 		DF2F10552EE1D07F00AD77A4 /* FirebaseAnalytics */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = DF2F10542EE1D07F00AD77A4 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
