@@ -186,25 +186,25 @@ class TechnicianTabBarController: BaseCustomTabBarController {
         print("📱 Setting up Technician Tab Bar")
         
         let homeVC = createNavControllerFromStoryboard(
-            storyboardName: "TechnicianDashboard",
+            storyboardName: "Technician",
             title: "Home",
             image: UIImage(systemName: "house.fill")
         )
         
         let requestsVC = createNavControllerFromStoryboard(
-            storyboardName: "TechnicianRequests",
+            storyboardName: "dummy", // TODO: change this
             title: "Requests",
             image: UIImage(systemName: "doc.text.fill")
         )
         
         let tasksVC = createNavControllerFromStoryboard(
-            storyboardName: "TechnicianTasks",
+            storyboardName: "dummy",// TODO: change this
             title: "Tasks",
             image: UIImage(systemName: "checklist")
         )
         
         let profileVC = createNavControllerFromStoryboard(
-            storyboardName: "TechnicianProfile",
+            storyboardName: "Profile",
             title: "Profile",
             image: UIImage(systemName: "person.circle.fill")
         )
