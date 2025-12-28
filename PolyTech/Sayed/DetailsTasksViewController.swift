@@ -15,13 +15,15 @@ class DetailsTasksViewController: UIViewController {
     @IBOutlet weak var taskIDLabel: UILabel!
     @IBOutlet weak var descriptionLabel: UILabel!
     @IBOutlet weak var statusSegmentedControl:UISegmentedControl!
-    @IBOutlet weak var notesTextField: UITextField!
+    @IBOutlet weak var notesTextView: UITextView!
     @IBOutlet weak var dueDateLabel: UILabel!
     @IBOutlet weak var AddressLabel: UILabel!
 
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        
+        setupTextViewUI()
+        
         if let currentTask = task {
             updateUI(with: currentTask)
         } else {
@@ -53,14 +55,19 @@ class DetailsTasksViewController: UIViewController {
     }
 
 
-
+    func setupTextViewUI() {
+            notesTextView.layer.borderWidth = 1.0
+            notesTextView.layer.borderColor = UIColor.lightGray.cgColor
+            notesTextView.layer.cornerRadius = 8.0
+            notesTextView.clipsToBounds = true
+        }
 
     @IBAction func updateStatusTapped(_ sender: UIButton) {
         print("Status update button tapped.")
     }
 
     @IBAction func updateNoteTapped(_ sender: UIButton) {
-        let newNote = notesTextField.text ?? ""
+        let newNote = notesTextView.text ?? ""
         print("New note saved: \(newNote)")
     }
 }

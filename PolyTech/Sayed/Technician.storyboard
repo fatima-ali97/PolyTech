@@ -358,12 +358,6 @@ Due: 2025-11-15</string>
                                     <action selector="updateNoteTapped:" destination="0F8-MV-RmU" eventType="touchUpInside" id="gC1-OU-ypU"/>
                                 </connections>
                             </button>
-                            <textField opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="248" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="bezel" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="i6u-2W-ACw">
-                                <rect key="frame" x="16" y="561" width="361" height="120"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                <textInputTraits key="textInputTraits"/>
-                            </textField>
                             <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="gyO-8s-2bR">
                                 <rect key="frame" x="16" y="689" width="361" height="39"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
@@ -407,6 +401,14 @@ Due: 2025-11-15</string>
                                     </userDefinedRuntimeAttribute>
                                 </userDefinedRuntimeAttributes>
                             </imageView>
+                            <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" fixedFrame="YES" textAlignment="natural" translatesAutoresizingMaskIntoConstraints="NO" id="6Uw-gl-2To">
+                                <rect key="frame" x="16" y="555" width="361" height="120"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                <color key="textColor" systemColor="labelColor"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
+                            </textView>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="uLh-MK-jcc"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
@@ -417,14 +419,14 @@ Due: 2025-11-15</string>
                         <outlet property="clientLabel" destination="0Oe-5Z-CsM" id="7e8-qZ-srX"/>
                         <outlet property="descriptionLabel" destination="iN1-Ae-0on" id="v1c-Ka-DKz"/>
                         <outlet property="dueDateLabel" destination="bkH-TA-cbG" id="fBL-Ps-XHb"/>
-                        <outlet property="notesTextField" destination="i6u-2W-ACw" id="fWX-NY-NfL"/>
+                        <outlet property="notesTextView" destination="6Uw-gl-2To" id="HZV-SG-zPR"/>
                         <outlet property="statusSegmentedControl" destination="yJC-ne-SPT" id="TCV-1C-qOI"/>
                         <outlet property="taskIDLabel" destination="Bzb-DN-MEm" id="aR1-HF-yLk"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="FEK-vr-4zr" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1363" y="706"/>
+            <point key="canvasLocation" x="1362.5954198473282" y="705.63380281690149"/>
         </scene>
         <!--Technician Dashboard View Controller-->
         <scene sceneID="WZC-73-NZm">
@@ -49965,6 +49967,9 @@ gVQAD4FZAA+BZgAPgWkAD4F2AA+BewAPgYMAD4GGAA+BiwAPgZMAAAAAAAAEAQAAAAAAAABWAAAAAAAA
 AAAAAAAAAA+Blg
 </mutableData>
         </image>
+        <systemColor name="labelColor">
+            <color white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>
