@@ -12,19 +12,27 @@ class HelpPageViewController: UIViewController {
     @IBOutlet weak var backbtn: UIImageView!
     override func viewDidLoad() {
         super.viewDidLoad()
+        setUpBackBtn()
 
         // Do any additional setup after loading the view.
     }
+    private func setUpBackBtn() {
 
-    
-    /*
-    // MARK: - Navigation
+        backbtn.isUserInteractionEnabled = true
 
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destination.
-        // Pass the selected object to the new view controller.
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(backbtnTapped))
+        backbtn.addGestureRecognizer(tapGesture)
     }
-    */
+    @objc func backbtnTapped() {
+
+        let storyboard = UIStoryboard(name: "FAQ", bundle: nil)
+        guard let vc = storyboard.instantiateViewController(withIdentifier: "FAQViewController") as? FAQViewController else {
+            print("FAQViewController not found in storyboard")
+            return
+        }
+        
+        navigationController?.pushViewController(vc, animated: true)
+    }
+    
 
 }
