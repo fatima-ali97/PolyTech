@@ -11,7 +11,6 @@
         <!--Navigation Controller-->
         <scene sceneID="I4S-iR-vGg">
             <objects>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="4W1-Y9-Nz5" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
                 <navigationController id="3O3-Xx-h1G" sceneMemberID="viewController">
                     <navigationBar key="navigationBar" contentMode="scaleToFill" id="MFk-JQ-EQQ">
                         <rect key="frame" x="0.0" y="118" width="393" height="44"/>
@@ -21,13 +20,13 @@
                         <segue destination="QFQ-2a-HY4" kind="relationship" relationship="rootViewController" id="9VR-f4-bL0"/>
                     </connections>
                 </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="4W1-Y9-Nz5" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="483" y="9"/>
         </scene>
         <!--Tasks View Controller-->
         <scene sceneID="Xsj-tH-sft">
             <objects>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="PJD-gZ-OGv" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
                 <viewController modalPresentationStyle="fullScreen" id="1Ji-5D-WUp" customClass="TasksViewController" customModule="PolyTech" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleAspectFit" id="YbZ-yM-8Ly">
                         <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
@@ -236,13 +235,13 @@ Due: 2025-11-15</string>
                         <outlet property="tableView" destination="TOL-iP-al0" id="Xcf-V2-iWI"/>
                     </connections>
                 </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="PJD-gZ-OGv" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="2222" y="9"/>
         </scene>
         <!--Details Tasks View Controller-->
         <scene sceneID="VPl-g8-5kw">
             <objects>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="FEK-vr-4zr" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
                 <viewController storyboardIdentifier="DetailsVC" modalPresentationStyle="fullScreen" id="0F8-MV-RmU" customClass="DetailsTasksViewController" customModule="PolyTech" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleAspectFit" id="nnj-dg-Ccy">
                         <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
@@ -423,13 +422,13 @@ Due: 2025-11-15</string>
                         <outlet property="taskIDLabel" destination="Bzb-DN-MEm" id="aR1-HF-yLk"/>
                     </connections>
                 </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="FEK-vr-4zr" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="1363" y="706"/>
         </scene>
         <!--Technician Dashboard View Controller-->
         <scene sceneID="WZC-73-NZm">
             <objects>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="shQ-l4-WKZ" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
                 <viewController modalPresentationStyle="fullScreen" id="QFQ-2a-HY4" customClass="TechnicianDashboardViewController" customModule="PolyTech" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="Ag4-cV-vsg">
                         <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
@@ -588,8 +587,8 @@ Due: 2025-11-15</string>
                                         <color key="textColor" red="0.4588235021" green="0.49803921579999999" blue="0.55294120309999995" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                                         <nil key="highlightedColor"/>
                                     </label>
-                                    <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PhC-i5-YKZ" customClass="DonutChartView" customModule="PolyTech" customModuleProvider="target">
-                                        <rect key="frame" x="226" y="39" width="144" height="173"/>
+                                    <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="AAu-3C-Ny4" customClass="DonutChartViewTwo" customModule="PolyTech" customModuleProvider="target">
+                                        <rect key="frame" x="227" y="31" width="143" height="168"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                     </view>
@@ -610,17 +609,18 @@ Due: 2025-11-15</string>
                     </view>
                     <navigationItem key="navigationItem" id="yK8-Iz-hzE"/>
                     <connections>
-                        <outlet property="StatusCard" destination="qJu-xs-gbh" id="PzH-1C-oE3"/>
-                        <outlet property="completedCard" destination="dTj-bi-wDL" id="zvT-UH-A3w"/>
-                        <outlet property="donutChartView" destination="PhC-i5-YKZ" id="NhY-20-8xt"/>
-                        <outlet property="inProgressCard" destination="I2n-lG-6Om" id="xSW-6d-5f3"/>
-                        <outlet property="pendingCard" destination="BAC-80-Acx" id="sTq-D2-tra"/>
-                        <outlet property="taskListButton" destination="oz4-kV-NgV" id="j3N-Em-PY5"/>
-                        <outlet property="totalRequestsCard" destination="19F-Xa-7EO" id="1Oa-8e-z5F"/>
+                        <outlet property="StatusCard" destination="qJu-xs-gbh" id="IFC-fu-iiu"/>
+                        <outlet property="completedCard" destination="dTj-bi-wDL" id="BdB-b1-BhR"/>
+                        <outlet property="donutChartView" destination="AAu-3C-Ny4" id="YvD-26-MDf"/>
+                        <outlet property="inProgressCard" destination="I2n-lG-6Om" id="wVN-Tr-xdl"/>
+                        <outlet property="pendingCard" destination="BAC-80-Acx" id="E3t-hh-Vjd"/>
+                        <outlet property="taskListButton" destination="oz4-kV-NgV" id="QhI-C2-k2p"/>
+                        <outlet property="totalRequestsCard" destination="19F-Xa-7EO" id="a08-rS-SAV"/>
                     </connections>
                 </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="shQ-l4-WKZ" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1363" y="8"/>
+            <point key="canvasLocation" x="1362.5954198473282" y="7.746478873239437"/>
         </scene>
     </scenes>
     <resources>
