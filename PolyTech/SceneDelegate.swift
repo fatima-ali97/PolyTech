@@ -11,7 +11,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
     var window: UIWindow?
 
-
     func scene(_ scene: UIScene,
                willConnectTo session: UISceneSession,
                options connectionOptions: UIScene.ConnectionOptions) {
@@ -19,47 +18,136 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         guard let windowScene = scene as? UIWindowScene else { return }
 
         let window = UIWindow(windowScene: windowScene)
-
-        let storyboard = UIStoryboard(name: "", bundle: nil) //change this + make sure u select the "is initial storyboard"
-
-        guard let initialVC = storyboard.instantiateInitialViewController() else {
-            fatalError("FAQ storyboard has no initial view controller")
+        
+//        // ⚠️ TEMPORARY: Force logout for testing - REMOVE THIS IN PRODUCTION
+//        #if DEBUG
+//        UserDefaults.standard.set(false, forKey: "isLoggedIn")
+//        UserDefaults.standard.removeObject(forKey: "userId")
+//        UserDefaults.standard.removeObject(forKey: "userRole")
+//        print("🔧 DEBUG: Force logged out for testing")
+//       #endif
+        
+        // Check if user is logged in
+        let isLoggedIn = isUserLoggedIn()
+        print("📊 Login status check: \(isLoggedIn ? "LOGGED IN" : "NOT LOGGED IN")")
+        
+        if isLoggedIn {
+            print("➡️ User is logged in - showing dashboard")
+            let userRole = UserDefaults.standard.string(forKey: "userRole") ?? "student"
+            showDashboard(in: window, role: userRole)
+        } else {
+            print("➡️ User is NOT logged in - showing login screen")
+            showLogin(in: window)
         }
-
-        window.rootViewController = initialVC
+        
         self.window = window
         window.makeKeyAndVisible()
     }
+    
+    // MARK: - Navigation Methods
+    
+    private func showLogin(in window: UIWindow) {
+        print("🔐 Loading login storyboard...")
+        
+        let loginStoryboard = UIStoryboard(name: "LoginStoryboard", bundle: nil)
+        
+        guard let loginVC = loginStoryboard.instantiateInitialViewController() else {
+            fatalError("❌ Cannot instantiate initial view controller from loginStoryboard. Make sure 'Is Initial View Controller' is checked in the storyboard.")
+        }
+        
+        print("✅ Login VC loaded successfully")
+        window.rootViewController = loginVC
+    }
+    
+    private func showDashboard(in window: UIWindow, role: String) {
+        print("📱 Loading dashboard with custom tab bar for role: \(role)")
+        
+        let tabBarController: UITabBarController
+        
+        switch role.lowercased() {
+        case "student":
+            tabBarController = StudentTabBarController()
+            print("✅ Student Tab Bar Controller created")
+        case "admin":
+            tabBarController = AdminTabBarController()
+            print("✅ Admin Tab Bar Controller created")
+        case "technician":
+            tabBarController = TechnicianTabBarController()
+            print("✅ Technician Tab Bar Controller created")
+        default:
+            print("⚠️ Unknown role: \(role), defaulting to Student")
+            tabBarController = StudentTabBarController()
+        }
+        
+        window.rootViewController = tabBarController
+        print("✅ Dashboard loaded successfully")
+    }
+    
+    // Check if user is logged in
+    private func isUserLoggedIn() -> Bool {
+        let isLoggedIn = UserDefaults.standard.bool(forKey: "isLoggedIn")
+        let userId = UserDefaults.standard.string(forKey: "userId")
+        let userRole = UserDefaults.standard.string(forKey: "userRole")
+        
+        print("📝 UserDefaults status:")
+        print("   - isLoggedIn: \(isLoggedIn)")
+        print("   - userId: \(userId ?? "nil")")
+        print("   - userRole: \(userRole ?? "nil")")
+        
+        return isLoggedIn
+    }
+    
+    // MARK: - Public Methods (call from anywhere in your app)
+    
+    func switchToLogin() {
+        print("🔄 Switching to login screen...")
+        guard let window = window else {
+            print("❌ Window is nil, cannot switch to login")
+            return
+        }
+        
+        showLogin(in: window)
+        
+        UIView.transition(with: window, duration: 0.3, options: .transitionCrossDissolve, animations: nil) { _ in
+            print("✅ Transition to login complete")
+        }
+    }
+    
+    func switchToDashboard() {
+        print("🔄 Switching to dashboard...")
+        guard let window = window else {
+            print("❌ Window is nil, cannot switch to dashboard")
+            return
+        }
+        
+        // Get the user role from UserDefaults
+        let userRole = UserDefaults.standard.string(forKey: "userRole") ?? "student"
+        showDashboard(in: window, role: userRole)
+        
+        UIView.transition(with: window, duration: 0.3, options: .transitionCrossDissolve, animations: nil) { _ in
+            print("✅ Transition to dashboard complete")
+        }
+    }
 
-
+    // MARK: - Scene Lifecycle Methods
+    
     func sceneDidDisconnect(_ scene: UIScene) {
-        // Called as the scene is being released by the system.
-        // This occurs shortly after the scene enters the background, or when its session is discarded.
-        // Release any resources associated with this scene that can be re-created the next time the scene connects.
-        // The scene may re-connect later, as its session was not necessarily discarded (see `application:didDiscardSceneSessions` instead).
+        print("🔌 Scene did disconnect")
     }
 
     func sceneDidBecomeActive(_ scene: UIScene) {
-        // Called when the scene has moved from an inactive state to an active state.
-        // Use this method to restart any tasks that were paused (or not yet started) when the scene was inactive.
+        print("🟢 Scene did become active")
     }
 
     func sceneWillResignActive(_ scene: UIScene) {
-        // Called when the scene will move from an active state to an inactive state.
-        // This may occur due to temporary interruptions (ex. an incoming phone call).
+        print("🟡 Scene will resign active")
     }
 
     func sceneWillEnterForeground(_ scene: UIScene) {
-        // Called as the scene transitions from the background to the foreground.
-        // Use this method to undo the changes made on entering the background.
+        print("⬆️ Scene will enter foreground")
     }
 
     func sceneDidEnterBackground(_ scene: UIScene) {
-        // Called as the scene transitions from the foreground to the background.
-        // Use this method to save data, release shared resources, and store enough scene-specific state information
-        // to restore the scene back to its current state.
+        print("⬇️ Scene did enter background")
     }
-
-
 }
-

@@ -5,14 +5,15 @@ class NotificationsViewController: UIViewController {
 
     // MARK: - IBOutlets
     @IBOutlet weak var tableView: UITableView!
+    @IBOutlet weak var clearAllButton: UIButton!
     
     // MARK: - Properties
     private var notifications: [NotificationModel] = []
     private let db = Firestore.firestore()
     private var listener: ListenerRegistration?
     
-    // Replace with actual user ID from your auth system
-    private let currentUserId = "7fg0EVpMQUPHR9kgBPEv7mFRgLt1"
+    // TODO: Replace with actual user ID from your auth system
+    private let currentUserId = "4gEMMK7yMPfJv3Xghk0iFefRBvH3"
     
     private let refreshControl = UIRefreshControl()
     private let emptyStateView = EmptyStateView()
@@ -21,16 +22,11 @@ class NotificationsViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        title = "Notifications"
-        navigationController?.navigationBar.prefersLargeTitles = true
-        view.backgroundColor = .background
+        
         setupUI()
         setupTableView()
         setupEmptyState()
         loadNotifications()
-        
-        // Uncomment to add sample data for testing
-         //addSampleNotifications()
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -41,7 +37,9 @@ class NotificationsViewController: UIViewController {
     // MARK: - Setup
     
     private func setupUI() {
-        
+        title = "Notifications"
+        navigationController?.navigationBar.prefersLargeTitles = true
+        view.backgroundColor = .background
         
         // Add "Mark All Read" button
         let markAllButton = UIBarButtonItem(
@@ -67,22 +65,21 @@ class NotificationsViewController: UIViewController {
         tableView.delegate = self
         tableView.dataSource = self
         tableView.separatorStyle = .none
-        tableView.backgroundColor = .background
+        tableView.backgroundColor = .clear
         tableView.rowHeight = UITableView.automaticDimension
         tableView.estimatedRowHeight = 100
         
+        //tableView.register(NotificationTableViewCell.self, forCellReuseIdentifier: "NotificationCell")
         
-        tableView.register(NotificationTableViewCell.self, forCellReuseIdentifier: "NotificationCell")
-        
-        // Add refresh control
+        // refresh control
         refreshControl.addTarget(self, action: #selector(refreshNotifications), for: .valueChanged)
         tableView.refreshControl = refreshControl
     }
-    
+    // MARK: - EMPTY STATE
     private func setupEmptyState() {
         emptyStateView.configure(
-            icon: nil,
-            title: "No notifications for now",
+            //icon: UIImage(systemName: "bell.slash.fill"),
+            title: "No Notifications For Now.",
             message: "Once a request status gets updated, we will notify you immediately."
         )
         emptyStateView.isHidden = true
@@ -100,34 +97,36 @@ class NotificationsViewController: UIViewController {
     // MARK: - Data Loading
     
     private func loadNotifications() {
+        print("load notifications for userId: \(currentUserId)")
+        
         // Real-time listener for notifications
         listener = db.collection("Notifications")
             .whereField("userId", isEqualTo: currentUserId)
-            .order(by: "timestamp", descending: true)
             .addSnapshotListener { [weak self] querySnapshot, error in
                 guard let self = self else { return }
                 
                 if let error = error {
-                    print("Error fetching notifications: \(error.localizedDescription)")
+                    print("**Error fetching notifications: \(error.localizedDescription)")
                     self.showError("Failed to load notifications")
                     return
                 }
-                var fetchedNotifications: [NotificationModel] = []
                 
-                
-                
-               
                 guard let documents = querySnapshot?.documents else {
-                    print("No notifications found")
+                    print(" No notifications for this user!!")
                     self.updateEmptyState()
                     return
                 }
                 
-              
-                
                 self.notifications = documents.compactMap { document in
-                    NotificationModel(dictionary: document.data(), id: document.documentID)
+                    let notification = NotificationModel(dictionary: document.data(), id: document.documentID)
+                    if notification == nil {
+                        print("Failed to parse document: \(document.documentID)")
+                        print("   Data: \(document.data())")
+                    }
+                    return notification
                 }
+                
+                print(" Successfully parsed \(self.notifications.count) notifications")
                 
                 DispatchQueue.main.async {
                     self.tableView.reloadData()
@@ -151,7 +150,10 @@ class NotificationsViewController: UIViewController {
     
     private func updateMarkAllReadButton() {
         let hasUnread = notifications.contains { !$0.isRead }
-        navigationItem.rightBarButtonItems?.first?.isEnabled = hasUnread
+        navigationItem.rightBarButtonItem?.isEnabled = hasUnread
+        
+        // Update clear all button visibility
+        clearAllButton?.isHidden = notifications.isEmpty
     }
     
     // MARK: - Actions
@@ -163,7 +165,7 @@ class NotificationsViewController: UIViewController {
         let batch = db.batch()
         
         for notification in unreadNotifications {
-            let docRef = db.collection("notifications").document(notification.id)
+            let docRef = db.collection("Notifications").document(notification.id)
             batch.updateData(["isRead": true], forDocument: docRef)
         }
         
@@ -181,13 +183,13 @@ class NotificationsViewController: UIViewController {
         guard !notifications.isEmpty else { return }
         
         let alert = UIAlertController(
-            title: "Clear All Notifications",
-            message: "Are you sure you want to delete all notifications? This action cannot be undone.",
+            title: "Warning",
+            message: "This action cannot be undone.\nDo you wish to proceed?",
             preferredStyle: .alert
         )
         
         alert.addAction(UIAlertAction(title: "Cancel", style: .cancel))
-        alert.addAction(UIAlertAction(title: "Clear All", style: .destructive) { [weak self] _ in
+        alert.addAction(UIAlertAction(title: "Proceed", style: .destructive) { [weak self] _ in
             self?.performClearAll()
         })
         
@@ -198,7 +200,7 @@ class NotificationsViewController: UIViewController {
         let batch = db.batch()
         
         for notification in notifications {
-            let docRef = db.collection("notifications").document(notification.id)
+            let docRef = db.collection("Notifications").document(notification.id)
             batch.deleteDocument(docRef)
         }
         
@@ -207,7 +209,7 @@ class NotificationsViewController: UIViewController {
                 print("Error clearing all notifications: \(error.localizedDescription)")
                 self?.showError("Failed to clear notifications")
             } else {
-                self?.showSuccessToast(message: "All notifications cleared")
+                self?.showSuccessToast(message: "All notifications cleared.")
             }
         }
     }
@@ -215,7 +217,7 @@ class NotificationsViewController: UIViewController {
     private func markAsRead(notification: NotificationModel) {
         guard !notification.isRead else { return }
         
-        db.collection("notifications")
+        db.collection("Notifications")
             .document(notification.id)
             .updateData(["isRead": true]) { error in
                 if let error = error {
@@ -227,7 +229,7 @@ class NotificationsViewController: UIViewController {
     private func deleteNotification(at indexPath: IndexPath) {
         let notification = notifications[indexPath.row]
         
-        db.collection("notifications")
+        db.collection("Notifications")
             .document(notification.id)
             .delete { [weak self] error in
                 if let error = error {
@@ -308,7 +310,7 @@ class NotificationsViewController: UIViewController {
         ]
         
         for notification in sampleNotifications {
-            db.collection("notifications").addDocument(data: notification) { error in
+            db.collection("Notifications").addDocument(data: notification) { error in
                 if let error = error {
                     print("Error adding sample notification: \(error.localizedDescription)")
                 }
@@ -334,7 +336,11 @@ extension NotificationsViewController: UITableViewDataSource {
         }
         
         let notification = notifications[indexPath.row]
-        cell.configure(with: notification)
+        cell.configure(with: notification) { [weak self] actionUrl in
+            // Handle action button tap
+            print("Action tapped for URL: \(actionUrl)")
+            self?.handleNotificationAction(actionUrl: actionUrl, notification: notification)
+        }
         
         return cell
     }
@@ -352,8 +358,7 @@ extension NotificationsViewController: UITableViewDelegate {
         
         // Handle action
         if let actionUrl = notification.actionUrl {
-            print("Navigate to: \(actionUrl)")
-            // TODO: Implement navigation based on actionUrl
+            handleNotificationAction(actionUrl: actionUrl, notification: notification)
         }
         
         // Add haptic feedback
@@ -363,13 +368,27 @@ extension NotificationsViewController: UITableViewDelegate {
         tableView.deselectRow(at: indexPath, animated: true)
     }
     
+    private func handleNotificationAction(actionUrl: String, notification: NotificationModel) {
+        print("Navigate to: \(actionUrl)")
+        // TODO: Implement navigation based on actionUrl
+        // Example: Navigate to different view controllers based on the URL or notification type
+        
+        // You can parse the actionUrl and navigate accordingly
+        // For example:
+        // if actionUrl.contains("request") {
+        //     navigateToRequestDetails(requestId: ...)
+        // } else if actionUrl.contains("location") {
+        //     navigateToLocationTracking(...)
+        // }
+    }
+    
     // Swipe to delete
     func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
         let deleteAction = UIContextualAction(style: .destructive, title: "Delete") { [weak self] _, _, completion in
             self?.deleteNotification(at: indexPath)
             completion(true)
         }
-        deleteAction.image = UIImage(systemName: "trash.fill")
+        deleteAction.image = UIImage(systemName: "minus")
         
         let notification = notifications[indexPath.row]
         if !notification.isRead {
@@ -377,7 +396,8 @@ extension NotificationsViewController: UITableViewDelegate {
                 self?.markAsRead(notification: notification)
                 completion(true)
             }
-            markReadAction.backgroundColor = .systemBlue
+            // TODO: change this to read
+            markReadAction.backgroundColor = .secondary
             markReadAction.image = UIImage(systemName: "checkmark")
             
             return UISwipeActionsConfiguration(actions: [deleteAction, markReadAction])
@@ -391,18 +411,18 @@ extension NotificationsViewController: UITableViewDelegate {
 
 class EmptyStateView: UIView {
     
-    private let iconImageView: UIImageView = {
-        let iv = UIImageView()
-        iv.contentMode = .scaleAspectFit
-        iv.tintColor = .systemGray3
-        iv.translatesAutoresizingMaskIntoConstraints = false
-        return iv
-    }()
+//    private let iconImageView: UIImageView = {
+//        let iv = UIImageView()
+//        iv.contentMode = .scaleAspectFit
+//        iv.tintColor = .secondary
+//        iv.translatesAutoresizingMaskIntoConstraints = false
+//        return iv
+//    }()
     
     private let titleLabel: UILabel = {
         let label = UILabel()
         label.font = .systemFont(ofSize: 20, weight: .semibold)
-        label.textColor = .secondaryLabel
+        label.textColor = .secondary
         label.textAlignment = .center
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
@@ -411,7 +431,7 @@ class EmptyStateView: UIView {
     private let messageLabel: UILabel = {
         let label = UILabel()
         label.font = .systemFont(ofSize: 16, weight: .regular)
-        label.textColor = .tertiaryLabel
+        label.textColor = .secondary
         label.textAlignment = .center
         label.numberOfLines = 0
         label.translatesAutoresizingMaskIntoConstraints = false
@@ -429,29 +449,35 @@ class EmptyStateView: UIView {
     }
     
     private func setupUI() {
-        addSubview(iconImageView)
+//        addSubview(iconImageView)
         addSubview(titleLabel)
         addSubview(messageLabel)
         
         NSLayoutConstraint.activate([
-            iconImageView.centerXAnchor.constraint(equalTo: centerXAnchor),
-            iconImageView.topAnchor.constraint(equalTo: topAnchor),
-            iconImageView.widthAnchor.constraint(equalToConstant: 80),
-            iconImageView.heightAnchor.constraint(equalToConstant: 80),
+//            iconImageView.centerXAnchor.constraint(equalTo: centerXAnchor),
+//            iconImageView.topAnchor.constraint(equalTo: topAnchor),
+//            iconImageView.widthAnchor.constraint(equalToConstant: 80),
+//            iconImageView.heightAnchor.constraint(equalToConstant: 80),
+//
             
-            titleLabel.topAnchor.constraint(equalTo: iconImageView.bottomAnchor, constant: 20),
-            titleLabel.leadingAnchor.constraint(equalTo: leadingAnchor),
-            titleLabel.trailingAnchor.constraint(equalTo: trailingAnchor),
+            titleLabel.centerXAnchor.constraint(equalTo: centerXAnchor),
+            titleLabel.topAnchor.constraint(equalTo: topAnchor),
+//            titleLabel.widthAnchor.constraint(equalToConstant: 80),
+//            titleLabel.heightAnchor.constraint(equalToConstant: 80),
             
-            messageLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 8),
+//            titleLabel.topAnchor.constraint(equalTo: iconImageView.bottomAnchor, constant: 20),
+//            titleLabel.leadingAnchor.constraint(equalTo: leadingAnchor),
+//            titleLabel.trailingAnchor.constraint(equalTo: trailingAnchor),
+//
+            messageLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 12),
             messageLabel.leadingAnchor.constraint(equalTo: leadingAnchor),
             messageLabel.trailingAnchor.constraint(equalTo: trailingAnchor),
             messageLabel.bottomAnchor.constraint(equalTo: bottomAnchor)
         ])
     }
     
-    func configure(icon: UIImage?, title: String, message: String) {
-        iconImageView.image = icon
+    func configure( title: String, message: String) {
+        
         titleLabel.text = title
         messageLabel.text = message
     }

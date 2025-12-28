@@ -1,8 +1,14 @@
 import UIKit
 import FirebaseFirestore
+import Cloudinary
 
 class NewMaintenanceViewController: UIViewController {
+    
+   
+    let cloudName: String =  "dwvlnmbtv"
 
+    var cloudinary: CLDCloudinary!
+    
     var isEditMode = false
     var documentId: String?
     var existingData: [String: Any]?
@@ -11,14 +17,13 @@ class NewMaintenanceViewController: UIViewController {
     @IBOutlet weak var category: UITextField!
     @IBOutlet weak var location: UITextField!
     @IBOutlet weak var urgency: UITextField!
-    @IBOutlet weak var imageUpload: UITextField!
-    @IBOutlet weak var Backbtn: UIImageView!
     @IBOutlet weak var savebtn: UIButton!
     @IBOutlet weak var pageTitle: UILabel!
     @IBOutlet weak var categoryDropDown: UIImageView!
     @IBOutlet weak var urgencyDropDown: UIImageView!
-
-
+    @IBOutlet weak var Backbtn: UIImageView!
+    @IBOutlet weak var uploadImage: UIImageView!
+    
     let database = Firestore.firestore()
 
     private let categoryPicker = UIPickerView()
@@ -57,9 +62,17 @@ class NewMaintenanceViewController: UIViewController {
         super.viewDidLoad()
         setupBackBtn()
         setupPickers()
+        initCloudinary()
         setupDropdownTap()
         configureEditMode()
+        //uploadImage()
     }
+    
+    
+    private func initCloudinary() {
+            let config = CLDConfiguration(cloudName: cloudName, secure: true)
+            cloudinary = CLDCloudinary(configuration: config)
+        }
 
     private func configureEditMode() {
         if isEditMode {
@@ -92,7 +105,6 @@ class NewMaintenanceViewController: UIViewController {
         }
     }
 
-    // MARK: - Actions
     @IBAction func Savebtn(_ sender: UIButton) {
 
         guard
@@ -132,16 +144,24 @@ class NewMaintenanceViewController: UIViewController {
 
 
     private func setupBackBtn() {
+
         Backbtn.isUserInteractionEnabled = true
-        Backbtn.addGestureRecognizer(
-            UITapGestureRecognizer(target: self,
-                                   action: #selector(backTapped))
-        )
+
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(backBtnTapped))
+        Backbtn.addGestureRecognizer(tapGesture)
+    }
+    
+    @objc func backBtnTapped() {
+
+        let storyboard = UIStoryboard(name: "Maintenance", bundle: nil)
+        guard let vc = storyboard.instantiateViewController(withIdentifier: "MaintenanceViewController") as? MaintenanceViewController else {
+            print("MaintenanceViewController not found in storyboard")
+            return
+        }
+        
+        navigationController?.pushViewController(vc, animated: true)
     }
 
-    @objc private func backTapped() {
-        navigationController?.popViewController(animated: true)
-    }
 
     private func setupPickers() {
         categoryPicker.delegate = self
@@ -178,7 +198,20 @@ class NewMaintenanceViewController: UIViewController {
         urgency.becomeFirstResponder()
     }
 
-
+    //NEW - Upload function
+        private func uploadImage() {
+            guard let data = UIImage(named: "cloudinary_logo")?.pngData() else {
+                return
+            }
+            cloudinary.createUploader().upload(data: data, uploadPreset: uploadPreset) { response, error in
+                DispatchQueue.main.async {
+                    guard let url = response?.secureUrl else {
+                        return
+                    }
+                    self.ivUploadedImage.cldSetImage(url, cloudinary: self.cloudinary)
+                }
+            }
+        }
     private func handleResult(error: Error?, successMessage: String) {
         if let error = error {
             showAlert(error.localizedDescription)

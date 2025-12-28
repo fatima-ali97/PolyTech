@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="23727" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="Bp8-2G-vRJ">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="23727" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="5YB-H6-0aI">
     <device id="retina6_12" orientation="portrait" appearance="light"/>
     <dependencies>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23721"/>
@@ -8,75 +8,6 @@
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
-        <!--Home View Controller-->
-        <scene sceneID="Wfo-5Z-oRR">
-            <objects>
-                <viewController storyboardIdentifier="StudentHomeViewController" modalPresentationStyle="fullScreen" id="Bp8-2G-vRJ" customClass="HomeViewController" customModule="PolyTech" sceneMemberID="viewController">
-                    <view key="view" contentMode="scaleToFill" id="M33-vD-82u">
-                        <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <subviews>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Welcome To PolyTech " textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="2Bt-NG-vGc">
-                                <rect key="frame" x="90" y="276" width="222" height="90"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <fontDescription key="fontDescription" name="HelveticaNeue-Bold" family="Helvetica Neue" pointSize="36"/>
-                                <nil key="textColor"/>
-                                <nil key="highlightedColor"/>
-                            </label>
-                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="gnO-Ke-jXL">
-                                <rect key="frame" x="132" y="436" width="122" height="39"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <color key="tintColor" red="0.086274509799999996" green="0.1647058824" blue="0.2666666667" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                <state key="normal" title="Button"/>
-                                <buttonConfiguration key="configuration" style="filled" title="FAQ &amp; Guide" cornerStyle="capsule"/>
-                            </button>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Submit a request, and we'll handle the rest." textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Wpy-yB-DcV">
-                                <rect key="frame" x="36" y="383" width="330" height="20"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <color key="tintColor" systemColor="underPageBackgroundColor"/>
-                                <fontDescription key="fontDescription" name="HelveticaNeue" family="Helvetica Neue" pointSize="17"/>
-                                <color key="textColor" systemColor="systemGray2Color"/>
-                                <nil key="highlightedColor"/>
-                            </label>
-                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="bell.badge.fill" catalog="system" translatesAutoresizingMaskIntoConstraints="NO" id="0aB-tN-JQl">
-                                <rect key="frame" x="316" y="66.333333333333258" width="42" height="32"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <color key="tintColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                            </imageView>
-                        </subviews>
-                        <viewLayoutGuide key="safeArea" id="fIw-FB-Gvo"/>
-                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
-                    </view>
-                    <toolbarItems/>
-                    <navigationItem key="navigationItem" largeTitleDisplayMode="never" id="Bcg-g4-eMo"/>
-                    <simulatedToolbarMetrics key="simulatedBottomBarMetrics"/>
-                    <connections>
-                        <outlet property="FAQbtn" destination="gnO-Ke-jXL" id="R9x-WB-eVJ"/>
-                        <outlet property="Notificationbtn" destination="0aB-tN-JQl" id="744-JD-JLj"/>
-                    </connections>
-                </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="XtY-Nf-IsC" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="7110.6870229007627" y="-176.05633802816902"/>
-        </scene>
-        <!--Navigation Controller-->
-        <scene sceneID="3tP-77-4gO">
-            <objects>
-                <navigationController automaticallyAdjustsScrollViewInsets="NO" id="feG-jw-yJN" sceneMemberID="viewController">
-                    <toolbarItems/>
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="fqS-90-VXC">
-                        <rect key="frame" x="0.0" y="118" width="393" height="44"/>
-                        <autoresizingMask key="autoresizingMask"/>
-                    </navigationBar>
-                    <nil name="viewControllers"/>
-                    <connections>
-                        <segue destination="Bp8-2G-vRJ" kind="relationship" relationship="rootViewController" id="NdJ-gd-zjD"/>
-                    </connections>
-                </navigationController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="6fw-4L-Djd" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="6183.9694656488546" y="-176.05633802816902"/>
-        </scene>
         <!--TempFaqViewController-->
         <scene sceneID="08c-p8-6EB">
             <objects>
@@ -105,16 +36,114 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Wh4-DG-rBN" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="7976" y="-176"/>
+            <point key="canvasLocation" x="8901.5267175572517" y="-176.05633802816902"/>
+        </scene>
+        <!--Home View Controller-->
+        <scene sceneID="lvn-uF-vti">
+            <objects>
+                <viewController storyboardIdentifier="StudentHomeViewController" modalPresentationStyle="fullScreen" useStoryboardIdentifierAsRestorationIdentifier="YES" id="62M-MB-qFA" customClass="HomeViewController" customModule="PolyTech" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="vnZ-xb-7K0">
+                        <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Welcome To PolyTech " textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="3y7-cf-XbJ">
+                                <rect key="frame" x="94" y="299" width="204" height="74"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="75" id="S0p-2Y-pdA"/>
+                                    <constraint firstAttribute="width" constant="204" id="kgk-yJ-y4m"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" name="HelveticaNeue-Bold" family="Helvetica Neue" pointSize="31"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Zya-Cr-Jfk">
+                                <rect key="frame" x="135" y="434" width="122" height="39"/>
+                                <color key="tintColor" red="0.1058823466" green="0.1607843041" blue="0.2588235438" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
+                                <state key="normal" title="Button"/>
+                                <buttonConfiguration key="configuration" style="filled" title="FAQ &amp; Guide" cornerStyle="capsule"/>
+                                <connections>
+                                    <action selector="faqButtonTapped:" destination="62M-MB-qFA" eventType="touchUpInside" id="t4q-iw-FBp"/>
+                                </connections>
+                            </button>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Submit a request, and we'll handle the rest." textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="CCy-Z0-BQM">
+                                <rect key="frame" x="31" y="381" width="330" height="20"/>
+                                <color key="tintColor" systemColor="underPageBackgroundColor"/>
+                                <fontDescription key="fontDescription" name="HelveticaNeue" family="Helvetica Neue" pointSize="17"/>
+                                <color key="textColor" systemColor="systemGray2Color"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" misplaced="YES" image="bell.badge.fill" catalog="system" translatesAutoresizingMaskIntoConstraints="NO" id="FHf-kx-SxX">
+                                <rect key="frame" x="325" y="65.333333333333371" width="36" height="40.333333333333371"/>
+                                <color key="tintColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                            </imageView>
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" image="ellipsis.message.fill" catalog="system" translatesAutoresizingMaskIntoConstraints="NO" id="b9a-Xa-Jme">
+                                <rect key="frame" x="31" y="66.666666666666671" width="36" height="39"/>
+                                <color key="tintColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="36" id="779-Sf-1eS"/>
+                                    <constraint firstAttribute="height" constant="40" id="8ro-Rs-YtF"/>
+                                </constraints>
+                            </imageView>
+                        </subviews>
+                        <viewLayoutGuide key="safeArea" id="RbS-LK-Ie5"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <constraints>
+                            <constraint firstItem="CCy-Z0-BQM" firstAttribute="top" secondItem="3y7-cf-XbJ" secondAttribute="bottom" constant="8" id="22d-ed-xbu"/>
+                            <constraint firstItem="Zya-Cr-Jfk" firstAttribute="centerX" secondItem="vnZ-xb-7K0" secondAttribute="centerX" id="5rv-dy-XGS"/>
+                            <constraint firstItem="3y7-cf-XbJ" firstAttribute="leading" secondItem="RbS-LK-Ie5" secondAttribute="leading" constant="94" id="8jL-dR-cqS"/>
+                            <constraint firstItem="Zya-Cr-Jfk" firstAttribute="centerX" secondItem="3y7-cf-XbJ" secondAttribute="centerX" id="A1J-g8-RKF"/>
+                            <constraint firstItem="b9a-Xa-Jme" firstAttribute="top" secondItem="vnZ-xb-7K0" secondAttribute="topMargin" constant="-96.000000000000043" id="FiQ-Sa-7p1"/>
+                            <constraint firstItem="CCy-Z0-BQM" firstAttribute="centerY" secondItem="RbS-LK-Ie5" secondAttribute="centerY" id="KKp-eC-0n9"/>
+                            <constraint firstItem="RbS-LK-Ie5" firstAttribute="bottom" secondItem="Zya-Cr-Jfk" secondAttribute="bottom" constant="261" id="NqN-zX-oXF"/>
+                            <constraint firstItem="CCy-Z0-BQM" firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="FHf-kx-SxX" secondAttribute="trailing" id="P46-C9-0l1"/>
+                            <constraint firstItem="CCy-Z0-BQM" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="b9a-Xa-Jme" secondAttribute="leading" id="X5U-OM-7fK"/>
+                            <constraint firstItem="3y7-cf-XbJ" firstAttribute="top" secondItem="RbS-LK-Ie5" secondAttribute="top" constant="137" id="aX3-b3-dAJ"/>
+                            <constraint firstItem="Zya-Cr-Jfk" firstAttribute="leading" secondItem="RbS-LK-Ie5" secondAttribute="leading" constant="135" id="bqx-VR-JGH"/>
+                            <constraint firstItem="Zya-Cr-Jfk" firstAttribute="centerX" secondItem="CCy-Z0-BQM" secondAttribute="centerX" id="cGb-wf-CS7"/>
+                            <constraint firstItem="Zya-Cr-Jfk" firstAttribute="top" secondItem="CCy-Z0-BQM" secondAttribute="bottom" constant="33" id="m9b-yJ-faI"/>
+                            <constraint firstItem="Zya-Cr-Jfk" firstAttribute="centerX" secondItem="RbS-LK-Ie5" secondAttribute="centerX" id="mYs-WI-rB3"/>
+                            <constraint firstItem="b9a-Xa-Jme" firstAttribute="centerY" secondItem="FHf-kx-SxX" secondAttribute="centerY" id="q21-pW-V2t"/>
+                        </constraints>
+                    </view>
+                    <toolbarItems/>
+                    <navigationItem key="navigationItem" largeTitleDisplayMode="never" id="tsu-WY-aZC"/>
+                    <simulatedToolbarMetrics key="simulatedBottomBarMetrics"/>
+                    <connections>
+                        <outlet property="FAQbtn" destination="Zya-Cr-Jfk" id="qUd-H2-bKC"/>
+                        <outlet property="Notificationbtn" destination="FHf-kx-SxX" id="TLC-eM-4iN"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="wKG-XL-dkH" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="8089.3129770992364" y="-176.05633802816902"/>
+        </scene>
+        <!--Navigation Controller-->
+        <scene sceneID="IeH-po-aPI">
+            <objects>
+                <navigationController storyboardIdentifier="HomeViewController" automaticallyAdjustsScrollViewInsets="NO" useStoryboardIdentifierAsRestorationIdentifier="YES" id="5YB-H6-0aI" sceneMemberID="viewController">
+                    <toolbarItems/>
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="OHK-VE-MxX">
+                        <rect key="frame" x="0.0" y="118" width="393" height="44"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <nil name="viewControllers"/>
+                    <connections>
+                        <segue destination="62M-MB-qFA" kind="relationship" relationship="rootViewController" id="JSj-O5-Yhb"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="U2f-P3-Mlc" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="7162.5954198473282" y="-176.05633802816902"/>
         </scene>
     </scenes>
     <resources>
         <image name="bell.badge.fill" catalog="system" width="117" height="128"/>
+        <image name="ellipsis.message.fill" catalog="system" width="128" height="114"/>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>
         <systemColor name="systemGray2Color">
-            <color red="0.68235294117647061" green="0.68235294117647061" blue="0.69803921568627447" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.68235294120000001" green="0.68235294120000001" blue="0.69803921570000005" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
         <systemColor name="underPageBackgroundColor">
             <color red="0.70980392156862748" green="0.71764705882352942" blue="0.74117647058823533" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
