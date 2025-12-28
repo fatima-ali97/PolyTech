@@ -18,8 +18,18 @@ class AdminDashboardViewController: UIViewController {
     @IBOutlet var cardViews: [UIView]!
     
     private let db = Firestore.firestore()
+    var userId: String?
+    
     
     override func viewDidLoad() {
+        
+        
+        if userId == nil {
+        userId = UserDefaults.standard.string(forKey: "userId")
+        }
+               
+               
+        loadData()
         super.viewDidLoad()
         title = "Admin Dashboard"
         view.backgroundColor = .systemGroupedBackground
@@ -44,6 +54,12 @@ class AdminDashboardViewController: UIViewController {
             $0.applyCardStyle()
         }
     }
+    
+    private func loadData() {
+        guard let userId = userId else {
+            print("⚠️ No user ID available")
+            return
+        }}
     
     @objc private func didTapBell() {
         let alert = UIAlertController(title: "Notifications", message: "Tapped bell.", preferredStyle: .alert)
