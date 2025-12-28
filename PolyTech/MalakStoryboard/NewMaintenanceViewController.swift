@@ -4,21 +4,17 @@ import Cloudinary
 
 class NewMaintenanceViewController: UIViewController {
 
-    // MARK: - Cloudinary
     let cloudName: String = "dwvlnmbtv"
-    let uploadPreset = "maintenance_unsigned"
+    let uploadPreset = "Polytech_Cloudinary"
     var cloudinary: CLDCloudinary!
 
-    // MARK: - Firestore
     let database = Firestore.firestore()
 
-    // MARK: - State
     var isEditMode = false
     var documentId: String?
     var existingData: [String: Any]?
     var uploadedImageUrl: String?
 
-    // MARK: - IBOutlets
     @IBOutlet weak var requestName: UITextField!
     @IBOutlet weak var category: UITextField!
     @IBOutlet weak var location: UITextField!
@@ -30,13 +26,11 @@ class NewMaintenanceViewController: UIViewController {
     @IBOutlet weak var Backbtn: UIImageView!
     @IBOutlet weak var uploadImage: UIImageView!
 
-    // MARK: - Pickers
     private let categoryPicker = UIPickerView()
     private let urgencyPicker = UIPickerView()
     private var selectedCategory: MaintenanceCategory?
     private var selectedUrgency: UrgencyLevel?
 
-    // MARK: - Enums
     enum MaintenanceCategory: String, CaseIterable {
         case osUpdate = "os_update"
         case classroomEquipment = "classroom_equipment"
@@ -62,7 +56,6 @@ class NewMaintenanceViewController: UIViewController {
         var displayName: String { rawValue.capitalized }
     }
 
-    // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
         initCloudinary()
@@ -73,13 +66,11 @@ class NewMaintenanceViewController: UIViewController {
         configureEditMode()
     }
 
-    // MARK: - Cloudinary Init
     private func initCloudinary() {
         let config = CLDConfiguration(cloudName: cloudName, secure: true)
         cloudinary = CLDCloudinary(configuration: config)
     }
 
-    // MARK: - Image Picker
     private func setupImageTap() {
         uploadImage.isUserInteractionEnabled = true
         uploadImage.addGestureRecognizer(
@@ -99,22 +90,23 @@ class NewMaintenanceViewController: UIViewController {
 
         cloudinary.createUploader().upload(
             data: imageData,
-            uploadPreset: uploadPreset
-        ) { [weak self] result, error in
+            uploadPreset: uploadPreset,
+            completionHandler: { [weak self] result, error in
 
-            self?.savebtn.isEnabled = true
+                self?.savebtn.isEnabled = true
 
-            if let error = error {
-                print("Cloudinary error:", error.localizedDescription)
-                return
+                if let error = error {
+                    print("Cloudinary error:", error.localizedDescription)
+                    return
+                }
+
+                guard let secureUrl = result?.secureUrl else { return }
+                self?.uploadedImageUrl = secureUrl
             }
-
-            guard let secureUrl = result?.secureUrl else { return }
-            self?.uploadedImageUrl = secureUrl
-        }
+        )
     }
 
-    // MARK: - Edit Mode
+
     private func configureEditMode() {
         if isEditMode {
             pageTitle.text = "Edit Maintenance Request"
@@ -146,7 +138,6 @@ class NewMaintenanceViewController: UIViewController {
         }
     }
 
-    // MARK: - Save
     @IBAction func Savebtn(_ sender: UIButton) {
 
         guard
@@ -182,7 +173,6 @@ class NewMaintenanceViewController: UIViewController {
         }
     }
 
-    // MARK: - Navigation
     private func setupBackBtn() {
         Backbtn.isUserInteractionEnabled = true
         Backbtn.addGestureRecognizer(
@@ -194,7 +184,6 @@ class NewMaintenanceViewController: UIViewController {
         navigationController?.popViewController(animated: true)
     }
 
-    // MARK: - Pickers
     private func setupPickers() {
         categoryPicker.delegate = self
         categoryPicker.dataSource = self
@@ -228,7 +217,6 @@ class NewMaintenanceViewController: UIViewController {
         urgency.becomeFirstResponder()
     }
 
-    // MARK: - Alerts
     private func handleResult(_ error: Error?) {
         if let error = error {
             showAlert(error.localizedDescription)
@@ -255,7 +243,6 @@ class NewMaintenanceViewController: UIViewController {
     }
 }
 
-// MARK: - Extensions
 extension NewMaintenanceViewController:
     UIPickerViewDelegate,
     UIPickerViewDataSource,
