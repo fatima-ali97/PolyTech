@@ -10,7 +10,6 @@ class HomeViewController: UIViewController {
     var userId: String?
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        // Ensure tab bar is visible
         if let tabBarController = self.tabBarController as? BaseCustomTabBarController {
             tabBarController.hideCustomTabBar(false, animated: true)
         }
@@ -19,7 +18,6 @@ class HomeViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Get userId from UserDefaults if not passed
                 if userId == nil {
                     userId = UserDefaults.standard.string(forKey: "userId")
                 }
@@ -54,7 +52,6 @@ class HomeViewController: UIViewController {
            }
            
            print("✅ Loading student dashboard for user: \(userId)")
-           // Load student-specific data here
        }
        
     @IBAction func faqButtonTapped(_ sender: UIButton) {
