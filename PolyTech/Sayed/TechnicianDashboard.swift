@@ -8,7 +8,7 @@ class TechnicianDashboardViewController: UIViewController {
     @IBOutlet weak var completedCard: UIView!
     @IBOutlet weak var StatusCard: UIView!
     @IBOutlet weak var taskListButton: UIButton!
-    @IBOutlet weak var donutChartView: DonutChartView!
+    @IBOutlet weak var donutChartView: DonutChartViewTwo!
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -39,12 +39,12 @@ class TechnicianDashboardViewController: UIViewController {
         let colorInProgress = UIColor(red: 0.35, green: 0.67, blue: 0.93, alpha: 1.0)
         let colorPending = UIColor(red: 0.56, green: 0.62, blue: 0.67, alpha: 1.0)
 
-//        chart.dataEntries = [
-//            (value: 749, color: colorCompleted),
-//            (value: 342, color: colorInProgress),
-//            (value: 156, color: colorPending)
-//        ]
-//        
+        chart.segments = [
+            DonutChartViewTwo.Segment(value: 749, color: colorCompleted),
+            DonutChartViewTwo.Segment(value: 342, color: colorInProgress),
+            DonutChartViewTwo.Segment(value: 156, color: colorPending)
+        ]
+        
         chart.backgroundColor = .clear
     }
     
