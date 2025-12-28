@@ -5,7 +5,7 @@ struct Message {
     let isUser: Bool
 }
 
-final class ChatBotViewController: UIViewController {
+class ChatBotViewController: UIViewController {
 
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var messageTextField: UITextField!
