@@ -10,6 +10,9 @@ import FirebaseFirestore
 
 class AdminDashboardViewController: UIViewController {
 
+    @IBOutlet weak var techOfWeekRankLabel: UILabel!
+    @IBOutlet weak var techOfWeekSubtitleLabel: UILabel!
+    @IBOutlet weak var techOfWeekNameLabel: UILabel!
     @IBOutlet weak var pendingStatusLabel: UILabel!
     @IBOutlet weak var inProgressStatusLabel: UILabel!
     @IBOutlet weak var completedStatusLabel: UILabel!
@@ -50,6 +53,8 @@ class AdminDashboardViewController: UIViewController {
         loadDashboardCounts()
         
         startDonutListener()
+        
+        loadTechnicianOfTheWeek()
     }
     
     @objc private func didTapBell() {
@@ -146,6 +151,42 @@ class AdminDashboardViewController: UIViewController {
                     .init(value: CGFloat(inProgress), color: .systemBlue),
                     .init(value: CGFloat(completed), color: .systemGreen)
                 ]
+            }
+        }
+    }
+    
+    private func loadTechnicianOfTheWeek() {
+        db.collection("technicians").getDocuments { [weak self] snapshot, error in
+            guard let self else { return }
+            
+            if let error = error {
+                print("❌ Technician of week error:", error)
+                return
+            }
+            
+            let docs = snapshot?.documents ?? []
+            
+            // build list
+            let techs: [(name: String, solvedTasks: Int)] = docs.compactMap { doc in let data = doc.data()
+                
+                guard let name = data["name"] as? String else { return nil }
+                
+                
+                // this is so that solvedTasks can come as Int or as NSNumber
+                let solved = (data["solvedTasks"] as? NSNumber)?.intValue
+                            ?? (data["solvedTasks"] as? Int)
+                            ?? 0
+                
+                return (name: name, solvedTasks: solved)
+            }
+            
+            // picking the best technician (aka technician of the week)
+            guard let best = techs.max(by: { $0.solvedTasks < $1.solvedTasks }) else { return }
+            
+            DispatchQueue.main.async {
+                self.techOfWeekNameLabel.text = "🎉 \(best.name) 🎉"
+                self.techOfWeekSubtitleLabel.text = "\(best.solvedTasks) tasks solved"
+                self.techOfWeekRankLabel.text = "#1"
             }
         }
     }
