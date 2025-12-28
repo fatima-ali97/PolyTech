@@ -46,8 +46,8 @@
                                 <rect key="frame" x="0.0" y="237" width="393" height="455"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                             </tableView>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="XBD-u0-zEH">
-                                <rect key="frame" x="116.66666666666669" y="700" width="160" height="44"/>
+                            <button opaque="NO" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="XBD-u0-zEH">
+                                <rect key="frame" x="116.66666666666652" y="694" width="160" height="44"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="160" id="GqS-P7-lZ5"/>
                                     <constraint firstAttribute="height" constant="44" id="oEv-IZ-0aF"/>
