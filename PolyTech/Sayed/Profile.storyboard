@@ -25,19 +25,6 @@
             </objects>
             <point key="canvasLocation" x="483" y="9"/>
         </scene>
-        <!--Navigation Controller-->
-        <scene sceneID="ytp-Bj-hsH">
-            <objects>
-                <navigationController id="k3n-8F-cJK" sceneMemberID="viewController">
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="EAi-EQ-zzK">
-                        <rect key="frame" x="0.0" y="118" width="393" height="44"/>
-                        <autoresizingMask key="autoresizingMask"/>
-                    </navigationBar>
-                </navigationController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="K0i-Zw-p8u" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="483" y="9"/>
-        </scene>
         <!--Profile View Controller-->
         <scene sceneID="PMO-Ga-SZr">
             <objects>
@@ -46,8 +33,8 @@
                         <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleAspectFit" fixedFrame="YES" alwaysBounceVertical="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Zkh-Zb-GuP">
-                                <rect key="frame" x="0.0" y="306" width="393" height="731"/>
+                            <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleAspectFit" fixedFrame="YES" alwaysBounceVertical="YES" contentInsetAdjustmentBehavior="scrollableAxes" translatesAutoresizingMaskIntoConstraints="NO" id="Zkh-Zb-GuP">
+                                <rect key="frame" x="0.0" y="301" width="393" height="800"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <subviews>
                                     <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="YPe-ZN-nco">
@@ -276,7 +263,7 @@
                                         </subviews>
                                     </view>
                                     <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="FbQ-fJ-RHg">
-                                        <rect key="frame" x="0.0" y="45" width="393" height="308"/>
+                                        <rect key="frame" x="0.0" y="45" width="393" height="910"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                         <state key="normal" title="Button"/>
                                         <buttonConfiguration key="configuration" style="plain"/>
@@ -370,6 +357,7 @@
                     <navigationItem key="navigationItem" id="oBo-bv-SZT"/>
                     <connections>
                         <outlet property="actionButton" destination="0HR-i5-aBA" id="q40-Ms-SjX"/>
+                        <outlet property="scrollView" destination="Zkh-Zb-GuP" id="4al-Xz-kBQ"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="xt7-4n-h61" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>

@@ -10,11 +10,13 @@ import UIKit
 class ProfileViewController: UIViewController {
 
     @IBOutlet weak var actionButton: UIButton!
-
+    @IBOutlet weak var scrollView: UIScrollView!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
         setupButtonUI()
+        setupScrollViewUI()
     }
     
     func setupButtonUI() {
@@ -24,4 +26,10 @@ class ProfileViewController: UIViewController {
         actionButton.backgroundColor = .clear
         actionButton.setTitleColor(.systemBlue, for: .normal)
     }
+    
+    func setupScrollViewUI() {
+            scrollView.contentInsetAdjustmentBehavior = .never
+            scrollView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 1050, right: 0)
+        }
+    
 }
