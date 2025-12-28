@@ -21,7 +21,7 @@ class HomeViewController: UIViewController {
                 if userId == nil {
                     userId = UserDefaults.standard.string(forKey: "userId")
                 }
-                
+        loadData()
         setupNotificationButton()
         setupChatBotBtn()
     }

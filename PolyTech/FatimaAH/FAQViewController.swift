@@ -19,6 +19,7 @@ final class FAQViewController: UIViewController {
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var getHelpButton: UIButton!
 
+    @IBOutlet weak var BackBtn: UIImageView!
     
     private var sections: [FAQSection] = []
 
@@ -35,10 +36,34 @@ final class FAQViewController: UIViewController {
         setupUI()
         FAQData()
         visibleSections = sections
-
+        setupBackBtn()
         tableView.reloadData()
     }
 
+    
+    private func setupBackBtn() {
+
+        BackBtn.isUserInteractionEnabled = true
+
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(backBtnTapped))
+        BackBtn.addGestureRecognizer(tapGesture)
+    }
+    
+    @objc func backBtnTapped() {
+
+        let storyboard = UIStoryboard(name: "HomePage", bundle: nil)
+        guard let vc = storyboard.instantiateViewController(withIdentifier: "HomeViewController") as? HomeViewController else {
+            print("HomeViewController not found in storyboard")
+            return
+        }
+        
+        navigationController?.pushViewController(vc, animated: true)
+    }
+    
+    
+    
+    
+    
     private func setupUI() {
         searchBar.delegate = self
 
