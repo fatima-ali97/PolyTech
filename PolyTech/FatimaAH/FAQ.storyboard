@@ -81,6 +81,7 @@
                         </constraints>
                     </view>
                     <connections>
+                        <outlet property="BackBtn" destination="cmf-tX-8gk" id="qHn-Jx-zgf"/>
                         <outlet property="getHelpButton" destination="XBD-u0-zEH" id="CFx-dd-EEQ"/>
                         <outlet property="searchBar" destination="pvR-Qi-Sa8" id="iAg-kl-nJ0"/>
                         <outlet property="tableView" destination="kD8-27-O8W" id="7Au-Op-900"/>
