@@ -151,6 +151,7 @@ class NewMaintenanceViewController: UIViewController {
         Backbtn.addGestureRecognizer(tapGesture)
     }
     
+    
     @objc func backBtnTapped() {
 
         let storyboard = UIStoryboard(name: "Maintenance", bundle: nil)
@@ -199,19 +200,19 @@ class NewMaintenanceViewController: UIViewController {
     }
 
     //NEW - Upload function
-        private func uploadImage() {
-            guard let data = UIImage(named: "cloudinary_logo")?.pngData() else {
-                return
-            }
-            cloudinary.createUploader().upload(data: data, uploadPreset: uploadPreset) { response, error in
-                DispatchQueue.main.async {
-                    guard let url = response?.secureUrl else {
-                        return
-                    }
-                    self.ivUploadedImage.cldSetImage(url, cloudinary: self.cloudinary)
-                }
-            }
-        }
+//        private func uploadImage() {
+//            guard let data = UIImage(named: "cloudinary_logo")?.pngData() else {
+//                return
+//            }
+//            cloudinary.createUploader().upload(data: data, uploadPreset: uploadPreset) { response, error in
+//                DispatchQueue.main.async {
+//                    guard let url = response?.secureUrl else {
+//                        return
+//                    }
+//                    self.ivUploadedImage.cldSetImage(url, cloudinary: self.cloudinary)
+//                }
+//            }
+//        }
     private func handleResult(error: Error?, successMessage: String) {
         if let error = error {
             showAlert(error.localizedDescription)
