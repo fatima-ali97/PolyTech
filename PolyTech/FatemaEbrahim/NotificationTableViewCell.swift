@@ -65,7 +65,7 @@ class NotificationTableViewCell: UITableViewCell {
         let iv = UIImageView()
         iv.image = UIImage(systemName: "mappin.circle.fill")
         iv.contentMode = .scaleAspectFit
-        iv.tintColor = .systemBlue
+        iv.tintColor = .accent
         iv.translatesAutoresizingMaskIntoConstraints = false
         return iv
     }()
@@ -217,19 +217,19 @@ class NotificationTableViewCell: UITableViewCell {
         let config: (icon: String, backgroundColor: UIColor) = {
             switch type {
             case .success:
-                return ("checkmark", UIColor.systemBlue)
+                return ("checkmark", .accent)
             case .error:
-                return ("xmark", UIColor.systemRed)
+                return ("xmark", .accent)
             case .fail:
-                return ("xmark", UIColor.systemRed)
+                return ("xmark", .accent)
             case .info:
-                return ("mappin.and.ellipse", UIColor.systemBlue)
+                return ("mappin.and.ellipse", .accent)
             case .message:
-                return ("envelope.fill", UIColor.systemBlue)
+                return ("envelope.fill", .accent)
             case .accept:
-                return ("checkmark", UIColor.systemGreen)
+                return ("checkmark", .accent)
             case .location:
-                return ("person.badge.plus.fill", UIColor.systemBlue)
+                return ("person.badge.plus.fill", .accent)
             }
         }()
         
@@ -241,13 +241,13 @@ class NotificationTableViewCell: UITableViewCell {
         let config: (title: String, icon: String, backgroundColor: UIColor, textColor: UIColor) = {
             switch type {
             case .success:
-                return ("Rate The Service", "hand.thumbsup.fill", UIColor.systemBlue, .white)
+                return ("Rate The Service", "hand.thumbsup.fill", .primary, .white)
             case .info:
-                return ("Track Location", "mappin.circle.fill", UIColor.systemBlue, .white)
+                return ("Track Location", "mappin.circle.fill", .primary, .white)
             case .error, .fail, .accept, .location:
-                return ("View Request Details", "doc.text.fill", UIColor.systemBlue, .white)
+                return ("View Request Details", "doc.text.fill", .primary, .white)
             case .message:
-                return ("View Message", "envelope.fill", UIColor.systemBlue, .white)
+                return ("View Message", "envelope.fill", .primary, .white)
             }
         }()
         

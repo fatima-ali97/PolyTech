@@ -89,7 +89,7 @@ class NotificationsViewController: UIViewController {
     private func setupUI() {
         title = "Notifications"
         navigationController?.navigationBar.prefersLargeTitles = true
-        view.backgroundColor = .systemBackground
+        view.backgroundColor = .clear
         
         // Add subviews
         view.addSubview(tableView)
@@ -127,7 +127,7 @@ class NotificationsViewController: UIViewController {
             // Clear all button (bottom) - Set this FIRST
             clearAllButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
             clearAllButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
-            clearAllButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -80),
+            clearAllButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -50),
             clearAllButton.heightAnchor.constraint(equalToConstant: 54),
             
             // Mark all read button (floating)
@@ -399,7 +399,7 @@ extension NotificationsViewController: UITableViewDelegate {
                 self?.markAsRead(notification: notification)
                 completion(true)
             }
-            markReadAction.backgroundColor = .systemGreen
+            markReadAction.backgroundColor = .accent
             markReadAction.image = UIImage(systemName: "checkmark.circle.fill")
             
             return UISwipeActionsConfiguration(actions: [deleteAction, markReadAction])
@@ -425,7 +425,7 @@ class EmptyStateView: UIView {
     private let titleLabel: UILabel = {
         let label = UILabel()
         label.font = .systemFont(ofSize: 20, weight: .semibold)
-        label.textColor = .secondaryLabel
+        label.textColor = .onPrimary
         label.textAlignment = .center
         label.numberOfLines = 0
         return label
@@ -434,7 +434,7 @@ class EmptyStateView: UIView {
     private let messageLabel: UILabel = {
         let label = UILabel()
         label.font = .systemFont(ofSize: 16, weight: .regular)
-        label.textColor = .tertiaryLabel
+        label.textColor = .onPrimary
         label.textAlignment = .center
         label.numberOfLines = 0
         return label
