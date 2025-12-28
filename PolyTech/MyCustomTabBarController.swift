@@ -122,7 +122,7 @@ class StudentTabBarController: BaseCustomTabBarController {
         )
         
         let maintenanceVC = createNavControllerFromStoryboard(
-            storyboardName: "Maintenance",
+            storyboardName: "NotificationStoryboard",
             title: "Maintenance",
             image: UIImage(systemName: "wrench.and.screwdriver.fill")
         )
