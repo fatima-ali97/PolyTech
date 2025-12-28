@@ -74,14 +74,14 @@ class HistoryViewController: UIViewController,
         present(alert, animated: true)
     }
 
-    private func openFeedbackPage() {
+    @objc func openFeedbackPage() {
         let storyboard = UIStoryboard(name: "Ali", bundle: nil)
         let vc = storyboard.instantiateViewController(
             withIdentifier: "ServiceFeedbackViewController"
         )
         navigationController?.pushViewController(vc, animated: true)
     }
-
+  
     func tableView(_ tableView: UITableView,
                    numberOfRowsInSection section: Int) -> Int {
         historyList.count
