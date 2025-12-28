@@ -108,20 +108,36 @@ class LoginViewController: UIViewController {
                 return
             }
             
+            // Save login state and user info
+            UserDefaults.standard.set(true, forKey: "isLoggedIn")
+            UserDefaults.standard.set(userId, forKey: "userId")
+            UserDefaults.standard.set(role, forKey: "userRole")
+            
             self.navigateToHome(for: role, userId: userId)
         }
     }
     
     // MARK: - Navigation
     private func navigateToHome(for role: String, userId: String) {
-        // Determine which storyboard file to load based on role
+        // Save login state and user info
+        UserDefaults.standard.set(true, forKey: "isLoggedIn")
+        UserDefaults.standard.set(userId, forKey: "userId")
+        UserDefaults.standard.set(role, forKey: "userRole")
+        
+        // Check if user is a student - use tab bar
+        if role.lowercased() == "student" {
+            // Switch to dashboard with tab bar
+            if let sceneDelegate = view.window?.windowScene?.delegate as? SceneDelegate {
+                sceneDelegate.switchToDashboard()
+            }
+            return
+        }
+        
+        // For admin and technician - use old navigation (without tab bar)
         let storyboardName: String
         let viewControllerID: String
         
         switch role.lowercased() {
-        case "student":
-            storyboardName = "HomePage"  // Name of the storyboard file (without .storyboard extension)
-            viewControllerID = "HomeViewController"  // Storyboard ID set in Identity Inspector
         case "admin":
             storyboardName = "AdminHome"
             viewControllerID = "AdminHomeViewController"
@@ -133,11 +149,10 @@ class LoginViewController: UIViewController {
             signOutUser()
             return
         }
+
         
-        // Load the storyboard file
         let storyboard = UIStoryboard(name: storyboardName, bundle: nil)
         
-        // Instantiate the view controller from the storyboard
         guard let homeVC = storyboard.instantiateViewController(withIdentifier: viewControllerID) as? UIViewController else {
             showAlert(title: "Error", message: "Unable to load home screen.")
             return
