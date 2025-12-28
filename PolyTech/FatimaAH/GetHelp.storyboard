@@ -26,6 +26,12 @@
                                         <color key="textColor" systemColor="secondarySystemGroupedBackgroundColor"/>
                                         <nil key="highlightedColor"/>
                                     </label>
+                                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="arrow.backward" catalog="system" translatesAutoresizingMaskIntoConstraints="NO" id="T3n-qc-buG">
+                                        <rect key="frame" x="21" y="72.333333333333314" width="40" height="16"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                        <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        <preferredSymbolConfiguration key="preferredSymbolConfiguration" weight="bold"/>
+                                    </imageView>
                                 </subviews>
                                 <color key="backgroundColor" red="0.086274509799999996" green="0.1647058824" blue="0.2666666667" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                                 <color key="tintColor" red="0.1215686275" green="0.2784313725" blue="0.58039215690000001" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
@@ -154,6 +160,7 @@
                         </constraints>
                     </view>
                     <connections>
+                        <outlet property="backbtn" destination="T3n-qc-buG" id="N4f-x9-jRa"/>
                         <outlet property="openLinkedIn" destination="TXd-Ax-Ims" id="VCp-8h-Hhc"/>
                         <outlet property="openLinkedin" destination="h44-nK-Tj4" id="heu-Qa-bnP"/>
                     </connections>
@@ -164,6 +171,7 @@
         </scene>
     </scenes>
     <resources>
+        <image name="arrow.backward" catalog="system" width="128" height="95"/>
         <image name="in" width="170.66667175292969" height="170.66667175292969"/>
         <image name="inst" width="16" height="16"/>
         <image name="mail" width="256" height="256"/>
