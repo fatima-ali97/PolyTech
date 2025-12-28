@@ -4,6 +4,8 @@ class HomeViewController: UIViewController {
     
     @IBOutlet weak var Notificationbtn: UIImageView!
     @IBOutlet weak var FAQbtn: UIButton!
+    @IBOutlet weak var chatBot: UIImageView!
+    
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
@@ -13,6 +15,7 @@ class HomeViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setupNotificationButton()
+        setupChatBotBtn()
     }
 
     private func setupNotificationButton() {
@@ -38,17 +41,40 @@ class HomeViewController: UIViewController {
     @IBAction func faqButtonTapped(_ sender: UIButton) {
         print("FAQ button tapped!") // Debugging log
         
-        let storyboard = UIStoryboard(name: "FAQ", bundle: nil) // Replace "FAQ" with your actual storyboard name
-        
+        let storyboard = UIStoryboard(name: "FAQ", bundle: nil)
         guard let vc = storyboard.instantiateViewController(withIdentifier: "FAQViewController") as? FAQViewController else {
             print("FAQViewController not found in storyboard")
             return
         }
-        
-        // Confirm if the controller is correctly instantiated
+
         print("FAQViewController successfully instantiated")
         
         navigationController?.pushViewController(vc, animated: true)
     }
+    
+    
+    
+    
+    private func setupChatBotBtn() {
+
+        chatBot.isUserInteractionEnabled = true
+
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(chatBotTapped))
+        chatBot.addGestureRecognizer(tapGesture)
+    }
+    
+    @objc func chatBotTapped() {
+
+        let storyboard = UIStoryboard(name: "ChatBot", bundle: nil)
+        guard let vc = storyboard.instantiateViewController(withIdentifier: "ChatBotViewController") as? ChatBotViewController else {
+            print("ChatBotViewController not found in storyboard")
+            return
+        }
+        
+        navigationController?.pushViewController(vc, animated: true)
+    }
+    
+    
+    
     }
 
