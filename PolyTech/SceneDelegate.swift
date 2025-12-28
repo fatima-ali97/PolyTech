@@ -25,7 +25,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 //        UserDefaults.standard.removeObject(forKey: "userId")
 //        UserDefaults.standard.removeObject(forKey: "userRole")
 //        print("🔧 DEBUG: Force logged out for testing")
-//        #endif
+//       #endif
         
         // Check if user is logged in
         let isLoggedIn = isUserLoggedIn()
