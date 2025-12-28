@@ -39,3 +39,18 @@ to force show the tab bar in ur screen
         }
 
 ```
+## code-snippet-3
+logout btn
+
+```swift
+@IBAction func logoutButtonTapped(_ sender: UIButton) {
+        let alert = UIAlertController(title: "Logout", message: "Are you sure you want to logout?", preferredStyle: .alert)
+        
+        alert.addAction(UIAlertAction(title: "Cancel", style: .cancel))
+        alert.addAction(UIAlertAction(title: "Logout", style: .destructive) { _ in
+            AuthManager.shared.logout(from: self)
+        })
+        
+        present(alert, animated: true)
+    }
+    ```
