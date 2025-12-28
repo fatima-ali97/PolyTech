@@ -25,7 +25,7 @@
             </objects>
             <point key="canvasLocation" x="483" y="9"/>
         </scene>
-        <!--Profile View Controller-->
+        <!--Profile-->
         <scene sceneID="PMO-Ga-SZr">
             <objects>
                 <viewController id="4YU-c1-hhC" customClass="ProfileViewController" customModule="PolyTech" customModuleProvider="target" sceneMemberID="viewController">
@@ -324,13 +324,6 @@
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Profile" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ZxV-ed-JIp">
-                                <rect key="frame" x="155" y="65" width="82" height="33"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <fontDescription key="fontDescription" type="boldSystem" pointSize="27"/>
-                                <nil key="textColor"/>
-                                <nil key="highlightedColor"/>
-                            </label>
                             <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="0HR-i5-aBA">
                                 <rect key="frame" x="130" y="241" width="132" height="39"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
@@ -354,7 +347,7 @@
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <color key="tintColor" red="0.25098040700000002" green="0.25490197539999998" blue="0.26666668059999998" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                     </view>
-                    <navigationItem key="navigationItem" id="oBo-bv-SZT"/>
+                    <navigationItem key="navigationItem" title="Profile" id="oBo-bv-SZT"/>
                     <connections>
                         <outlet property="actionButton" destination="0HR-i5-aBA" id="q40-Ms-SjX"/>
                         <outlet property="scrollView" destination="Zkh-Zb-GuP" id="4al-Xz-kBQ"/>
