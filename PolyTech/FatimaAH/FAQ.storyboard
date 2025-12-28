@@ -17,7 +17,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <navigationBar contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="PPT-zo-scZ">
-                                <rect key="frame" x="0.0" y="74" width="393" height="44"/>
+                                <rect key="frame" x="0.0" y="74" width="388.33333333333331" height="44"/>
                                 <color key="barTintColor" red="0.086274509803921567" green="0.16470588235294117" blue="0.25882352941176467" alpha="1" colorSpace="calibratedRGB"/>
                                 <items>
                                     <navigationItem title="FAQ" id="X6m-vO-Ee1"/>
@@ -30,7 +30,7 @@
                                 <preferredSymbolConfiguration key="preferredSymbolConfiguration" weight="bold"/>
                             </imageView>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Find important inforamtion and useful help guide." lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="fJr-28-ybm">
-                                <rect key="frame" x="10" y="140" width="378" height="41"/>
+                                <rect key="frame" x="10" y="140" width="373.33333333333331" height="41"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="41" id="6Cm-Cw-0dS"/>
                                 </constraints>
@@ -39,15 +39,15 @@
                                 <nil key="highlightedColor"/>
                             </label>
                             <searchBar contentMode="redraw" text="" translatesAutoresizingMaskIntoConstraints="NO" id="pvR-Qi-Sa8">
-                                <rect key="frame" x="0.0" y="174" width="393" height="56"/>
+                                <rect key="frame" x="0.0" y="174" width="388.33333333333331" height="56"/>
                                 <textInputTraits key="textInputTraits"/>
                             </searchBar>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" showsHorizontalScrollIndicator="NO" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="kD8-27-O8W">
-                                <rect key="frame" x="0.0" y="237" width="393" height="455"/>
+                                <rect key="frame" x="0.0" y="237" width="388.33333333333331" height="479"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                             </tableView>
-                            <button opaque="NO" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="XBD-u0-zEH">
-                                <rect key="frame" x="116.66666666666652" y="694" width="160" height="44"/>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="XBD-u0-zEH">
+                                <rect key="frame" x="40" y="724" width="308.33333333333331" height="44"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="160" id="GqS-P7-lZ5"/>
                                     <constraint firstAttribute="height" constant="44" id="oEv-IZ-0aF"/>
@@ -64,7 +64,6 @@
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
                             <constraint firstItem="kD8-27-O8W" firstAttribute="top" secondItem="pvR-Qi-Sa8" secondAttribute="bottom" constant="7" id="01z-RN-V6F"/>
-                            <constraint firstItem="nxx-X3-iNT" firstAttribute="bottom" secondItem="XBD-u0-zEH" secondAttribute="bottom" constant="40" id="4W9-MN-EzD"/>
                             <constraint firstItem="fJr-28-ybm" firstAttribute="top" secondItem="PPT-zo-scZ" secondAttribute="bottom" constant="22" id="8ji-Kv-RHH"/>
                             <constraint firstItem="pvR-Qi-Sa8" firstAttribute="centerY" secondItem="nxx-X3-iNT" secondAttribute="centerY" constant="-249" id="GnR-s5-XQN"/>
                             <constraint firstItem="fJr-28-ybm" firstAttribute="centerY" secondItem="nxx-X3-iNT" secondAttribute="centerY" constant="-290.5" id="IDj-E2-uTl"/>
@@ -72,7 +71,10 @@
                             <constraint firstItem="XBD-u0-zEH" firstAttribute="centerX" secondItem="nxx-X3-iNT" secondAttribute="centerX" id="PQz-AG-B2L"/>
                             <constraint firstItem="kD8-27-O8W" firstAttribute="leading" secondItem="nxx-X3-iNT" secondAttribute="leading" id="STh-y7-RSE"/>
                             <constraint firstItem="kD8-27-O8W" firstAttribute="centerX" secondItem="thZ-yU-2WX" secondAttribute="centerX" id="WTs-yE-9CK"/>
+                            <constraint firstItem="nxx-X3-iNT" firstAttribute="bottom" secondItem="XBD-u0-zEH" secondAttribute="bottom" constant="16" id="XVq-jb-fCp"/>
                             <constraint firstItem="kD8-27-O8W" firstAttribute="leading" secondItem="PPT-zo-scZ" secondAttribute="leading" id="Xgt-ed-ugg"/>
+                            <constraint firstItem="XBD-u0-zEH" firstAttribute="leading" secondItem="nxx-X3-iNT" secondAttribute="leading" constant="40" id="YmS-Rh-WUu"/>
+                            <constraint firstItem="nxx-X3-iNT" firstAttribute="trailing" secondItem="XBD-u0-zEH" secondAttribute="trailing" constant="40" id="ajm-cK-VRH"/>
                             <constraint firstItem="kD8-27-O8W" firstAttribute="trailing" secondItem="pvR-Qi-Sa8" secondAttribute="trailing" id="ays-dw-Dhk"/>
                             <constraint firstItem="kD8-27-O8W" firstAttribute="trailing" secondItem="PPT-zo-scZ" secondAttribute="trailing" id="gKM-Jw-ZBG"/>
                             <constraint firstItem="kD8-27-O8W" firstAttribute="leading" secondItem="pvR-Qi-Sa8" secondAttribute="leading" id="oaT-EL-6kq"/>
