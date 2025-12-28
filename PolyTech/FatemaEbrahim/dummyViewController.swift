@@ -29,7 +29,7 @@ class dummyViewController: UIViewController {
         super.viewWillAppear(animated)
         
         // Ensure tab bar is visible when this screen appears
-        if let tabBarController = self.tabBarController as? CustomTabBarController {
+        if let tabBarController = self.tabBarController as? BaseCustomTabBarController {
             tabBarController.hideCustomTabBar(false, animated: true)
         }
     }
@@ -50,10 +50,6 @@ class dummyViewController: UIViewController {
 
 }
 
-// Make it conform to BaseHomeViewController if needed
-extension dummyViewController: BaseHomeViewController {
-    // userId property is already defined above
-}
 
 
 

@@ -17,8 +17,8 @@ extension TabBarControllerProtocol {
     }
 }
 
-// MARK: - Custom Tab Bar Controller
-class CustomTabBarController: UITabBarController, TabBarControllerProtocol {
+// MARK: - Base Custom Tab Bar Controller
+class BaseCustomTabBarController: UITabBarController, TabBarControllerProtocol {
     
     private var customTabBarView: TabBarView!
     
@@ -46,7 +46,6 @@ class CustomTabBarController: UITabBarController, TabBarControllerProtocol {
     private func updateTabBarVisibility() {
         guard let selectedVC = selectedViewController else { return }
         
-        // Check if the current view controller (or its children) conforms to TabBarHideable
         if let navController = selectedVC as? UINavigationController {
             let shouldHide = navController.viewControllers.contains { ($0 as? TabBarHideable)?.hidesTabBar ?? false }
             hideCustomTabBar(shouldHide)
@@ -55,46 +54,33 @@ class CustomTabBarController: UITabBarController, TabBarControllerProtocol {
         }
     }
     
-    private func setupViewControllers() {
-        let homeVC = createNavControllerFromStoryboard(
-            storyboardName: "HomePage",
-            title: "Home",
-            image: UIImage(systemName: "house.fill")
-        )
-        
-        let maintenanceVC = createNavControllerFromStoryboard(
-            storyboardName: "Maintenance",
-            title: "Maintenance",
-            image: UIImage(systemName: "wrench.and.screwdriver.fill")
-        )
-        
-        let inventoryVC = createNavControllerFromStoryboard(
-            storyboardName: "InvStoryboard",
-            title: "Inventory",
-            image: UIImage(systemName: "shippingbox.fill")
-        )
-        
-        let profileVC = createNavControllerFromStoryboard(
-            storyboardName: "Profile",
-            title: "Profile",
-            image: UIImage(systemName: "person.fill")
-        )
-        
-        viewControllers = [homeVC, maintenanceVC, inventoryVC, profileVC]
+    // Override this in subclasses
+    func setupViewControllers() {
+        fatalError("setupViewControllers() must be overridden in subclass")
     }
     
-    private func createNavControllerFromStoryboard(storyboardName: String, title: String, image: UIImage?) -> UINavigationController {
+    func createNavControllerFromStoryboard(storyboardName: String, title: String, image: UIImage?) -> UINavigationController {
         let storyboard = UIStoryboard(name: storyboardName, bundle: nil)
         
         guard let viewController = storyboard.instantiateInitialViewController() else {
             fatalError("Cannot instantiate initial view controller from \(storyboardName) storyboard. Make sure 'Is Initial View Controller' is checked.")
         }
         
+        // Pass userId to the view controller
+        let userId = UserDefaults.standard.string(forKey: "userId")
+        
         if let navController = viewController as? UINavigationController {
+            if var rootVC = navController.viewControllers.first as? BaseHomeViewController {
+                rootVC.userId = userId
+            }
             navController.tabBarItem.title = title
             navController.tabBarItem.image = image
             return navController
         } else {
+            if var baseVC = viewController as? BaseHomeViewController {
+                baseVC.userId = userId
+            }
+            
             let navController = UINavigationController(rootViewController: viewController)
             navController.tabBarItem.title = title
             navController.tabBarItem.image = image
@@ -123,6 +109,111 @@ class CustomTabBarController: UITabBarController, TabBarControllerProtocol {
     }
 }
 
+// MARK: - Student Tab Bar Controller
+class StudentTabBarController: BaseCustomTabBarController {
+    
+    override func setupViewControllers() {
+        print("📱 Setting up Student Tab Bar")
+        
+        let homeVC = createNavControllerFromStoryboard(
+            storyboardName: "HomePage",
+            title: "Home",
+            image: UIImage(systemName: "house.fill")
+        )
+        
+        let maintenanceVC = createNavControllerFromStoryboard(
+            storyboardName: "Maintenance",
+            title: "Maintenance",
+            image: UIImage(systemName: "wrench.and.screwdriver.fill")
+        )
+        
+        let inventoryVC = createNavControllerFromStoryboard(
+            storyboardName: "Inventory",
+            title: "Inventory",
+            image: UIImage(systemName: "shippingbox.fill")
+        )
+        
+        let profileVC = createNavControllerFromStoryboard(
+            storyboardName: "Profile",
+            title: "Profile",
+            image: UIImage(systemName: "person.fill")
+        )
+        
+        viewControllers = [homeVC, maintenanceVC, inventoryVC, profileVC]
+        print("✅ Student tabs configured: Home, Maintenance, Inventory, Profile")
+    }
+}
+
+// MARK: - Admin Tab Bar Controller
+class AdminTabBarController: BaseCustomTabBarController {
+    
+    override func setupViewControllers() {
+        print("📱 Setting up Admin Tab Bar")
+        
+        let homeVC = createNavControllerFromStoryboard(
+            storyboardName: "AdminDashboard",
+            title: "Home",
+            image: UIImage(systemName: "house.fill")
+        )
+        
+        let requestsVC = createNavControllerFromStoryboard(
+            storyboardName: "dummy", // TODO: change this
+            title: "Requests",
+            image: UIImage(systemName: "doc.text.fill")
+        )
+        
+        let techniciansVC = createNavControllerFromStoryboard(
+            storyboardName: "Technicians",
+            title: "Technicians",
+            image: UIImage(systemName: "person.2.fill")
+        )
+        
+        let profileVC = createNavControllerFromStoryboard(
+            storyboardName: "Profile",
+            title: "Profile",
+            image: UIImage(systemName: "person.circle.fill")
+        )
+        
+        viewControllers = [homeVC, requestsVC, techniciansVC, profileVC]
+        print("✅ Admin tabs configured: Home, Requests, Technicians, Profile")
+    }
+}
+
+// MARK: - Technician Tab Bar Controller
+class TechnicianTabBarController: BaseCustomTabBarController {
+    
+    override func setupViewControllers() {
+        print("📱 Setting up Technician Tab Bar")
+        
+        let homeVC = createNavControllerFromStoryboard(
+            storyboardName: "TechnicianDashboard",
+            title: "Home",
+            image: UIImage(systemName: "house.fill")
+        )
+        
+        let requestsVC = createNavControllerFromStoryboard(
+            storyboardName: "TechnicianRequests",
+            title: "Requests",
+            image: UIImage(systemName: "doc.text.fill")
+        )
+        
+        let tasksVC = createNavControllerFromStoryboard(
+            storyboardName: "TechnicianTasks",
+            title: "Tasks",
+            image: UIImage(systemName: "checklist")
+        )
+        
+        let profileVC = createNavControllerFromStoryboard(
+            storyboardName: "TechnicianProfile",
+            title: "Profile",
+            image: UIImage(systemName: "person.circle.fill")
+        )
+        
+        viewControllers = [homeVC, requestsVC, tasksVC, profileVC]
+        print("✅ Technician tabs configured: Home, Requests, Tasks, Profile")
+    }
+}
+
 // MARK: - Tab Bar View
 class TabBarView: UIView {
     
@@ -135,8 +226,7 @@ class TabBarView: UIView {
     private let selectedButtonWidth: CGFloat = 100
     private let buttonHeight: CGFloat = 48
     
-    private let primaryColor = UIColor(red: 254/255, green: 152/255, blue: 155/255, alpha: 1.0)
-    // private let backgroundColor = UIColor.systemBackground
+    private let primaryColor = UIColor(hex: "#2A4662")
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -149,7 +239,7 @@ class TabBarView: UIView {
     }
     
     private func setupView() {
-        self.backgroundColor = backgroundColor
+        self.backgroundColor = .systemBackground
         layer.shadowColor = UIColor.black.cgColor
         layer.shadowOpacity = 0.1
         layer.shadowOffset = CGSize(width: 0, height: -2)
@@ -295,4 +385,9 @@ extension UIColor {
         
         self.init(red: red, green: green, blue: blue, alpha: alpha)
     }
+}
+
+// MARK: - Base Protocol for Home View Controllers
+protocol BaseHomeViewController: UIViewController {
+    var userId: String? { get set }
 }
