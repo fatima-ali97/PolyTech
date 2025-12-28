@@ -1,16 +1,20 @@
 import UIKit
 
-class RequestListViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
+class InventoryViewController: UIViewController {
 
     @IBOutlet weak var tableView: UITableView!
+    @IBOutlet weak var Addpage: UIImageView!
 
-    let requests = ["Request 1", "Request 2", "Request 3"]
+    var requests = ["Request 1", "Request 2", "Request 3"]
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        tableView.dataSource = self
+
         tableView.delegate = self
+        tableView.dataSource = self
     }
+}
+extension InventoryViewController: UITableViewDataSource, UITableViewDelegate {
 
     func tableView(_ tableView: UITableView,
                    numberOfRowsInSection section: Int) -> Int {
@@ -20,8 +24,24 @@ class RequestListViewController: UIViewController, UITableViewDataSource, UITabl
     func tableView(_ tableView: UITableView,
                    cellForRowAt indexPath: IndexPath) -> UITableViewCell {
 
-        let cell = UITableViewCell(style: .default, reuseIdentifier: "cell")
+        let cell = tableView.dequeueReusableCell(
+            withIdentifier: "RequestCell",
+            for: indexPath
+        )
+
         cell.textLabel?.text = requests[indexPath.row]
         return cell
     }
+
+    // Swipe to delete
+    func tableView(_ tableView: UITableView,
+                   commit editingStyle: UITableViewCell.EditingStyle,
+                   forRowAt indexPath: IndexPath) {
+
+        if editingStyle == .delete {
+            requests.remove(at: indexPath.row)
+            tableView.deleteRows(at: [indexPath], with: .automatic)
+        }
+    }
 }
+
