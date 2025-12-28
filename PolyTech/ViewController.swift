@@ -12,7 +12,8 @@ class LoginViewController: UIViewController {
     
     // MARK: - Properties
     private let db = Firestore.firestore()
-    private let emailSuffix = "@student.polytechnic.bh"
+    private let studentEmailSuffix = "@student.polytechnic.bh"
+    private let staffEmailSuffix = "@polytechnic.bh"
     
     // MARK: - IBOutlets
     @IBOutlet weak var academicIdTextField: UITextField!
@@ -48,9 +49,9 @@ class LoginViewController: UIViewController {
     @IBAction func loginButtonTapped(_ sender: UIButton) {
         view.endEditing(true)
         
-        guard let academicId = academicIdTextField.text?.trimmingCharacters(in: .whitespaces),
-              !academicId.isEmpty else {
-            showAlert(title: "Missing Academic ID", message: "Please enter your academic ID.")
+        guard let identifier = academicIdTextField.text?.trimmingCharacters(in: .whitespaces),
+              !identifier.isEmpty else {
+            showAlert(title: "Missing ID", message: "Please enter your academic ID or username.")
             return
         }
         
@@ -60,30 +61,49 @@ class LoginViewController: UIViewController {
             return
         }
         
-        let email = academicId + emailSuffix
-        authenticateUser(email: email, password: password)
+        // Try to authenticate with both email formats
+        attemptLogin(identifier: identifier, password: password)
     }
     
     // MARK: - Authentication
-    private func authenticateUser(email: String, password: String) {
+    private func attemptLogin(identifier: String, password: String) {
         setLoadingState(true)
         
-        Auth.auth().signIn(withEmail: email, password: password) { [weak self] authResult, error in
+        // First, try with student email format
+        let studentEmail = identifier + studentEmailSuffix
+        
+        Auth.auth().signIn(withEmail: studentEmail, password: password) { [weak self] authResult, error in
             guard let self = self else { return }
             
-            if let error = error {
-                self.setLoadingState(false)
-                self.handleAuthError(error)
+            if error == nil, let userId = authResult?.user.uid {
+                // Student login successful
+                print("✅ Student login successful")
+                self.fetchUserRole(userId: userId)
                 return
             }
             
-            guard let userId = authResult?.user.uid else {
-                self.setLoadingState(false)
-                self.showAlert(title: "Error", message: "Unable to retrieve user information.")
-                return
-            }
+            // Student login failed, try staff email format
+            print("⚠️ Student login failed, trying staff format...")
+            let staffEmail = identifier + self.staffEmailSuffix
             
-            self.fetchUserRole(userId: userId)
+            Auth.auth().signIn(withEmail: staffEmail, password: password) { authResult, error in
+                if let error = error {
+                    // Both attempts failed
+                    self.setLoadingState(false)
+                    self.handleAuthError(error)
+                    return
+                }
+                
+                guard let userId = authResult?.user.uid else {
+                    self.setLoadingState(false)
+                    self.showAlert(title: "Error", message: "Unable to retrieve user information.")
+                    return
+                }
+                
+                // Staff login successful
+                print("✅ Staff login successful")
+                self.fetchUserRole(userId: userId)
+            }
         }
     }
     
@@ -119,56 +139,18 @@ class LoginViewController: UIViewController {
     
     // MARK: - Navigation
     private func navigateToHome(for role: String, userId: String) {
-        // Save login state and user info
+        // Save login state and user info (already saved above, but keeping for clarity)
         UserDefaults.standard.set(true, forKey: "isLoggedIn")
         UserDefaults.standard.set(userId, forKey: "userId")
         UserDefaults.standard.set(role, forKey: "userRole")
         
-        // Check if user is a student - use tab bar
-        if role.lowercased() == "student" {
-            // Switch to dashboard with tab bar
-            if let sceneDelegate = view.window?.windowScene?.delegate as? SceneDelegate {
-                sceneDelegate.switchToDashboard()
-            }
-            return
+        print("📱 Navigating to home for role: \(role)")
+        print("💾 Saved login state to UserDefaults")
+        
+        // All roles now use the custom tab bar!
+        if let sceneDelegate = view.window?.windowScene?.delegate as? SceneDelegate {
+            sceneDelegate.switchToDashboard()
         }
-        
-        // For admin and technician - use old navigation (without tab bar)
-        let storyboardName: String
-        let viewControllerID: String
-        
-        switch role.lowercased() {
-        case "admin":
-            storyboardName = "AdminHome"
-            viewControllerID = "AdminHomeViewController"
-        case "technician":
-            storyboardName = "TechnicianHome"
-            viewControllerID = "TechnicianHomeViewController"
-        default:
-            showAlert(title: "Error", message: "Invalid user role: \(role)")
-            signOutUser()
-            return
-        }
-
-        
-        let storyboard = UIStoryboard(name: storyboardName, bundle: nil)
-        
-        guard let homeVC = storyboard.instantiateViewController(withIdentifier: viewControllerID) as? UIViewController else {
-            showAlert(title: "Error", message: "Unable to load home screen.")
-            return
-        }
-        
-        // Pass userId to the destination VC if it conforms to BaseHomeViewController
-        if var baseHomeVC = homeVC as? BaseHomeViewController {
-            baseHomeVC.userId = userId
-        }
-        
-        // Embed in navigation controller
-        let navigationController = UINavigationController(rootViewController: homeVC)
-        navigationController.modalPresentationStyle = .fullScreen
-        
-        // Present the navigation controller
-        self.present(navigationController, animated: true, completion: nil)
     }
     
     // MARK: - Error Handling
@@ -181,9 +163,9 @@ class LoginViewController: UIViewController {
         case .wrongPassword:
             message = "Incorrect password. Please try again."
         case .invalidEmail:
-            message = "Invalid academic ID format."
+            message = "Invalid ID format."
         case .userNotFound:
-            message = "No account found with this academic ID."
+            message = "No account found with this ID."
         case .networkError:
             message = "Network error. Please check your connection."
         case .tooManyRequests:
@@ -213,7 +195,7 @@ class LoginViewController: UIViewController {
     }
 }
 
-// MARK: - Base Protocol for Home View Controllers
-protocol BaseHomeViewController: UIViewController {
-    var userId: String? { get set }
-}
+//// MARK: - Base Protocol for Home View Controllers
+//protocol BaseHomeViewController: UIViewController {
+//    var userId: String? { get set }
+//}

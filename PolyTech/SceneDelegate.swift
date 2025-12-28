@@ -33,7 +33,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         
         if isLoggedIn {
             print("➡️ User is logged in - showing dashboard")
-            showDashboard(in: window)
+            let userRole = UserDefaults.standard.string(forKey: "userRole") ?? "student"
+            showDashboard(in: window, role: userRole)
         } else {
             print("➡️ User is NOT logged in - showing login screen")
             showLogin(in: window)
@@ -48,7 +49,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     private func showLogin(in window: UIWindow) {
         print("🔐 Loading login storyboard...")
         
-        // Load from your LOGIN storyboard
         let loginStoryboard = UIStoryboard(name: "LoginStoryboard", bundle: nil)
         
         guard let loginVC = loginStoryboard.instantiateInitialViewController() else {
@@ -59,9 +59,26 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         window.rootViewController = loginVC
     }
     
-    private func showDashboard(in window: UIWindow) {
-        print("📱 Loading dashboard with custom tab bar...")
-        let tabBarController = CustomTabBarController()
+    private func showDashboard(in window: UIWindow, role: String) {
+        print("📱 Loading dashboard with custom tab bar for role: \(role)")
+        
+        let tabBarController: UITabBarController
+        
+        switch role.lowercased() {
+        case "student":
+            tabBarController = StudentTabBarController()
+            print("✅ Student Tab Bar Controller created")
+        case "admin":
+            tabBarController = AdminTabBarController()
+            print("✅ Admin Tab Bar Controller created")
+        case "technician":
+            tabBarController = TechnicianTabBarController()
+            print("✅ Technician Tab Bar Controller created")
+        default:
+            print("⚠️ Unknown role: \(role), defaulting to Student")
+            tabBarController = StudentTabBarController()
+        }
+        
         window.rootViewController = tabBarController
         print("✅ Dashboard loaded successfully")
     }
@@ -91,7 +108,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         
         showLogin(in: window)
         
-        // Animate transition - Fixed closure syntax
         UIView.transition(with: window, duration: 0.3, options: .transitionCrossDissolve, animations: nil) { _ in
             print("✅ Transition to login complete")
         }
@@ -104,9 +120,10 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             return
         }
         
-        showDashboard(in: window)
+        // Get the user role from UserDefaults
+        let userRole = UserDefaults.standard.string(forKey: "userRole") ?? "student"
+        showDashboard(in: window, role: userRole)
         
-        // Animate transition - Fixed closure syntax
         UIView.transition(with: window, duration: 0.3, options: .transitionCrossDissolve, animations: nil) { _ in
             print("✅ Transition to dashboard complete")
         }

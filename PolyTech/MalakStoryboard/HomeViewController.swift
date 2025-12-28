@@ -7,13 +7,23 @@ class HomeViewController: UIViewController {
     @IBOutlet weak var chatBot: UIImageView!
     
     
+    var userId: String?
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        // Ensure tab bar is visible
+        if let tabBarController = self.tabBarController as? BaseCustomTabBarController {
+            tabBarController.hideCustomTabBar(false, animated: true)
+        }
         navigationController?.setNavigationBarHidden(true, animated: animated)
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        // Get userId from UserDefaults if not passed
+                if userId == nil {
+                    userId = UserDefaults.standard.string(forKey: "userId")
+                }
+                
         setupNotificationButton()
         setupChatBotBtn()
     }
@@ -37,7 +47,16 @@ class HomeViewController: UIViewController {
         navigationController?.pushViewController(vc, animated: true)
     }
     
-    
+    private func loadData() {
+           guard let userId = userId else {
+               print("⚠️ No user ID available")
+               return
+           }
+           
+           print("✅ Loading student dashboard for user: \(userId)")
+           // Load student-specific data here
+       }
+       
     @IBAction func faqButtonTapped(_ sender: UIButton) {
         print("FAQ button tapped!") // Debugging log
         
