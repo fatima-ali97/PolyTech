@@ -9,13 +9,14 @@ import UIKit
 
 class HelpPageViewController: UIViewController {
 
+    @IBOutlet weak var backbtn: UIImageView!
     override func viewDidLoad() {
         super.viewDidLoad()
 
         // Do any additional setup after loading the view.
     }
-    
 
+    
     /*
     // MARK: - Navigation
 
