@@ -182,7 +182,7 @@ extension TasksViewController: TaskCellDelegate {
         let task = tasks[indexPath.row]
         print("Details tapped for Task ID: \(task.id) - Attempting transition to DetailsTasksViewController")
         
-        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+        let storyboard = UIStoryboard(name: "Technician", bundle: nil)
         
         guard let detailsVC = storyboard.instantiateViewController(withIdentifier: "DetailsVC") as? DetailsTasksViewController else {
             print("Error: Could not instantiate DetailsTasksViewController. Check Storyboard ID.")
