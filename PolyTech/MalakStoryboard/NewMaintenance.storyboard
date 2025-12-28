@@ -138,13 +138,18 @@
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <color key="tintColor" red="0.81960785390000002" green="0.82745099070000006" blue="0.8392156959" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                             </imageView>
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="square.and.arrow.up" catalog="system" translatesAutoresizingMaskIntoConstraints="NO" id="CDW-0Y-tZ7">
+                                <rect key="frame" x="320" y="502.33333333333303" width="12" height="25"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <color key="tintColor" red="0.83137255909999996" green="0.83529412749999998" blue="0.84705877299999999" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
+                            </imageView>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="6qH-V5-F4c"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                     </view>
                     <navigationItem key="navigationItem" id="tPd-Cl-udt"/>
                     <connections>
-                        <outlet property="Backbtn" destination="lhb-v9-BMN" id="7HP-C5-hEu"/>
+                        <outlet property="Backbtn" destination="3Jz-Zf-yvS" id="hrF-AY-hYQ"/>
                         <outlet property="category" destination="O5p-4W-SpH" id="urU-UV-6gJ"/>
                         <outlet property="categoryDropDown" destination="eA6-uy-09t" id="URD-ek-wlf"/>
                         <outlet property="imageUpload" destination="VVv-96-c6C" id="8VW-8m-1Qf"/>
@@ -152,13 +157,14 @@
                         <outlet property="pageTitle" destination="mSt-YA-kRE" id="w7u-sl-iuW"/>
                         <outlet property="requestName" destination="y7O-ik-8p4" id="pfK-Pf-Pm1"/>
                         <outlet property="savebtn" destination="F8X-sl-1RF" id="iVK-Wd-Hmf"/>
+                        <outlet property="uploadImage" destination="CDW-0Y-tZ7" id="cLv-1M-RYR"/>
                         <outlet property="urgency" destination="NJx-qO-D0q" id="i3s-qD-fCl"/>
                         <outlet property="urgencyDropDown" destination="5ec-09-TqG" id="bnJ-Af-2zE"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="QGQ-AJ-MhK" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1182" y="-1313"/>
+            <point key="canvasLocation" x="1180.9160305343512" y="-1313.3802816901409"/>
         </scene>
     </scenes>
     <resources>
