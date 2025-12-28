@@ -13,7 +13,7 @@ struct FAQSection {
     var rows: [FAQRow]
 }
 
-final class FAQViewController: UIViewController {
+ class FAQViewController: UIViewController {
 
     @IBOutlet weak var searchBar: UISearchBar!
     @IBOutlet weak var tableView: UITableView!
@@ -24,6 +24,7 @@ final class FAQViewController: UIViewController {
     private var sections: [FAQSection] = []
 
     private var visibleSections: [FAQSection] = []
+    
 
     private var isSearching: Bool {
         let text = (searchBar.text ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
@@ -158,8 +159,8 @@ If you forgot your password completely, contact IT Help.
     }
 
     @IBAction func getHelpTapped(_ sender: UIButton) {
-        let sb = UIStoryboard(name: "   GetHelp", bundle: nil)
-        let vc = sb.instantiateViewController(withIdentifier: "HelpPageVC")
+        let sb = UIStoryboard(name: "GetHelp", bundle: nil)
+        let vc = sb.instantiateViewController(withIdentifier: "HelpPageViewController")
         navigationController?.pushViewController(vc, animated: true)
     }
 
