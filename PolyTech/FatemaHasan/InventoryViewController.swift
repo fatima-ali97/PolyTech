@@ -1,47 +1,88 @@
 import UIKit
 
-class InventoryViewController: UIViewController {
+final class ItemsViewController: UIViewController {
 
-    @IBOutlet weak var tableView: UITableView!
-    @IBOutlet weak var Addpage: UIImageView!
+    // MARK: - Properties
 
-    var requests = ["Request 1", "Request 2", "Request 3"]
+    private var items: [Item] = []
+    private let tableView = UITableView()
+
+    // MARK: - Lifecycle
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        title = "Items"
+        view.backgroundColor = .systemBackground
 
-        tableView.delegate = self
+        setupTableView()
+        items = generateSampleData()
+    }
+
+    // MARK: - Setup
+
+    private func setupTableView() {
+        tableView.translatesAutoresizingMaskIntoConstraints = false
+        tableView.register(
+            ItemTableViewCell.self,
+            forCellReuseIdentifier: ItemTableViewCell.reuseIdentifier
+        )
         tableView.dataSource = self
+        tableView.delegate = self
+
+        view.addSubview(tableView)
+
+        NSLayoutConstraint.activate([
+            tableView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
+        ])
+    }
+
+    // MARK: - Sample Data
+
+    private func generateSampleData() -> [Item] {
+        return (1...10).map {
+            Item(id: UUID(), title: "Sample Item \($0)")
+        }
     }
 }
-extension InventoryViewController: UITableViewDataSource, UITableViewDelegate {
+extension ItemsViewController: UITableViewDataSource, UITableViewDelegate {
 
-    func tableView(_ tableView: UITableView,
-                   numberOfRowsInSection section: Int) -> Int {
-        return requests.count
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        items.count
     }
 
-    func tableView(_ tableView: UITableView,
-                   cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+    func tableView(
+        _ tableView: UITableView,
+        cellForRowAt indexPath: IndexPath
+    ) -> UITableViewCell {
 
-        let cell = tableView.dequeueReusableCell(
-            withIdentifier: "RequestCell",
+        guard let cell = tableView.dequeueReusableCell(
+            withIdentifier: ItemTableViewCell.reuseIdentifier,
             for: indexPath
-        )
+        ) as? ItemTableViewCell else {
+            return UITableViewCell()
+        }
 
-        cell.textLabel?.text = requests[indexPath.row]
-        return cell
-    }
+        let item = items[indexPath.row]
+        cell.configure(with: item)
 
-    // Swipe to delete
-    func tableView(_ tableView: UITableView,
-                   commit editingStyle: UITableViewCell.EditingStyle,
-                   forRowAt indexPath: IndexPath) {
+        // Button actions
+        cell.onAddTapped = {
+            print("Add tapped for \(item.title)")
+        }
 
-        if editingStyle == .delete {
-            requests.remove(at: indexPath.row)
+        cell.onEditTapped = {
+            print("Edit tapped for \(item.title)")
+        }
+
+        cell.onDeleteTapped = { [weak self] in
+            self?.items.remove(at: indexPath.row)
             tableView.deleteRows(at: [indexPath], with: .automatic)
         }
+
+        return cell
     }
 }
 
