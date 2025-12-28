@@ -13,7 +13,8 @@ struct TaskModel {
     let status: String
     let description: String?
     let Address: String?
-
+    var note: String?
+    
     init?(dictionary: [String: Any]) {
         guard let id = dictionary["id"] as? String,
               let client = dictionary["client"] as? String,
@@ -28,5 +29,6 @@ struct TaskModel {
         self.status = status
         self.description = dictionary["description"] as? String
         self.Address = dictionary["Address"] as? String
+        self.note = dictionary["note"] as? String
     }
 }

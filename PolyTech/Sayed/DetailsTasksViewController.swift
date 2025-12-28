@@ -6,11 +6,13 @@
 //
 
 import UIKit
+import FirebaseFirestore
 
 class DetailsTasksViewController: UIViewController {
     
     var task: TaskModel?
-
+    let db = Firestore.firestore()
+    
     @IBOutlet weak var clientLabel: UILabel!
     @IBOutlet weak var taskIDLabel: UILabel!
     @IBOutlet weak var descriptionLabel: UILabel!
@@ -42,6 +44,8 @@ class DetailsTasksViewController: UIViewController {
         dueDateLabel.text = "Scheduled for \(task.dueDate)"
         AddressLabel.text = task.Address ?? "No Address"
         
+        notesTextView.text = task.note ?? ""
+        
         switch task.status {
         case TaskFilter.pending.rawValue:
             statusSegmentedControl.selectedSegmentIndex = 0 // pending
@@ -63,11 +67,53 @@ class DetailsTasksViewController: UIViewController {
         }
 
     @IBAction func updateStatusTapped(_ sender: UIButton) {
-        print("Status update button tapped.")
+        saveChangesToFirebase()
     }
+    
+    func saveChangesToFirebase() {
+            guard let taskId = task?.id else { return }
+            
+            let selectedIndex = statusSegmentedControl.selectedSegmentIndex
+            var newStatus = TaskFilter.pending.rawValue
+            
+            if selectedIndex == 1 { newStatus = TaskFilter.inProgress.rawValue }
+            else if selectedIndex == 2 { newStatus = TaskFilter.completed.rawValue }
+            
+            let newNote = notesTextView.text ?? ""
 
-    @IBAction func updateNoteTapped(_ sender: UIButton) {
-        let newNote = notesTextView.text ?? ""
-        print("New note saved: \(newNote)")
+            db.collection("tasks").whereField("id", isEqualTo: taskId).getDocuments { (snapshot, error) in
+                if let error = error {
+                    print("Error: \(error.localizedDescription)")
+                    return
+                }
+
+                guard let document = snapshot?.documents.first else {
+                    print("No document found with ID: \(taskId)")
+                    return
+                }
+
+                document.reference.updateData([
+                    "status": newStatus,
+                    "note": newNote
+                ]) { err in
+                    if let err = err {
+                        print("Error updating document: \(err)")
+                    } else {
+                        print("✅ Document successfully updated")
+                        self.showSuccessAlert()
+                    }
+                }
+            }
+        }
+
+    func showSuccessAlert() {
+        let alert = UIAlertController(
+            title: "Success",
+            message: "Changes have been saved successfully to Firebase",
+            preferredStyle: .alert
+        )
+        
+        alert.addAction(UIAlertAction(title: "OK", style: .default))
+        present(alert, animated: true)
     }
 }
