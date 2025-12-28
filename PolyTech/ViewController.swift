@@ -7,7 +7,7 @@
 import UIKit
 import FirebaseAuth
 import FirebaseFirestore
-
+import LocalAuthentication // for face ID
 class LoginViewController: UIViewController {
     
     // MARK: - Properties
@@ -132,8 +132,34 @@ class LoginViewController: UIViewController {
             UserDefaults.standard.set(true, forKey: "isLoggedIn")
             UserDefaults.standard.set(userId, forKey: "userId")
             UserDefaults.standard.set(role, forKey: "userRole")
+            //do the face id thing
+            let localAuthenticationContext = LAContext()
+            var authenticationError: NSError?
             
-            self.navigateToHome(for: role, userId: userId)
+            let reason = "Authentication Required to Login."
+            
+            if localAuthenticationContext.canEvaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, error: &authenticationError) {
+                localAuthenticationContext.evaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, localizedReason: reason) { success, evaluateError in
+                    if success {
+                        DispatchQueue.main.async {
+                            self.navigateToHome(for: role, userId: userId)
+                        }
+                      
+                    } else {
+                        guard let error = evaluateError else {
+                            return
+                        }
+                        print(error)
+                    }
+                }
+            }else{
+                guard let error = authenticationError else {
+                    return
+                }
+                print(error)
+            }
+            //self navigate to home was here
+            
         }
     }
     
