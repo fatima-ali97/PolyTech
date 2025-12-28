@@ -11,7 +11,6 @@
         <!--Admin Dashboard View Controller-->
         <scene sceneID="N0N-B9-yur">
             <objects>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="Xw9-uh-UM9" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
                 <viewController storyboardIdentifier="AdminDashboardViewController" id="Srr-pD-4gI" customClass="AdminDashboardViewController" customModule="PolyTech" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="eqL-Y6-G4W">
                         <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
@@ -310,9 +309,12 @@
                     <navigationItem key="navigationItem" id="B53-an-Nj2"/>
                     <connections>
                         <outlet property="completedLabel" destination="zC8-hU-3PN" id="z51-WO-DEh"/>
+                        <outlet property="completedStatusLabel" destination="VEw-ho-5xv" id="Mhb-hV-iQX"/>
                         <outlet property="donutChartView" destination="aK3-MK-kHa" id="wlg-3T-wxp"/>
                         <outlet property="inProgressLabel" destination="eiA-kK-lKi" id="EKP-Ve-e8w"/>
+                        <outlet property="inProgressStatusLabel" destination="Pe8-xX-8J8" id="tKg-VY-UZg"/>
                         <outlet property="pendingLabel" destination="fib-Q5-b67" id="fBc-h1-l5F"/>
+                        <outlet property="pendingStatusLabel" destination="AQ7-dB-6X5" id="bYI-On-vb1"/>
                         <outlet property="totalRequestsLabel" destination="E8p-j1-zaF" id="e8R-v9-VSh"/>
                         <outletCollection property="cardViews" destination="3rH-Eo-gZB" collectionClass="NSMutableArray" id="RL3-Ga-CYt"/>
                         <outletCollection property="cardViews" destination="Wd1-c1-29I" collectionClass="NSMutableArray" id="6nH-m6-oen"/>
@@ -322,6 +324,7 @@
                         <outletCollection property="cardViews" destination="DcZ-KM-Ogm" collectionClass="NSMutableArray" id="L2J-Am-ZI4"/>
                     </connections>
                 </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="Xw9-uh-UM9" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="-686.25954198473278" y="-555.63380281690138"/>
         </scene>

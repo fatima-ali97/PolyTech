@@ -10,6 +10,9 @@ import FirebaseFirestore
 
 class AdminDashboardViewController: UIViewController {
 
+    @IBOutlet weak var pendingStatusLabel: UILabel!
+    @IBOutlet weak var inProgressStatusLabel: UILabel!
+    @IBOutlet weak var completedStatusLabel: UILabel!
     @IBOutlet weak var totalRequestsLabel: UILabel!
     @IBOutlet weak var pendingLabel: UILabel!
     @IBOutlet weak var inProgressLabel: UILabel!
@@ -18,18 +21,8 @@ class AdminDashboardViewController: UIViewController {
     @IBOutlet var cardViews: [UIView]!
     
     private let db = Firestore.firestore()
-    var userId: String?
-    
     
     override func viewDidLoad() {
-        
-        
-        if userId == nil {
-        userId = UserDefaults.standard.string(forKey: "userId")
-        }
-               
-               
-        loadData()
         super.viewDidLoad()
         title = "Admin Dashboard"
         view.backgroundColor = .systemGroupedBackground
@@ -53,13 +46,11 @@ class AdminDashboardViewController: UIViewController {
         cardViews.forEach {
             $0.applyCardStyle()
         }
+        
+        loadDashboardCounts()
+        
+        startDonutListener()
     }
-    
-    private func loadData() {
-        guard let userId = userId else {
-            print("⚠️ No user ID available")
-            return
-        }}
     
     @objc private func didTapBell() {
         let alert = UIAlertController(title: "Notifications", message: "Tapped bell.", preferredStyle: .alert)
@@ -93,6 +84,7 @@ class AdminDashboardViewController: UIViewController {
                 let count = snapshot?.documents.count ?? 0
                 DispatchQueue.main.async {
                     self.pendingLabel.text = "\(count)"
+                    self.pendingStatusLabel.text = "Pending (\(count))"
                 }
             }
         
@@ -108,6 +100,7 @@ class AdminDashboardViewController: UIViewController {
                 let count = snapshot?.documents.count ?? 0
                 DispatchQueue.main.async {
                     self.inProgressLabel.text = "\(count)"
+                    self.inProgressStatusLabel.text = "In Progress (\(count))"
                 }
             }
         
@@ -123,9 +116,38 @@ class AdminDashboardViewController: UIViewController {
                 let count = snapshot?.documents.count ?? 0
                 DispatchQueue.main.async {
                     self.completedLabel.text = "\(count)"
+                    self.completedStatusLabel.text = "Completed (\(count))"
                 }
             }
         
+    }
+    
+    private var requestsListener: ListenerRegistration?
+    
+    private func startDonutListener() {
+        
+        requestsListener = db.collection("requests").addSnapshotListener { [weak self] snap, err in
+            guard let self else { return }
+            if let err = err {
+                print("Donut total fetch error:", err)
+                return
+            }
+            
+            let docs = snap?.documents ?? []
+            let statuses = docs.compactMap { $0.data()["status"] as? String }
+            
+            let pending = statuses.filter { $0 == "pending" }.count
+            let inProgress = statuses.filter { $0 == "in_progress" }.count
+            let completed = statuses.filter { $0 == "completed" }.count
+            
+            DispatchQueue.main.async {
+                self.donutChartView.segments = [
+                    .init(value: CGFloat(pending), color: .systemOrange),
+                    .init(value: CGFloat(inProgress), color: .systemBlue),
+                    .init(value: CGFloat(completed), color: .systemGreen)
+                ]
+            }
+        }
     }
 
     /*
