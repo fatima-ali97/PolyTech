@@ -11,7 +11,7 @@
         <!--New Maintenance View Controller-->
         <scene sceneID="glo-Md-cFe">
             <objects>
-                <viewController id="iUh-Uj-aok" customClass="NewMaintenanceViewController" customModule="PolyTech" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="NewMaintenanceViewController" id="iUh-Uj-aok" customClass="NewMaintenanceViewController" customModule="PolyTech" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="3CV-AJ-Onl">
                         <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -164,7 +164,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="QGQ-AJ-MhK" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="934" y="-1388"/>
+            <point key="canvasLocation" x="1016" y="-1437"/>
         </scene>
     </scenes>
     <resources>
@@ -175,7 +175,7 @@
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>
         <systemColor name="systemGray2Color">
-            <color red="0.68235294120000001" green="0.68235294120000001" blue="0.69803921570000005" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.68235294117647061" green="0.68235294117647061" blue="0.69803921568627447" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
     </resources>
 </document>
