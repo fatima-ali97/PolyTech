@@ -1,25 +1,19 @@
 import UIKit
 import FirebaseFirestore
-import FirebaseAuth
 
-class InventoryViewController: UIViewController {
+class HistoryViewController: UIViewController {
 
+    @IBOutlet weak var SearchBar: UISearchBar!
     // MARK: - IBOutlets
     @IBOutlet weak var tableView: UITableView!
     
-    @IBOutlet weak var AddInventory: UIImageView!
-    
-    @IBOutlet weak var returnInventoryBtn: UIButton!
-    
     // MARK: - Properties
-    private var inventoryItems: [NotificationModel] = []
+    private var historyItems: [NotificationModel] = []
     private let db = Firestore.firestore()
     private var listener: ListenerRegistration?
     
-    
-    private var currentUserId: String {
-        Auth.auth().currentUser?.uid ?? ""
-    }
+    // TODO: Replace with actual user ID from your auth system
+    private let currentUserId = "4gEMMK7yMPfJv3Xghk0iFefRBvH3"
     
     private let refreshControl = UIRefreshControl()
     private let emptyStateView = EmptyStateView()
@@ -32,65 +26,8 @@ class InventoryViewController: UIViewController {
         setupUI()
         setupTableView()
         setupEmptyState()
-        loadInventoryItems()
-        setUpAddBtn()
-//        setUpReturnBtn()
+        loadHistoryItems()
     }
-    
-    private func setUpAddBtn() {
-
-        AddInventory.isUserInteractionEnabled = true
-
-        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(addTapped))
-        AddInventory.addGestureRecognizer(tapGesture)
-    }
-    
-    @objc func addTapped() {
-
-        let storyboard = UIStoryboard(name: "NewInventory", bundle: nil)
-        guard let vc = storyboard.instantiateViewController(withIdentifier: "NewInventoryViewController") as? NewInventoryViewController else {
-            print("NewInventoryViewController not found in storyboard")
-            return
-        }
-        
-        navigationController?.pushViewController(vc, animated: true)
-    }
-    
-    
-//    
-//    private func setUpReturnBtn() {
-//
-//        returnInventoryBtn.isUserInteractionEnabled = true
-//
-//        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(returnTapped))
-//        returnInventoryBtn.addGestureRecognizer(tapGesture)
-//    }
-//    
-//    @objc func returnTapped() {
-//
-//        let storyboard = UIStoryboard(name: "ReturnInventory", bundle: nil)
-//        guard let vc = storyboard.instantiateViewController(withIdentifier: "ReturnInventoryViewController") as? ReturnInventoryViewController else {
-//            print("ReturnInventoryViewController not found in storyboard")
-//            return
-//        }
-//        
-//        navigationController?.pushViewController(vc, animated: true)
-//    }
-    
-    @IBAction func returnButtonTapped(_ sender: UIButton) {
-        print("Return button tapped!") // Debugging log
-        
-        let storyboard = UIStoryboard(name: "ReturnInventory", bundle: nil)
-        guard let vc = storyboard.instantiateViewController(withIdentifier: "ReturnInventoryViewController") as? ReturnInventoryViewController else {
-            print("ReturnInventoryViewController not found in storyboard")
-            return
-        }
-
-        print("ReturnInventoryViewController successfully instantiated")
-        
-        navigationController?.pushViewController(vc, animated: true)
-    }
-    
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
@@ -100,7 +37,7 @@ class InventoryViewController: UIViewController {
     // MARK: - Setup
     
     private func setupUI() {
-        title = "Inventory"
+        title = "History"
         navigationController?.navigationBar.prefersLargeTitles = true
         view.backgroundColor = .background
     }
@@ -121,7 +58,7 @@ class InventoryViewController: UIViewController {
         tableView.register(InventoryTableViewCell.self, forCellReuseIdentifier: "InventoryCell")
         
         // refresh control
-        refreshControl.addTarget(self, action: #selector(refreshInventoryItems), for: .valueChanged)
+        refreshControl.addTarget(self, action: #selector(refreshHistoryItems), for: .valueChanged)
         tableView.refreshControl = refreshControl
     }
     // MARK: - EMPTY STATE
@@ -133,7 +70,7 @@ class InventoryViewController: UIViewController {
         
         emptyStateView.configure(
             //icon: UIImage(systemName: "bell.slash.fill"),
-            title: "No Inventory Items For Now.",
+            title: "No History Items For Now.",
             message: "Once a request status gets updated, we will notify you immediately."
         )
         emptyStateView.isHidden = true
@@ -150,28 +87,28 @@ class InventoryViewController: UIViewController {
     
     // MARK: - Data Loading
     
-    private func loadInventoryItems() {
-        print("load inventory items for userId: \(currentUserId)")
+    private func loadHistoryItems() {
+        print("load history items for userId: \(currentUserId)")
         
-        // Real-time listener for inventory items
+        // Real-time listener for history items
         listener = db.collection("Notifications")
             .whereField("userId", isEqualTo: currentUserId)
             .addSnapshotListener { [weak self] querySnapshot, error in
                 guard let self = self else { return }
                 
                 if let error = error {
-                    print("**Error fetching inventory items: \(error.localizedDescription)")
-                    self.showError("Failed to load inventory items")
+                    print("**Error fetching history items: \(error.localizedDescription)")
+                    self.showError("Failed to load history items")
                     return
                 }
                 
                 guard let documents = querySnapshot?.documents else {
-                    print(" No inventory items for this user!!")
+                    print(" No history items for this user!!")
                     self.updateEmptyState()
                     return
                 }
                 
-                self.inventoryItems = documents.compactMap { document in
+                self.historyItems = documents.compactMap { document in
                     let item = NotificationModel(dictionary: document.data(), id: document.documentID)
                     if item == nil {
                         print("Failed to parse document: \(document.documentID)")
@@ -180,7 +117,7 @@ class InventoryViewController: UIViewController {
                     return item
                 }
                 
-                print(" Successfully parsed \(self.inventoryItems.count) inventory items")
+                print(" Successfully parsed \(self.historyItems.count) history items")
                 
                 DispatchQueue.main.async {
                     guard let tableView = self.tableView else { return }
@@ -190,7 +127,7 @@ class InventoryViewController: UIViewController {
             }
     }
     
-    @objc private func refreshInventoryItems() {
+    @objc private func refreshHistoryItems() {
         // Refresh is handled automatically by the real-time listener
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
             self.refreshControl.endRefreshing()
@@ -199,8 +136,8 @@ class InventoryViewController: UIViewController {
     
     private func updateEmptyState() {
         guard let tableView = tableView else { return }
-        emptyStateView.isHidden = !inventoryItems.isEmpty
-        tableView.isHidden = inventoryItems.isEmpty
+        emptyStateView.isHidden = !historyItems.isEmpty
+        tableView.isHidden = historyItems.isEmpty
     }
     
     // MARK: - Actions
@@ -218,7 +155,7 @@ class InventoryViewController: UIViewController {
     }
     
     private func deleteItem(at indexPath: IndexPath) {
-        let item = inventoryItems[indexPath.row]
+        let item = historyItems[indexPath.row]
         
         db.collection("Notifications")
             .document(item.id)
@@ -251,7 +188,7 @@ class InventoryViewController: UIViewController {
     
     // MARK: - Sample Data (for testing)
     
-    private func addSampleInventoryItems() {
+    private func addSampleHistoryItems() {
         let sampleItems: [[String: Any]] = [
             [
                 "userId": currentUserId,
@@ -312,10 +249,10 @@ class InventoryViewController: UIViewController {
 
 // MARK: - UITableViewDataSource
 
-extension InventoryViewController: UITableViewDataSource {
+extension HistoryViewController: UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return inventoryItems.count
+        return historyItems.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -326,7 +263,7 @@ extension InventoryViewController: UITableViewDataSource {
             return UITableViewCell()
         }
         
-        let item = inventoryItems[indexPath.row]
+        let item = historyItems[indexPath.row]
         cell.configure(with: item) { [weak self] actionUrl in
             // Handle action button tap
             print("Action tapped for URL: \(actionUrl)")
@@ -339,10 +276,10 @@ extension InventoryViewController: UITableViewDataSource {
 
 // MARK: - UITableViewDelegate
 
-extension InventoryViewController: UITableViewDelegate {
+extension HistoryViewController: UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let item = inventoryItems[indexPath.row]
+        let item = historyItems[indexPath.row]
         
         // Mark as read
         markAsRead(item: item)
@@ -381,7 +318,7 @@ extension InventoryViewController: UITableViewDelegate {
         }
         deleteAction.image = UIImage(systemName: "minus")
         
-        let item = inventoryItems[indexPath.row]
+        let item = historyItems[indexPath.row]
         if !item.isRead {
             let markReadAction = UIContextualAction(style: .normal, title: "Mark Read") { [weak self] _, _, completion in
                 self?.markAsRead(item: item)
