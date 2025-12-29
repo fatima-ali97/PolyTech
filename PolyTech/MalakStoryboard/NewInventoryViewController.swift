@@ -156,13 +156,13 @@ class NewInventoryViewController: UIViewController {
     
     @objc func backBtnTapped() {
 
-        let storyboard = UIStoryboard(name: "Inventory", bundle: nil)
-        guard let vc = storyboard.instantiateViewController(withIdentifier: "InventoryViewController") as? InventoryViewController else {
-            print("InventoryViewController not found in storyboard")
-            return
-        }
-        
-        navigationController?.pushViewController(vc, animated: true)
+//        let storyboard = UIStoryboard(name: "Inventory", bundle: nil)
+//        guard let vc = storyboard.instantiateViewController(withIdentifier: "InventoryViewController") as? InventoryViewController else {
+//            print("InventoryViewController not found in storyboard")
+//            return
+//        }
+//        
+//        navigationController?.pushViewController(vc, animated: true)
     }
 
 
