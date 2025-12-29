@@ -35,6 +35,12 @@ class DetailsTasksViewController: UIViewController {
             dueDateLabel.text = "Error: Task data missing"
             AddressLabel.text = "Error: Task data missing"
         }
+        
+        let normalAttributes = [NSAttributedString.Key.foregroundColor: UIColor.lightGray]
+        statusSegmentedControl.setTitleTextAttributes(normalAttributes, for: .normal)
+        
+        let selectedAttributes = [NSAttributedString.Key.foregroundColor: UIColor.white]
+        statusSegmentedControl.setTitleTextAttributes(selectedAttributes, for: .selected)
     }
 
     func updateUI(with task: TaskModel) {
