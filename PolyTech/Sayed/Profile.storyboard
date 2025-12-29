@@ -285,13 +285,13 @@
                                             </label>
                                         </subviews>
                                     </view>
-                                    <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="DG2-P1-J9q" userLabel="EditProfileButton">
+                                    <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="DG2-P1-J9q" userLabel="EditPasswordButton">
                                         <rect key="frame" x="0.0" y="119" width="393" height="77"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                         <state key="normal" title="Button"/>
                                         <buttonConfiguration key="configuration" style="plain"/>
                                         <connections>
-                                            <segue destination="Rhb-qm-4hk" kind="show" id="91Y-Ch-3Ve"/>
+                                            <segue destination="Rhb-qm-4hk" kind="show" id="LIX-id-z2J"/>
                                         </connections>
                                     </button>
                                 </subviews>
@@ -506,7 +506,7 @@
         <!--Edit Password View Controller-->
         <scene sceneID="CjF-7q-3tp">
             <objects>
-                <viewController modalPresentationStyle="fullScreen" id="Rhb-qm-4hk" customClass="EditPasswordViewController" sceneMemberID="viewController">
+                <viewController modalPresentationStyle="fullScreen" id="Rhb-qm-4hk" customClass="EditPasswordViewController" customModule="PolyTech" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="dho-8u-pP1">
                         <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -630,6 +630,9 @@ again login to the app.</string>
                                         <integer key="value" value="18"/>
                                     </userDefinedRuntimeAttribute>
                                 </userDefinedRuntimeAttributes>
+                                <connections>
+                                    <action selector="savePasswordTapped:" destination="Rhb-qm-4hk" eventType="touchUpInside" id="JpB-Pu-Qi0"/>
+                                </connections>
                             </button>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="jGi-DW-pej"/>
@@ -637,6 +640,12 @@ again login to the app.</string>
                         <color key="tintColor" red="0.25098040700000002" green="0.25490197539999998" blue="0.26666668059999998" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                     </view>
                     <navigationItem key="navigationItem" id="494-h2-TRl"/>
+                    <connections>
+                        <outlet property="confirmPasswordTextField" destination="FXG-r8-JfS" id="2cJ-25-ukQ"/>
+                        <outlet property="currentPasswordTextField" destination="uBM-v1-jSw" id="OKG-wo-bF3"/>
+                        <outlet property="newPasswordTextField" destination="zbu-1T-HiW" id="gjx-nd-gpA"/>
+                        <outlet property="savePasswordButton" destination="2Ew-y8-pPc" id="jLS-hA-uUU"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="9xL-t3-s4u" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
