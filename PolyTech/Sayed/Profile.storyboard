@@ -541,6 +541,9 @@
                                         <integer key="value" value="18"/>
                                     </userDefinedRuntimeAttribute>
                                 </userDefinedRuntimeAttributes>
+                                <connections>
+                                    <action selector="saveChangesButtonTapped:" destination="g5h-87-krf" eventType="touchUpInside" id="7sW-WB-JSE"/>
+                                </connections>
                             </button>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="gfH-tO-ujO"/>
