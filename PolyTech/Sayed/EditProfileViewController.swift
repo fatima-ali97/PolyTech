@@ -16,7 +16,6 @@ class EditProfileViewController: UIViewController {
     @IBOutlet weak var phoneTextField: UITextField!
     @IBOutlet weak var usernameTextField: UITextField!
     @IBOutlet weak var addressTextField: UITextField!
-    @IBOutlet weak var changePasswordButton: UIButton!
     @IBOutlet weak var saveChangesButton: UIButton!
     
     private let db = Firestore.firestore()
@@ -54,10 +53,7 @@ class EditProfileViewController: UIViewController {
         }
     }
     
-    func setupButtonUI() {
-        changePasswordButton.layer.masksToBounds = true
-        changePasswordButton.backgroundColor = .clear
-        
+    func setupButtonUI() {        
         saveChangesButton.layer.masksToBounds = true
     }
     
