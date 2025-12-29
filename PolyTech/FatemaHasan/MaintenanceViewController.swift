@@ -1,19 +1,24 @@
 import UIKit
 import FirebaseFirestore
+import FirebaseAuth
 
 class MaintenanceViewController: UIViewController {
 
     // MARK: - IBOutlets
     @IBOutlet weak var tableView: UITableView!
     
+    @IBOutlet weak var AddMaintenance: UIImageView!
     // MARK: - Properties
     private var maintenanceItems: [NotificationModel] = []
     private let db = Firestore.firestore()
     private var listener: ListenerRegistration?
     
-    // TODO: Replace with actual user ID from your auth system
-    private let currentUserId = "4gEMMK7yMPfJv3Xghk0iFefRBvH3"
     
+    private var currentUserId: String {
+        Auth.auth().currentUser?.uid ?? ""
+    }
+
+
     private let refreshControl = UIRefreshControl()
     private let emptyStateView = EmptyStateView()
     
@@ -26,7 +31,28 @@ class MaintenanceViewController: UIViewController {
         setupTableView()
         setupEmptyState()
         loadMaintenanceItems()
+        setUpAddBtn()
     }
+    
+    private func setUpAddBtn() {
+
+        AddMaintenance.isUserInteractionEnabled = true
+
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(addTapped))
+        AddMaintenance.addGestureRecognizer(tapGesture)
+    }
+    
+    @objc func addTapped() {
+
+        let storyboard = UIStoryboard(name: "NewMaintenance", bundle: nil)
+        guard let vc = storyboard.instantiateViewController(withIdentifier: "NewMaintenanceViewController") as? NewMaintenanceViewController else {
+            print("NewMaintenanceViewController not found in storyboard")
+            return
+        }
+        
+        navigationController?.pushViewController(vc, animated: true)
+    }
+    
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
