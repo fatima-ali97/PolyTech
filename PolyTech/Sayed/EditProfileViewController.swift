@@ -77,5 +77,41 @@ class EditProfileViewController: UIViewController {
                 }
             }
         }
+    @IBAction func saveChangesButtonTapped(_ sender: UIButton) {
+        guard let uid = Auth.auth().currentUser?.uid else {
+            print("❌ Error: No user logged in")
+            return
+        }
+        
+        let updatedData: [String: Any] = [
+            "fullName": fullNameTextField.text?.trimmingCharacters(in: .whitespaces) ?? "",
+            "email": emailTextField.text?.trimmingCharacters(in: .whitespaces) ?? "",
+            "phoneNumber": phoneTextField.text?.trimmingCharacters(in: .whitespaces) ?? "",
+            "username": usernameTextField.text?.trimmingCharacters(in: .whitespaces) ?? "",
+            "address": addressTextField.text?.trimmingCharacters(in: .whitespaces) ?? ""
+        ]
+        
+        print("Sending data to Firebase...")
+
+        db.collection("users").document(uid).setData(updatedData, merge: true) { [weak self] error in
+            if let error = error {
+                print("❌ Update Error: \(error.localizedDescription)")
+                self?.showAlert(title: "Update Failed", message: error.localizedDescription)
+            } else {
+                print("✅ Profile Updated Successfully!")
+                
+                self?.showAlert(title: "Success", message: "Your profile has been updated.") {
+                    self?.navigationController?.popViewController(animated: true)
+                }
+            }
+        }
+    }
     
+    private func showAlert(title: String, message: String, completion: (() -> Void)? = nil) {
+        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "OK", style: .default) { _ in
+            completion?()
+        })
+        present(alert, animated: true)
+    }
 }
