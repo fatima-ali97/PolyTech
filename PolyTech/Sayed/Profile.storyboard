@@ -314,7 +314,7 @@
             </objects>
             <point key="canvasLocation" x="1223.6641221374045" y="7.042253521126761"/>
         </scene>
-        <!--Edit Profile View Controller-->
+        <!--Edit Profile-->
         <scene sceneID="UrC-ax-1hV">
             <objects>
                 <viewController modalPresentationStyle="fullScreen" id="g5h-87-krf" customClass="EditProfileViewController" customModule="PolyTech" customModuleProvider="target" sceneMemberID="viewController">
@@ -322,13 +322,6 @@
                         <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Edit Profile" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="YqE-54-GQ0">
-                                <rect key="frame" x="128" y="65" width="137" height="33"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <fontDescription key="fontDescription" type="boldSystem" pointSize="27"/>
-                                <nil key="textColor"/>
-                                <nil key="highlightedColor"/>
-                            </label>
                             <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="IGo-H5-6nZ">
                                 <rect key="frame" x="0.0" y="164" width="393" height="75"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
@@ -489,7 +482,7 @@
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <color key="tintColor" red="0.25098040700000002" green="0.25490197539999998" blue="0.26666668059999998" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                     </view>
-                    <navigationItem key="navigationItem" id="Ufu-zx-OG1"/>
+                    <navigationItem key="navigationItem" title="Edit Profile" id="Ufu-zx-OG1"/>
                     <connections>
                         <outlet property="addressTextField" destination="OyX-7t-wmE" id="oUW-RM-axP"/>
                         <outlet property="emailTextField" destination="xpX-Kg-69C" id="x59-Nf-36E"/>
@@ -503,7 +496,7 @@
             </objects>
             <point key="canvasLocation" x="1927" y="8"/>
         </scene>
-        <!--Edit Password View Controller-->
+        <!--Change Password-->
         <scene sceneID="CjF-7q-3tp">
             <objects>
                 <viewController modalPresentationStyle="fullScreen" id="Rhb-qm-4hk" customClass="EditPasswordViewController" customModule="PolyTech" customModuleProvider="target" sceneMemberID="viewController">
@@ -511,13 +504,6 @@
                         <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Edit Profile" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="lw7-Om-pN4">
-                                <rect key="frame" x="128" y="65" width="137" height="33"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <fontDescription key="fontDescription" type="boldSystem" pointSize="27"/>
-                                <nil key="textColor"/>
-                                <nil key="highlightedColor"/>
-                            </label>
                             <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="M0M-Af-0jC">
                                 <rect key="frame" x="0.0" y="335" width="393" height="75"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
@@ -527,7 +513,7 @@
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                         <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                        <textInputTraits key="textInputTraits"/>
+                                        <textInputTraits key="textInputTraits" secureTextEntry="YES" textContentType="new-password"/>
                                         <userDefinedRuntimeAttributes>
                                             <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
                                                 <integer key="value" value="100"/>
@@ -554,7 +540,7 @@
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                         <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                        <textInputTraits key="textInputTraits"/>
+                                        <textInputTraits key="textInputTraits" secureTextEntry="YES" textContentType="new-password"/>
                                         <userDefinedRuntimeAttributes>
                                             <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
                                                 <integer key="value" value="100"/>
@@ -581,7 +567,7 @@
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                         <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                        <textInputTraits key="textInputTraits"/>
+                                        <textInputTraits key="textInputTraits" secureTextEntry="YES" textContentType="password"/>
                                         <userDefinedRuntimeAttributes>
                                             <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
                                                 <integer key="value" value="100"/>
@@ -639,7 +625,7 @@ again login to the app.</string>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <color key="tintColor" red="0.25098040700000002" green="0.25490197539999998" blue="0.26666668059999998" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                     </view>
-                    <navigationItem key="navigationItem" id="494-h2-TRl"/>
+                    <navigationItem key="navigationItem" title="Change Password" id="494-h2-TRl"/>
                     <connections>
                         <outlet property="confirmPasswordTextField" destination="FXG-r8-JfS" id="2cJ-25-ukQ"/>
                         <outlet property="currentPasswordTextField" destination="uBM-v1-jSw" id="OKG-wo-bF3"/>
