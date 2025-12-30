@@ -5,7 +5,7 @@ class HomeViewController: UIViewController {
     @IBOutlet weak var Notificationbtn: UIImageView!
     @IBOutlet weak var FAQbtn: UIButton!
     @IBOutlet weak var chatBot: UIImageView!
-    
+    @IBOutlet weak var OptionsBtn: UIButton!
     
     var userId: String?
     override func viewWillAppear(_ animated: Bool) {
@@ -24,8 +24,28 @@ class HomeViewController: UIViewController {
         loadData()
         setupNotificationButton()
         setupChatBotBtn()
+        setupOptionsButton()
     }
 
+    private func setupOptionsButton() {
+
+        OptionsBtn.isUserInteractionEnabled = true
+
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(optionsTapped))
+        OptionsBtn.addGestureRecognizer(tapGesture)
+    }
+    
+    @objc func optionsTapped() {
+
+        let storyboard = UIStoryboard(name: "OptionsPage", bundle: nil)
+        guard let vc = storyboard.instantiateViewController(withIdentifier: "OptionsPageViewController") as? OptionsPageViewController else {
+            print("OptionsPageViewController not found in storyboard")
+            return
+        }
+        
+        navigationController?.pushViewController(vc, animated: true)
+    }
+    
     private func setupNotificationButton() {
 
         Notificationbtn.isUserInteractionEnabled = true
@@ -89,6 +109,7 @@ class HomeViewController: UIViewController {
         
         navigationController?.pushViewController(vc, animated: true)
     }
+    
     
     
     
