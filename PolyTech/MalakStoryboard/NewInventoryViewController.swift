@@ -14,11 +14,11 @@ class NewInventoryViewController: UIViewController {
     @IBOutlet weak var quantity: UITextField!
     @IBOutlet weak var location: UITextField!
     @IBOutlet weak var reason: UITextField!
-    @IBOutlet weak var Backbtn: UIImageView!
     @IBOutlet weak var savebtn: UIButton!
     @IBOutlet weak var pageTitle: UILabel!
     @IBOutlet weak var categoryDropDown: UIImageView!
-
+    @IBOutlet weak var backBtn: UIImageView!
+    
     let database = Firestore.firestore()
     
     private var selectedCategory: InventoryCategory?
@@ -40,7 +40,7 @@ class NewInventoryViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        setupBackBtn()
+        setupBackBtnButton()
         setupPickers()
         setupDropdownTap()
         configureEditMode()
@@ -146,23 +146,23 @@ class NewInventoryViewController: UIViewController {
     }
     
 
-    private func setupBackBtn() {
+    private func setupBackBtnButton() {
 
-        Backbtn.isUserInteractionEnabled = true
+        backBtn.isUserInteractionEnabled = true
 
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(backBtnTapped))
-        Backbtn.addGestureRecognizer(tapGesture)
+        backBtn.addGestureRecognizer(tapGesture)
     }
     
     @objc func backBtnTapped() {
 
-//        let storyboard = UIStoryboard(name: "Inventory", bundle: nil)
-//        guard let vc = storyboard.instantiateViewController(withIdentifier: "InventoryViewController") as? InventoryViewController else {
-//            print("InventoryViewController not found in storyboard")
-//            return
-//        }
-//        
-//        navigationController?.pushViewController(vc, animated: true)
+        let storyboard = UIStoryboard(name: "HomePage", bundle: nil)
+        guard let vc = storyboard.instantiateViewController(withIdentifier: "HomeViewController") as? HomeViewController else {
+            print("HomeViewController not found in storyboard")
+            return
+        }
+        
+        navigationController?.pushViewController(vc, animated: true)
     }
 
 
