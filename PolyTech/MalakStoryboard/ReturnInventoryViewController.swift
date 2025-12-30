@@ -13,18 +13,15 @@ class ReturnInventoryViewController: UIViewController {
     @IBOutlet weak var quantity: UITextField!
     @IBOutlet weak var reason: UITextField!
     @IBOutlet weak var condition: UITextField!
-    @IBOutlet weak var Backbtn: UIImageView!
     @IBOutlet weak var returnbtn: UIButton!
     @IBOutlet weak var pageTitle: UILabel!
+    @IBOutlet weak var backBtn: UIImageView!
+    
  
     let database = Firestore.firestore()
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        Backbtn.isUserInteractionEnabled = true
-        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(backTapped))
-        Backbtn.addGestureRecognizer(tapGesture)
         
         if isEditMode {
             pageTitle.text = "Edit Return Inventory"
@@ -34,8 +31,29 @@ class ReturnInventoryViewController: UIViewController {
             pageTitle.text = "New Return Inventory"
             returnbtn.setTitle("Save", for: .normal)
         }
+        setupBackBtnButton()
     }
     
+    
+    private func setupBackBtnButton() {
+
+        backBtn.isUserInteractionEnabled = true
+
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(backBtnTapped))
+        backBtn.addGestureRecognizer(tapGesture)
+    }
+    
+    @objc func backBtnTapped() {
+
+        let storyboard = UIStoryboard(name: "HomePage", bundle: nil)
+        guard let vc = storyboard.instantiateViewController(withIdentifier: "HomeViewController") as? HomeViewController else {
+            print("HomeViewController not found in storyboard")
+            return
+        }
+        
+        navigationController?.pushViewController(vc, animated: true)
+    }
+
     func showFields() {
         guard let data = existingData else { return }
         
@@ -49,9 +67,6 @@ class ReturnInventoryViewController: UIViewController {
         }
     }
     
-    @objc func backTapped() {
-        navigationController?.popViewController(animated: true)
-    }
 
     @IBAction func Returnbtn(_ sender: UIButton) {
         guard
