@@ -8,6 +8,7 @@
 import UIKit
 import FirebaseFirestore
 import FirebaseAuth
+import FirebaseMessaging
 
 class ProfileViewController: UIViewController {
     
@@ -20,6 +21,9 @@ class ProfileViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        let isEnabled = UserDefaults.standard.bool(forKey:"pushNotificationsEnabled")
+            notificationSwitch.isOn = isEnabled
         
         setupScrollViewUI()
         fetchUserData()
@@ -83,6 +87,39 @@ class ProfileViewController: UIViewController {
             self.present(initialVC, animated: true, completion: nil)
         } else {
             print("History.storyboard missing 'Is Initial View Controller' setting.")
+        }
+    }
+    
+    @IBOutlet weak var notificationSwitch: UISwitch!
+
+    @IBAction func notificationSwitchChanged(_ sender: UISwitch) {
+        print("Changing notification status to: \(sender.isOn)")
+        if sender.isOn {
+            enableNotifications()
+        } else {
+            disableNotifications()
+        }
+    }
+    
+    private func enableNotifications() {
+        Messaging.messaging().subscribe(toTopic: "all_users") { error in
+            if let error = error {
+                print("Error subscribing to notifications: \(error)")
+            } else {
+                print("Notifications Enabled: Subscribed to all_users topic")
+                UserDefaults.standard.set(true, forKey: "pushNotificationsEnabled")
+            }
+        }
+    }
+
+    private func disableNotifications() {
+        Messaging.messaging().unsubscribe(fromTopic: "all_users") { error in
+            if let error = error {
+                print("Error unsubscribing: \(error)")
+            } else {
+                print("Notifications Disabled: Unsubscribed from topic")
+                UserDefaults.standard.set(false, forKey: "pushNotificationsEnabled")
+            }
         }
     }
     
