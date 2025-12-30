@@ -36,27 +36,35 @@ class InventoryViewController: UIViewController {
         setupEmptyState()
         loadInventoryItems()
         setUpAddBtn()
-//        setUpReturnBtn()
+//        addTapped()
+
     }
     
     private func setUpAddBtn() {
 
+//        AddInventory.isUserInteractionEnabled = true
+//
+//        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(addTapped))
+//        AddInventory.addGestureRecognizer(tapGesture)
         AddInventory.isUserInteractionEnabled = true
+        AddInventory.addTarget(self, action: #selector(addTapped), for: .touchUpInside)
 
-        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(addTapped))
-        AddInventory.addGestureRecognizer(tapGesture)
     }
     
-    @objc func addTapped() {
-
+    @objc private func addTapped() {
         let storyboard = UIStoryboard(name: "NewInventory", bundle: nil)
-        guard let vc = storyboard.instantiateViewController(withIdentifier: "NewInventoryViewController") as? NewInventoryViewController else {
-            print("NewInventoryViewController not found in storyboard")
+        guard let vc = storyboard.instantiateViewController(
+            withIdentifier: "NewInventoryViewController"
+        ) as? NewInventoryViewController else {
+            print("❌ NewInventoryViewController not found or wrong class")
             return
         }
-        
-        navigationController?.pushViewController(vc, animated: true)
+
+        vc.modalPresentationStyle = .fullScreen
+        present(vc, animated: true)
     }
+
+    
     
     
     
