@@ -1,113 +1,336 @@
 import UIKit
-import Firebase
 import FirebaseFirestore
-import FirebaseAuth
 
 class HistoryViewController: UIViewController {
 
-    let db = Firestore.firestore()
-
+    @IBOutlet weak var SearchBar: UISearchBar!
+    // MARK: - IBOutlets
+    @IBOutlet weak var tableView: UITableView!
+    
+    // MARK: - Properties
+    private var historyItems: [NotificationModel] = []
+    private let db = Firestore.firestore()
+    private var listener: ListenerRegistration?
+    
+    // TODO: Replace with actual user ID from your auth system
+    private let currentUserId = "4gEMMK7yMPfJv3Xghk0iFefRBvH3"
+    
+    private let refreshControl = UIRefreshControl()
+    private let emptyStateView = EmptyStateView()
+    
+    // MARK: - Lifecycle
+    
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        setupUI()
+        setupTableView()
+        setupEmptyState()
+        loadHistoryItems()
     }
-
-    @IBOutlet weak var Search: UISearchBar!
-
-    @IBAction func viewDetailsButtonTapped(_ sender: UIButton) {
-        fetchHistoryForUserIDs()
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        listener?.remove()
     }
-  
-    func openFeedbackPage() {
-        let storyboard = UIStoryboard(name: "Ali", bundle: nil)
-        guard let feedbackVC = storyboard.instantiateViewController(
-            withIdentifier: "ServiceFeedbackViewController"
-        ) as? ServiceFeedbackViewController else {
-            print("ServiceFeedbackViewController not found")
+    
+    // MARK: - Setup
+    
+    private func setupUI() {
+        title = "History"
+        navigationController?.navigationBar.prefersLargeTitles = true
+        view.backgroundColor = .background
+    }
+    
+    private func setupTableView() {
+        guard let tableView = tableView else {
+            print("ERROR: tableView outlet is not connected!")
             return
         }
-
-        if let navController = self.navigationController {
-            navController.pushViewController(feedbackVC, animated: true)
-        } else {
-            present(feedbackVC, animated: true)
+        
+        tableView.delegate = self
+        tableView.dataSource = self
+        tableView.separatorStyle = .none
+        tableView.backgroundColor = .clear
+        tableView.rowHeight = UITableView.automaticDimension
+        tableView.estimatedRowHeight = 100
+        
+        tableView.register(InventoryTableViewCell.self, forCellReuseIdentifier: "InventoryCell")
+        
+        // refresh control
+        refreshControl.addTarget(self, action: #selector(refreshHistoryItems), for: .valueChanged)
+        tableView.refreshControl = refreshControl
+    }
+    // MARK: - EMPTY STATE
+    private func setupEmptyState() {
+        guard let tableView = tableView else {
+            print("ERROR: Cannot setup empty state - tableView outlet is not connected!")
+            return
         }
+        
+        emptyStateView.configure(
+            //icon: UIImage(systemName: "bell.slash.fill"),
+            title: "No History Items For Now.",
+            message: "Once a request status gets updated, we will notify you immediately."
+        )
+        emptyStateView.isHidden = true
+        view.addSubview(emptyStateView)
+        
+        emptyStateView.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            emptyStateView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            emptyStateView.centerYAnchor.constraint(equalTo: view.centerYAnchor),
+            emptyStateView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 40),
+            emptyStateView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -40)
+        ])
     }
-
-    // MARK: - Actions for buttons
-    @IBAction func feedbackButtonTapped(_ sender: UIButton) {
-        openFeedbackPage()
-    }
-
-    @IBAction func Feedback1(_ sender: UIButton) {
-        openFeedbackPage()
-    }
-
-    @IBAction func Feedback2(_ sender: UIButton) {
-        openFeedbackPage()
-    }
-
-    @IBAction func Feedback3(_ sender: UIButton) {
-        openFeedbackPage()
-    }
-
-    @IBAction func Feedback4(_ sender: UIButton) {
-        openFeedbackPage()
-    }
-
-    @IBAction func Feedback5(_ sender: UIButton) {
-        openFeedbackPage()
-    }
-
-
-    func fetchHistoryForUserIDs() {
-        let userIDs = [
-            "7fg0EVpMQUPHR9kgBPEv7mFRgLt1",
-            "njeKzS3LdubCZC8tAgrPmGlQtgh1v",
-            "uHdeNxV47CZUp6SwM3s1X1GAP3t1",
-            "zvyu1FR9kfabqzzb4uHRop3hbgb2"
-        ]
-
-        // Fetch documents for all user IDs
-        db.collection("history")
-            .whereField("userId", in: userIDs)
-            .getDocuments { snapshot, error in
+    
+    // MARK: - Data Loading
+    
+    private func loadHistoryItems() {
+        print("load history items for userId: \(currentUserId)")
+        
+        // Real-time listener for history items
+        listener = db.collection("Notifications")
+            .whereField("userId", isEqualTo: currentUserId)
+            .addSnapshotListener { [weak self] querySnapshot, error in
+                guard let self = self else { return }
+                
                 if let error = error {
-                    self.showAlert(title: "Error", message: error.localizedDescription)
+                    print("**Error fetching history items: \(error.localizedDescription)")
+                    self.showError("Failed to load history items")
                     return
                 }
-
-                guard let documents = snapshot?.documents, !documents.isEmpty else {
-                    self.showAlert(title: "No Data", message: "No history found for the specified users.")
+                
+                guard let documents = querySnapshot?.documents else {
+                    print(" No history items for this user!!")
+                    self.updateEmptyState()
                     return
                 }
-
-                // For simplicity, show the first document
-                let data = documents[0].data()
-                self.showHistoryDetailsPopup(data: data)
+                
+                self.historyItems = documents.compactMap { document in
+                    let item = NotificationModel(dictionary: document.data(), id: document.documentID)
+                    if item == nil {
+                        print("Failed to parse document: \(document.documentID)")
+                        print("   Data: \(document.data())")
+                    }
+                    return item
+                }
+                
+                print(" Successfully parsed \(self.historyItems.count) history items")
+                
+                DispatchQueue.main.async {
+                    guard let tableView = self.tableView else { return }
+                    tableView.reloadData()
+                    self.updateEmptyState()
+                }
             }
     }
-
-    func showHistoryDetailsPopup(data: [String: Any]) {
-        let requestName = data["requestName"] as? String ?? "N/A"
-        let itemName = data["itemName"] as? String ?? "N/A"
-        let category = data["category"] as? String ?? "N/A"
-        let location = data["location"] as? String ?? "N/A"
-
-        let message = """
-        Request Name: \(requestName)
-        Item Name: \(itemName)
-        Category: \(category)
-        Location: \(location)
-        """
-
-        let alert = UIAlertController(title: "History Details", message: message, preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: "OK", style: .default))
-        self.present(alert, animated: true)
+    
+    @objc private func refreshHistoryItems() {
+        // Refresh is handled automatically by the real-time listener
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+            self.refreshControl.endRefreshing()
+        }
     }
-
-    func showAlert(title: String, message: String) {
-        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+    
+    private func updateEmptyState() {
+        guard let tableView = tableView else { return }
+        emptyStateView.isHidden = !historyItems.isEmpty
+        tableView.isHidden = historyItems.isEmpty
+    }
+    
+    // MARK: - Actions
+    
+    private func markAsRead(item: NotificationModel) {
+        guard !item.isRead else { return }
+        
+        db.collection("Notifications")
+            .document(item.id)
+            .updateData(["isRead": true]) { error in
+                if let error = error {
+                    print("Error marking item as read: \(error.localizedDescription)")
+                }
+            }
+    }
+    
+    private func deleteItem(at indexPath: IndexPath) {
+        let item = historyItems[indexPath.row]
+        
+        db.collection("Notifications")
+            .document(item.id)
+            .delete { [weak self] error in
+                if let error = error {
+                    print("Error deleting item: \(error.localizedDescription)")
+                    self?.showError("Failed to delete item")
+                } else {
+                    self?.showSuccessToast(message: "Item deleted")
+                }
+            }
+    }
+    
+    // MARK: - UI Helpers
+    
+    private func showError(_ message: String) {
+        let alert = UIAlertController(title: "Error", message: message, preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: "OK", style: .default))
-        self.present(alert, animated: true)
+        present(alert, animated: true)
+    }
+    
+    private func showSuccessToast(message: String) {
+        let toast = UIAlertController(title: nil, message: message, preferredStyle: .alert)
+        present(toast, animated: true)
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
+            toast.dismiss(animated: true)
+        }
+    }
+    
+    // MARK: - Sample Data (for testing)
+    
+    private func addSampleHistoryItems() {
+        let sampleItems: [[String: Any]] = [
+            [
+                "userId": currentUserId,
+                "title": "New Message",
+                "message": "John Doe sent you a message",
+                "type": "message",
+                "iconName": "envelope.fill",
+                "isRead": false,
+                "timestamp": Timestamp(date: Date().addingTimeInterval(-300))
+            ],
+            [
+                "userId": currentUserId,
+                "title": "Success!",
+                "message": "Your profile was updated successfully",
+                "type": "success",
+                "iconName": "checkmark.circle.fill",
+                "isRead": false,
+                "timestamp": Timestamp(date: Date().addingTimeInterval(-3600))
+            ],
+            [
+                "userId": currentUserId,
+                "title": "New Follower",
+                "message": "Jane Smith started following you",
+                "type": "follow",
+                "iconName": "person.badge.plus.fill",
+                "isRead": true,
+                "timestamp": Timestamp(date: Date().addingTimeInterval(-7200))
+            ],
+            [
+                "userId": currentUserId,
+                "title": "Warning",
+                "message": "Your storage is almost full",
+                "type": "warning",
+                "iconName": "exclamationmark.triangle.fill",
+                "isRead": true,
+                "timestamp": Timestamp(date: Date().addingTimeInterval(-86400))
+            ],
+            [
+                "userId": currentUserId,
+                "title": "You got a like!",
+                "message": "Sarah Johnson liked your post",
+                "type": "like",
+                "iconName": "heart.fill",
+                "isRead": false,
+                "timestamp": Timestamp(date: Date().addingTimeInterval(-1800))
+            ]
+        ]
+        
+        for item in sampleItems {
+            db.collection("Notifications").addDocument(data: item) { error in
+                if let error = error {
+                    print("Error adding sample item: \(error.localizedDescription)")
+                }
+            }
+        }
+    }
+}
+
+// MARK: - UITableViewDataSource
+
+extension HistoryViewController: UITableViewDataSource {
+    
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return historyItems.count
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        guard let cell = tableView.dequeueReusableCell(
+            withIdentifier: "InventoryCell",
+            for: indexPath
+        ) as? InventoryTableViewCell else {
+            return UITableViewCell()
+        }
+        
+        let item = historyItems[indexPath.row]
+        cell.configure(with: item) { [weak self] actionUrl in
+            // Handle action button tap
+            print("Action tapped for URL: \(actionUrl)")
+            self?.handleItemAction(actionUrl: actionUrl, item: item)
+        }
+        
+        return cell
+    }
+}
+
+// MARK: - UITableViewDelegate
+
+extension HistoryViewController: UITableViewDelegate {
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let item = historyItems[indexPath.row]
+        
+        // Mark as read
+        markAsRead(item: item)
+        
+        // Handle action
+        if let actionUrl = item.actionUrl {
+            handleItemAction(actionUrl: actionUrl, item: item)
+        }
+        
+        // Add haptic feedback
+        let generator = UIImpactFeedbackGenerator(style: .light)
+        generator.impactOccurred()
+        
+        tableView.deselectRow(at: indexPath, animated: true)
+    }
+    
+    private func handleItemAction(actionUrl: String, item: NotificationModel) {
+        print("Navigate to: \(actionUrl)")
+        // TODO: Implement navigation based on actionUrl
+        // Example: Navigate to different view controllers based on the URL or item type
+        
+        // You can parse the actionUrl and navigate accordingly
+        // For example:
+        // if actionUrl.contains("request") {
+        //     navigateToRequestDetails(requestId: ...)
+        // } else if actionUrl.contains("location") {
+        //     navigateToLocationTracking(...)
+        // }
+    }
+    
+    // Swipe to delete
+    func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
+        let deleteAction = UIContextualAction(style: .destructive, title: "Delete") { [weak self] _, _, completion in
+            self?.deleteItem(at: indexPath)
+            completion(true)
+        }
+        deleteAction.image = UIImage(systemName: "minus")
+        
+        let item = historyItems[indexPath.row]
+        if !item.isRead {
+            let markReadAction = UIContextualAction(style: .normal, title: "Mark Read") { [weak self] _, _, completion in
+                self?.markAsRead(item: item)
+                completion(true)
+            }
+            // TODO: change this to read
+            markReadAction.backgroundColor = .secondary
+            markReadAction.image = UIImage(systemName: "checkmark")
+            
+            return UISwipeActionsConfiguration(actions: [deleteAction, markReadAction])
+        }
+        
+        return UISwipeActionsConfiguration(actions: [deleteAction])
     }
 }

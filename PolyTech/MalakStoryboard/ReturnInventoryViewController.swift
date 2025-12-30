@@ -2,55 +2,84 @@ import UIKit
 import FirebaseFirestore
 import FirebaseAuth
 
-class ReturnInventoryViewController: UIViewController {
+class ReturnInventoryViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDataSource, UITextFieldDelegate {
 
-    var isEditMode = false
-    var documentId: String?
-    var existingData: [String: Any]?
-    
     @IBOutlet weak var itemName: UITextField!
     @IBOutlet weak var category: UITextField!
     @IBOutlet weak var quantity: UITextField!
     @IBOutlet weak var reason: UITextField!
     @IBOutlet weak var condition: UITextField!
-    @IBOutlet weak var Backbtn: UIImageView!
     @IBOutlet weak var returnbtn: UIButton!
     @IBOutlet weak var pageTitle: UILabel!
- 
+    @IBOutlet weak var backBtn: UIImageView!
+    @IBOutlet weak var categoryDropDown: UIImageView!
+    
     let database = Firestore.firestore()
+    let categories = ["electronics", "laboratory", "classroom"]
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        pageTitle.text = "New Return Inventory"
+        returnbtn.setTitle("Save", for: .normal)
 
-        Backbtn.isUserInteractionEnabled = true
-        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(backTapped))
-        Backbtn.addGestureRecognizer(tapGesture)
+        // Set the delegate for the quantity text field
+        quantity.delegate = self
         
-        if isEditMode {
-            pageTitle.text = "Edit Return Inventory"
-            returnbtn.setTitle("Edit", for: .normal)
-            showFields()
-        } else {
-            pageTitle.text = "New Return Inventory"
-            returnbtn.setTitle("Save", for: .normal)
-        }
+        // Set the keyboard type for the quantity text field to number pad
+        quantity.keyboardType = .numberPad
+        
+        setupBackBtnButton()
+        setupCategoryPicker()
     }
     
-    func showFields() {
-        guard let data = existingData else { return }
-        
-        itemName.text = data["itemName"] as? String
-        category.text = data["category"] as? String
-        reason.text = data["reason"] as? String
-        condition.text = data["condition"] as? String
-        
-        if let quantityValue = data["quantity"] as? Int {
-            quantity.text = "\(quantityValue)"
-        }
+    private func setupBackBtnButton() {
+        backBtn.isUserInteractionEnabled = true
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(backBtnTapped))
+        backBtn.addGestureRecognizer(tapGesture)
     }
     
-    @objc func backTapped() {
-        navigationController?.popViewController(animated: true)
+    @objc func backBtnTapped() {
+        let storyboard = UIStoryboard(name: "HomePage", bundle: nil)
+        guard let vc = storyboard.instantiateViewController(withIdentifier: "HomeViewController") as? HomeViewController else {
+            print("HomeViewController not found in storyboard")
+            return
+        }
+        
+        navigationController?.pushViewController(vc, animated: true)
+    }
+    
+    private func setupCategoryPicker() {
+        let categoryPicker = UIPickerView()
+        categoryPicker.delegate = self
+        categoryPicker.dataSource = self
+        category.inputView = categoryPicker
+
+        let toolbar = UIToolbar()
+        toolbar.sizeToFit()
+        let doneButton = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(donePickingCategory))
+        toolbar.setItems([doneButton], animated: true)
+        category.inputAccessoryView = toolbar
+    }
+    
+    @objc func donePickingCategory() {
+        view.endEditing(true)
+    }
+
+    func numberOfComponents(in pickerView: UIPickerView) -> Int {
+        return 1
+    }
+
+    func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
+        return categories.count
+    }
+
+    func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
+        return categories[row]
+    }
+
+    func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
+        category.text = categories[row]
     }
 
     @IBAction func Returnbtn(_ sender: UIButton) {
@@ -71,29 +100,17 @@ class ReturnInventoryViewController: UIViewController {
             return
         }
         
-        var data: [String: Any] = [
+        let data: [String: Any] = [
             "itemName": itemNameText,
             "category": categoryText,
             "quantity": quantityValue,
             "reason": reasonText,
-            "condition": conditionText
+            "condition": conditionText,
+            "createdAt": Timestamp()
         ]
         
-        if isEditMode, let documentId = documentId {
-            data["updatedAt"] = Timestamp()
-            
-            database.collection("returnInventoryRequest")
-                .document(documentId)
-                .updateData(data) { [weak self] error in
-                    self?.handleResult(error: error, successMessage: "Return inventory updated successfully")
-                }
-        } else {
-            data["createdAt"] = Timestamp()
-            
-            database.collection("returnInventoryRequest")
-                .addDocument(data: data) { [weak self] error in
-                    self?.handleResult(error: error, successMessage: "Return inventory saved successfully")
-                }
+        database.collection("returnInventoryRequest").addDocument(data: data) { [weak self] error in
+            self?.handleResult(error: error, successMessage: "Return inventory saved successfully")
         }
     }
     
@@ -109,5 +126,13 @@ class ReturnInventoryViewController: UIViewController {
             })
             present(alert, animated: true)
         }
+    }
+    
+    // UITextFieldDelegate method to restrict input to numbers only
+    func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
+        // Allow only digits, backspace, and other control characters
+        let allowedCharacters = CharacterSet(charactersIn: "0123456789")
+        let characterSet = CharacterSet(charactersIn: string)
+        return allowedCharacters.isSuperset(of: characterSet) || string.isEmpty
     }
 }
