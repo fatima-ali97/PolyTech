@@ -23,15 +23,18 @@
                                 <color key="textColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <searchBar contentMode="redraw" ambiguous="YES" barStyle="blackTranslucent" searchBarStyle="minimal" text="" translatesAutoresizingMaskIntoConstraints="NO" id="nO0-tW-w3w">
+                            <searchBar contentMode="redraw" barStyle="blackTranslucent" searchBarStyle="minimal" text="" translatesAutoresizingMaskIntoConstraints="NO" id="nO0-tW-w3w">
                                 <rect key="frame" x="16" y="118" width="361" height="44"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="44" id="eqJ-m2-yoa"/>
+                                </constraints>
                                 <textInputTraits key="textInputTraits"/>
                                 <connections>
                                     <outlet property="delegate" destination="qbR-nc-I13" id="A6H-fc-YU7"/>
                                 </connections>
                             </searchBar>
-                            <tableView clipsSubviews="YES" contentMode="scaleToFill" ambiguous="YES" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="F9u-aO-7AF">
-                                <rect key="frame" x="0.0" y="177" width="393" height="599"/>
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="F9u-aO-7AF">
+                                <rect key="frame" x="0.0" y="162" width="393" height="622"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                 <prototypes>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" id="LUt-sd-aRI">
@@ -55,7 +58,10 @@
                             <constraint firstItem="XRK-u5-Bhz" firstAttribute="bottom" secondItem="F9u-aO-7AF" secondAttribute="bottom" id="CME-y2-GRJ"/>
                             <constraint firstItem="XRK-u5-Bhz" firstAttribute="bottom" secondItem="F9u-aO-7AF" secondAttribute="bottom" id="D1N-qC-5Jr"/>
                             <constraint firstItem="F9u-aO-7AF" firstAttribute="leading" secondItem="XRK-u5-Bhz" secondAttribute="leading" id="Ftr-hn-48h"/>
+                            <constraint firstItem="nO0-tW-w3w" firstAttribute="leading" secondItem="gwg-JY-pvg" secondAttribute="leadingMargin" id="H4F-7L-WqP"/>
                             <constraint firstItem="XRK-u5-Bhz" firstAttribute="bottom" secondItem="F9u-aO-7AF" secondAttribute="bottom" id="MOV-Ky-Vun"/>
+                            <constraint firstItem="nO0-tW-w3w" firstAttribute="centerX" secondItem="F9u-aO-7AF" secondAttribute="centerX" id="l7D-8R-BQX"/>
+                            <constraint firstItem="nO0-tW-w3w" firstAttribute="top" secondItem="XRK-u5-Bhz" secondAttribute="top" id="o25-LP-xii"/>
                         </constraints>
                     </view>
                     <connections>
