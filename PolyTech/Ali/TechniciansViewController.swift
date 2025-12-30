@@ -6,10 +6,13 @@
 //
 
 import UIKit
+import FirebaseFirestore
 
 class TechniciansViewController: UITableViewController {
     
-    enum Availability {
+    private let db = Firestore.firestore()
+    
+    enum Availability: String {
         case available
         case busy
     }
@@ -21,11 +24,7 @@ class TechniciansViewController: UITableViewController {
         let hours: String
     }
     
-    private var technicians: [Technician] = [
-        .init(name: "Ali Fadhel", availability: .available, tasks: 142, hours: "6:00 - 12:00"),
-        .init(name: "Fatema Hasan", availability: .busy, tasks: 98, hours: "12:00 - 18:00"),
-        .init(name: "Fatima Ali", availability: .busy, tasks: 187, hours: "18:00 - 24:00")
-    ]
+    private var technicians: [Technician] = []
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -33,6 +32,10 @@ class TechniciansViewController: UITableViewController {
         tableView.separatorStyle = .none
         tableView.rowHeight = UITableView.automaticDimension
         tableView.estimatedRowHeight = 160
+        tableView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 120, right: 0)
+        tableView.scrollIndicatorInsets = tableView.contentInset
+        
+        startTechniciansListener()
     }
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -53,11 +56,11 @@ class TechniciansViewController: UITableViewController {
         switch tech.availability {
         case .available:
             cell.statusLabel.text = "Available"
-            cell.statusLabel.backgroundColor = UIColor.systemBlue
+            cell.statusPillView.backgroundColor = UIColor.systemBlue
             cell.dotView.backgroundColor = UIColor.systemBlue
         case .busy:
-            cell.statusLabel.text = "busy"
-            cell.statusLabel.backgroundColor = UIColor.systemRed
+            cell.statusLabel.text = "Busy"
+            cell.statusPillView.backgroundColor = UIColor.systemRed
             cell.dotView.backgroundColor = UIColor.systemRed
         }
         
@@ -73,5 +76,47 @@ class TechniciansViewController: UITableViewController {
          }
          */
         
+    }
+    
+    private var listener: ListenerRegistration?
+    
+    private func startTechniciansListener() {
+        listener = db.collection("technicians").addSnapshotListener { [weak self] snapshot, error in
+            guard let self else { return }
+            
+            if let error = error {
+                print("❌ technicians listener error:", error)
+                return
+            }
+            
+            let docs = snapshot?.documents ?? []
+            print("✅ technicians docs:", docs.count)
+            
+            self.technicians = docs.compactMap { doc in
+                let data = doc.data()
+                print("DOC", doc.documentID, data)
+                
+                guard
+                    let name = data["name"] as? String,
+                    let availabilityRaw = data["availability"] as? String,
+                    let availability = Availability(rawValue: availabilityRaw),
+                    let tasks = data["tasks"] as? Int,
+                    let hours = data["hours"] as? String
+                else {
+                    print("⚠️ Skipping doc \(doc.documentID) due to missing/wrong fields")
+                    return nil
+                }
+                
+                return Technician(name: name, availability: availability, tasks: tasks, hours: hours)
+            }
+            
+            DispatchQueue.main.async {
+                self.tableView.reloadData()
+            }
+        }
+    }
+    
+    deinit {
+        listener?.remove()
     }
 }

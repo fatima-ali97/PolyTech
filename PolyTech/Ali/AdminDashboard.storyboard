@@ -11,7 +11,6 @@
         <!--Admin Dashboard View Controller-->
         <scene sceneID="N0N-B9-yur">
             <objects>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="Xw9-uh-UM9" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
                 <viewController storyboardIdentifier="AdminDashboardViewController" id="Srr-pD-4gI" customClass="AdminDashboardViewController" customModule="PolyTech" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="eqL-Y6-G4W">
                         <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
@@ -197,37 +196,37 @@
                                                             <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="lb0-It-Jrv">
                                                                 <rect key="frame" x="8" y="56" width="10" height="10"/>
                                                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                                                <color key="backgroundColor" systemColor="systemIndigoColor"/>
+                                                                <color key="backgroundColor" red="0.39215683940000001" green="0.75686275960000005" blue="0.39607840779999998" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                                                             </view>
                                                             <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Ewp-2a-o9P">
                                                                 <rect key="frame" x="8" y="95" width="10" height="10"/>
                                                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                                                <color key="backgroundColor" systemColor="systemBlueColor"/>
+                                                                <color key="backgroundColor" red="0.20392158630000001" green="0.47058826679999999" blue="0.96862745289999996" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                                                             </view>
                                                             <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="bHp-w2-3pq">
                                                                 <rect key="frame" x="8" y="135" width="10" height="10"/>
                                                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                                                <color key="backgroundColor" systemColor="systemMintColor"/>
+                                                                <color key="backgroundColor" red="0.94509804249999996" green="0.60392159219999997" blue="0.21960783" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                                                             </view>
                                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Completed (749)" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="VEw-ho-5xv">
                                                                 <rect key="frame" x="34" y="51" width="130" height="21"/>
                                                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                                                <color key="textColor" systemColor="systemIndigoColor"/>
+                                                                <color key="textColor" red="0.38431376220000002" green="0.74117648599999997" blue="0.38431376220000002" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                                                                 <nil key="highlightedColor"/>
                                                             </label>
                                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="In Progress (342)" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Pe8-xX-8J8">
                                                                 <rect key="frame" x="34" y="90" width="133" height="21"/>
                                                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                                                <color key="textColor" systemColor="systemBlueColor"/>
+                                                                <color key="textColor" red="0.20000001789999999" green="0.4588235021" blue="0.94117647410000005" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                                                                 <nil key="highlightedColor"/>
                                                             </label>
                                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Pending (152)" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="AQ7-dB-6X5">
                                                                 <rect key="frame" x="34" y="130" width="106" height="21"/>
                                                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                                                <color key="textColor" systemColor="systemMintColor"/>
+                                                                <color key="textColor" red="0.94509804249999996" green="0.60392159219999997" blue="0.21960783" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                                                                 <nil key="highlightedColor"/>
                                                             </label>
                                                             <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="aK3-MK-kHa" userLabel="donutChartView" customClass="DonutChartView" customModule="PolyTech">
@@ -251,22 +250,22 @@
                                                                 <nil key="textColor"/>
                                                                 <nil key="highlightedColor"/>
                                                             </label>
-                                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Fatema Ebrahim" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Dj0-dG-jZx">
-                                                                <rect key="frame" x="8" y="93" width="123" height="21"/>
+                                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="🎉 Fatema Ebrahim 🎉" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Dj0-dG-jZx">
+                                                                <rect key="frame" x="8" y="93" width="178" height="21"/>
                                                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                                 <nil key="textColor"/>
                                                                 <nil key="highlightedColor"/>
                                                             </label>
                                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="143 tasks solved" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="VAG-9f-OfU">
-                                                                <rect key="frame" x="8" y="122" width="108" height="17"/>
+                                                                <rect key="frame" x="8" y="122" width="115" height="17"/>
                                                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                                                 <color key="textColor" white="0.33333333333333331" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                                 <nil key="highlightedColor"/>
                                                             </label>
                                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="#1" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Pa8-w1-E7i">
-                                                                <rect key="frame" x="335" y="93" width="18" height="21"/>
+                                                                <rect key="frame" x="330" y="93" width="18" height="21"/>
                                                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                                 <nil key="textColor"/>
@@ -287,7 +286,7 @@
                                         </subviews>
                                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                         <constraints>
-                                            <constraint firstItem="5xP-Ni-CIh" firstAttribute="leading" secondItem="Nwd-d6-35C" secondAttribute="leading" constant="16" id="FdX-w6-p6i"/>
+                                            <constraint firstAttribute="leading" secondItem="5xP-Ni-CIh" secondAttribute="leading" constant="-16" id="FdX-w6-p6i"/>
                                             <constraint firstItem="5xP-Ni-CIh" firstAttribute="top" secondItem="Nwd-d6-35C" secondAttribute="top" constant="16" id="Q2f-vp-5in"/>
                                             <constraint firstAttribute="bottom" secondItem="5xP-Ni-CIh" secondAttribute="bottom" constant="16" id="Y3l-6a-GpI"/>
                                             <constraint firstAttribute="trailing" secondItem="5xP-Ni-CIh" secondAttribute="trailing" constant="16" id="t1j-Qm-fke"/>
@@ -298,7 +297,7 @@
                                     <constraint firstItem="Nwd-d6-35C" firstAttribute="top" secondItem="n00-Wl-9ym" secondAttribute="top" id="ZU1-wT-JG2"/>
                                     <constraint firstItem="Nwd-d6-35C" firstAttribute="leading" secondItem="n00-Wl-9ym" secondAttribute="leading" id="oLx-3w-LkM"/>
                                     <constraint firstItem="Nwd-d6-35C" firstAttribute="bottom" secondItem="n00-Wl-9ym" secondAttribute="bottom" id="ta0-DJ-gwU"/>
-                                    <constraint firstItem="n00-Wl-9ym" firstAttribute="trailing" secondItem="Nwd-d6-35C" secondAttribute="trailing" id="zlz-mE-pTG"/>
+                                    <constraint firstItem="Nwd-d6-35C" firstAttribute="trailing" secondItem="n00-Wl-9ym" secondAttribute="trailing" id="zlz-mE-pTG"/>
                                 </constraints>
                                 <viewLayoutGuide key="contentLayoutGuide" id="o4J-DF-pnn"/>
                                 <viewLayoutGuide key="frameLayoutGuide" id="n00-Wl-9ym"/>
@@ -310,9 +309,15 @@
                     <navigationItem key="navigationItem" id="B53-an-Nj2"/>
                     <connections>
                         <outlet property="completedLabel" destination="zC8-hU-3PN" id="z51-WO-DEh"/>
+                        <outlet property="completedStatusLabel" destination="VEw-ho-5xv" id="Mhb-hV-iQX"/>
                         <outlet property="donutChartView" destination="aK3-MK-kHa" id="wlg-3T-wxp"/>
                         <outlet property="inProgressLabel" destination="eiA-kK-lKi" id="EKP-Ve-e8w"/>
+                        <outlet property="inProgressStatusLabel" destination="Pe8-xX-8J8" id="tKg-VY-UZg"/>
                         <outlet property="pendingLabel" destination="fib-Q5-b67" id="fBc-h1-l5F"/>
+                        <outlet property="pendingStatusLabel" destination="AQ7-dB-6X5" id="bYI-On-vb1"/>
+                        <outlet property="techOfWeekNameLabel" destination="Dj0-dG-jZx" id="XNW-Hd-SP2"/>
+                        <outlet property="techOfWeekRankLabel" destination="Pa8-w1-E7i" id="oMv-R1-PKP"/>
+                        <outlet property="techOfWeekSubtitleLabel" destination="VAG-9f-OfU" id="Xsr-c2-CS7"/>
                         <outlet property="totalRequestsLabel" destination="E8p-j1-zaF" id="e8R-v9-VSh"/>
                         <outletCollection property="cardViews" destination="3rH-Eo-gZB" collectionClass="NSMutableArray" id="RL3-Ga-CYt"/>
                         <outletCollection property="cardViews" destination="Wd1-c1-29I" collectionClass="NSMutableArray" id="6nH-m6-oen"/>
@@ -322,6 +327,7 @@
                         <outletCollection property="cardViews" destination="DcZ-KM-Ogm" collectionClass="NSMutableArray" id="L2J-Am-ZI4"/>
                     </connections>
                 </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="Xw9-uh-UM9" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="-686.25954198473278" y="-555.63380281690138"/>
         </scene>
@@ -330,17 +336,8 @@
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>
-        <systemColor name="systemBlueColor">
-            <color red="0.0" green="0.47843137250000001" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-        </systemColor>
         <systemColor name="systemGrayColor">
-            <color red="0.5568627451" green="0.5568627451" blue="0.57647058819999997" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-        </systemColor>
-        <systemColor name="systemIndigoColor">
-            <color red="0.34509803919999998" green="0.33725490200000002" blue="0.83921568629999999" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-        </systemColor>
-        <systemColor name="systemMintColor">
-            <color red="0.0" green="0.78039215689999997" blue="0.74509803919999995" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.55686274509803924" green="0.55686274509803924" blue="0.57647058823529407" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
     </resources>
 </document>
