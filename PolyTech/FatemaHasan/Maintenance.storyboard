@@ -30,11 +30,20 @@
                                     </tableViewCell>
                                 </prototypes>
                             </tableView>
-                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="plus" catalog="system" translatesAutoresizingMaskIntoConstraints="NO" id="2A8-PJ-sxv">
-                                <rect key="frame" x="337" y="52.333333333333371" width="26" height="26"/>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Zzo-Hc-jSi">
+                                <rect key="frame" x="50" y="71" width="55" height="39"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <color key="tintColor" systemColor="systemGray2Color"/>
-                            </imageView>
+                                <color key="tintColor" red="0.1215686351" green="0.20784312490000001" blue="0.33333334329999997" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
+                                <state key="normal" title="Button"/>
+                                <buttonConfiguration key="configuration" style="plain" title="Add"/>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="i3u-5W-oaV">
+                                <rect key="frame" x="297" y="71" width="54" height="39"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <color key="tintColor" red="0.1215686351" green="0.20784312490000001" blue="0.33333334329999997" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
+                                <state key="normal" title="Button"/>
+                                <buttonConfiguration key="configuration" style="plain" title="Edit"/>
+                            </button>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="lIY-ld-bnO"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
@@ -46,8 +55,9 @@
                         </constraints>
                     </view>
                     <connections>
-                        <outlet property="AddMaintenance" destination="2A8-PJ-sxv" id="ITx-be-nfA"/>
-                        <outlet property="tableView" destination="fCt-wn-yq8" id="Gjz-Kl-5Qz"/>
+                        <outlet property="Addbtn" destination="Zzo-Hc-jSi" id="XJh-3t-j66"/>
+                        <outlet property="EditBtn" destination="i3u-5W-oaV" id="QeX-cn-fJd"/>
+                        <outlet property="tableView" destination="fCt-wn-yq8" id="rYI-W5-e8K"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Bfe-HZ-Ded" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
@@ -56,12 +66,8 @@
         </scene>
     </scenes>
     <resources>
-        <image name="plus" catalog="system" width="128" height="113"/>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-        </systemColor>
-        <systemColor name="systemGray2Color">
-            <color red="0.68235294117647061" green="0.68235294117647061" blue="0.69803921568627447" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
     </resources>
 </document>
