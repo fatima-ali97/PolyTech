@@ -43,9 +43,6 @@
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                 <textInputTraits key="textInputTraits"/>
-                                <connections>
-                                    <action selector="RequestName:" destination="uQL-GF-qCc" eventType="editingDidEnd" id="SDO-2d-Hri"/>
-                                </connections>
                             </textField>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Request Name" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Agh-tp-asx">
                                 <rect key="frame" x="60" y="206" width="87" height="16"/>
@@ -61,9 +58,6 @@
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                 <textInputTraits key="textInputTraits"/>
-                                <connections>
-                                    <action selector="ItemName:" destination="uQL-GF-qCc" eventType="editingDidEnd" id="0OF-zh-f5T"/>
-                                </connections>
                             </textField>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Item Name" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="gos-Q9-3kZ">
                                 <rect key="frame" x="60" y="278" width="64" height="16"/>
@@ -79,9 +73,6 @@
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                 <textInputTraits key="textInputTraits"/>
-                                <connections>
-                                    <action selector="Category:" destination="uQL-GF-qCc" eventType="editingDidEnd" id="ff8-Sx-luW"/>
-                                </connections>
                             </textField>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Category" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="isk-DT-Va0">
                                 <rect key="frame" x="60" y="348" width="54" height="16"/>
@@ -97,9 +88,6 @@
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                 <textInputTraits key="textInputTraits" keyboardType="numberPad"/>
-                                <connections>
-                                    <action selector="Quantity:" destination="uQL-GF-qCc" eventType="editingDidEnd" id="OAU-Kq-iNQ"/>
-                                </connections>
                             </textField>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Quantity" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="Ff0-y0-aAo">
                                 <rect key="frame" x="60" y="419" width="49" height="16"/>
@@ -115,9 +103,6 @@
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                 <textInputTraits key="textInputTraits"/>
-                                <connections>
-                                    <action selector="Location:" destination="uQL-GF-qCc" eventType="editingDidEnd" id="fBD-q9-8CH"/>
-                                </connections>
                             </textField>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Location" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="fuq-SJ-Cbg">
                                 <rect key="frame" x="60" y="485" width="51" height="16"/>
@@ -133,9 +118,6 @@
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                 <textInputTraits key="textInputTraits"/>
-                                <connections>
-                                    <action selector="ReasonForRequest:" destination="uQL-GF-qCc" eventType="editingDidEnd" id="r4c-5W-q08"/>
-                                </connections>
                             </textField>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Reason For Request" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="Tu2-5c-459">
                                 <rect key="frame" x="60" y="551" width="119" height="16"/>
@@ -157,7 +139,7 @@
                                 <state key="normal" title="Button"/>
                                 <buttonConfiguration key="configuration" style="filled" title="Save" cornerStyle="capsule"/>
                                 <connections>
-                                    <action selector="saveBtn:" destination="uQL-GF-qCc" eventType="touchUpInside" id="Kdj-Pa-DhW"/>
+                                    <action selector="saveBtn:" destination="uQL-GF-qCc" eventType="touchUpInside" id="p52-B5-QyV"/>
                                 </connections>
                             </button>
                         </subviews>
@@ -170,21 +152,21 @@
                     </view>
                     <navigationItem key="navigationItem" id="Ai5-Wf-OCH"/>
                     <connections>
-                        <outlet property="backBtn" destination="YLU-PE-mbK" id="U3r-8K-XpT"/>
-                        <outlet property="category" destination="IoG-Mr-Svf" id="leZ-UG-Ati"/>
-                        <outlet property="categoryDropDown" destination="EoG-xN-Ybx" id="iwS-1k-Tf9"/>
-                        <outlet property="itemName" destination="LJu-z6-hVb" id="WCa-Ho-qG7"/>
-                        <outlet property="location" destination="AGp-gM-G3v" id="77B-Lh-xEk"/>
-                        <outlet property="pageTitle" destination="f1C-sl-e48" id="jXB-8u-PpN"/>
-                        <outlet property="quantity" destination="mah-6q-T13" id="mq2-r4-Wfc"/>
-                        <outlet property="reason" destination="AZh-b1-qMs" id="YlZ-Ln-2gs"/>
-                        <outlet property="requestName" destination="2xb-CK-Tzp" id="XIr-hm-Vt1"/>
-                        <outlet property="savebtn" destination="NNc-l0-gAI" id="OMb-VA-GpP"/>
+                        <outlet property="backBtn" destination="YLU-PE-mbK" id="fJ8-eO-g8g"/>
+                        <outlet property="category" destination="IoG-Mr-Svf" id="39F-MX-eLC"/>
+                        <outlet property="categoryDropDown" destination="EoG-xN-Ybx" id="HQt-HV-jNX"/>
+                        <outlet property="itemName" destination="LJu-z6-hVb" id="ZCO-83-3xH"/>
+                        <outlet property="location" destination="AGp-gM-G3v" id="wfL-XK-Uca"/>
+                        <outlet property="pageTitle" destination="f1C-sl-e48" id="ove-wf-7XY"/>
+                        <outlet property="quantity" destination="mah-6q-T13" id="irL-rD-pK2"/>
+                        <outlet property="reason" destination="AZh-b1-qMs" id="Ivn-JZ-dAZ"/>
+                        <outlet property="requestName" destination="2xb-CK-Tzp" id="B5L-DX-ThE"/>
+                        <outlet property="savebtn" destination="NNc-l0-gAI" id="6q2-K3-6um"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="rNL-cR-6xC" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2411" y="-719"/>
+            <point key="canvasLocation" x="2486" y="-1030"/>
         </scene>
     </scenes>
     <resources>
