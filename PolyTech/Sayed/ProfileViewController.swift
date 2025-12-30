@@ -82,7 +82,7 @@ class ProfileViewController: UIViewController {
             initialVC.modalPresentationStyle = .fullScreen
             self.present(initialVC, animated: true, completion: nil)
         } else {
-            print("Please set the 'Is Initial View Controller' in History.storyboard")
+            print("History.storyboard missing 'Is Initial View Controller' setting.")
         }
     }
     
