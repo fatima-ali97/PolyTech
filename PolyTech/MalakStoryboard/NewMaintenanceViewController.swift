@@ -4,17 +4,21 @@ import Cloudinary
 
 class NewMaintenanceViewController: UIViewController {
 
+    // Cloudinary setup
     let cloudName: String = "dwvlnmbtv"
     let uploadPreset = "Polytech_Cloudinary"
     var cloudinary: CLDCloudinary!
 
+    // Firestore database connection
     let database = Firestore.firestore()
 
+    // Edit mode management
     var isEditMode = false
     var documentId: String?
     var existingData: [String: Any]?
     var uploadedImageUrl: String?
 
+    // UI Elements
     @IBOutlet weak var requestName: UITextField!
     @IBOutlet weak var category: UITextField!
     @IBOutlet weak var location: UITextField!
@@ -25,13 +29,14 @@ class NewMaintenanceViewController: UIViewController {
     @IBOutlet weak var urgencyDropDown: UIImageView!
     @IBOutlet weak var uploadImage: UIImageView!
     @IBOutlet weak var backBtn: UIImageView!
-    
 
+    // Picker setup
     private let categoryPicker = UIPickerView()
     private let urgencyPicker = UIPickerView()
     private var selectedCategory: MaintenanceCategory?
     private var selectedUrgency: UrgencyLevel?
 
+    // Maintenance categories
     enum MaintenanceCategory: String, CaseIterable {
         case osUpdate = "os_update"
         case classroomEquipment = "classroom_equipment"
@@ -52,6 +57,7 @@ class NewMaintenanceViewController: UIViewController {
         }
     }
 
+    // Urgency levels
     enum UrgencyLevel: String, CaseIterable {
         case low, medium, high
         var displayName: String { rawValue.capitalized }
@@ -67,11 +73,13 @@ class NewMaintenanceViewController: UIViewController {
         configureEditMode()
     }
 
+    // Initialize Cloudinary
     private func initCloudinary() {
         let config = CLDConfiguration(cloudName: cloudName, secure: true)
         cloudinary = CLDCloudinary(configuration: config)
     }
 
+    // Enable tap to upload image
     private func setupImageTap() {
         uploadImage.isUserInteractionEnabled = true
         uploadImage.addGestureRecognizer(
@@ -79,6 +87,7 @@ class NewMaintenanceViewController: UIViewController {
         )
     }
 
+    // Select image from photo library
     @objc private func selectImage() {
         let picker = UIImagePickerController()
         picker.delegate = self
@@ -86,6 +95,7 @@ class NewMaintenanceViewController: UIViewController {
         present(picker, animated: true)
     }
 
+    // Upload image to Cloudinary
     private func uploadToCloudinary(imageData: Data) {
         savebtn.isEnabled = false
 
@@ -107,7 +117,7 @@ class NewMaintenanceViewController: UIViewController {
         )
     }
 
-
+    // Configure edit mode
     private func configureEditMode() {
         if isEditMode {
             pageTitle.text = "Edit Maintenance Request"
@@ -119,11 +129,11 @@ class NewMaintenanceViewController: UIViewController {
         }
     }
 
+    // Populate fields for editing
     private func populateFields() {
         guard let data = existingData else { return }
 
         requestName.text = data["requestName"] as? String
-        requestName.isEnabled = false
         location.text = data["location"] as? String
 
         if let raw = data["category"] as? String,
@@ -137,10 +147,13 @@ class NewMaintenanceViewController: UIViewController {
             selectedUrgency = urg
             urgency.text = urg.displayName
         }
+
+        if let imageUrl = data["imageUrl"] as? String {
+            // Optionally, load the image from the URL if necessary
+        }
     }
 
     @IBAction func Savebtn(_ sender: UIButton) {
-
         guard
             let requestNameText = requestName.text, !requestNameText.isEmpty,
             let locationText = location.text, !locationText.isEmpty,
@@ -175,15 +188,12 @@ class NewMaintenanceViewController: UIViewController {
     }
 
     private func setupBackBtnButton() {
-
         backBtn.isUserInteractionEnabled = true
-
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(backBtnTapped))
         backBtn.addGestureRecognizer(tapGesture)
     }
     
     @objc func backBtnTapped() {
-
         let storyboard = UIStoryboard(name: "HomePage", bundle: nil)
         guard let vc = storyboard.instantiateViewController(withIdentifier: "HomeViewController") as? HomeViewController else {
             print("HomeViewController not found in storyboard")
