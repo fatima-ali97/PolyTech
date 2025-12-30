@@ -46,5 +46,44 @@ class ProfileViewController: UIViewController {
         }
     }
     
+    @IBAction func logoutButtonTapped(_ sender: UIButton) {
+        let alert = UIAlertController(title: "Logout", message: "Are you sure you want to log out?", preferredStyle: .alert)
+        
+        alert.addAction(UIAlertAction(title: "Cancel", style: .cancel))
+        alert.addAction(UIAlertAction(title: "Logout", style: .destructive) { _ in
+            self.performLogout()
+        })
+        
+        present(alert, animated: true)
     }
 
+    private func performLogout() {
+        do {
+            try Auth.auth().signOut()
+            
+            UserDefaults.standard.set(false, forKey: "isLoggedIn")
+            UserDefaults.standard.removeObject(forKey: "userId")
+            UserDefaults.standard.removeObject(forKey: "userRole")
+            
+            DispatchQueue.main.async {
+                if let sceneDelegate = self.view.window?.windowScene?.delegate as? SceneDelegate {
+                    sceneDelegate.switchToLogin()
+                }
+            }
+        } catch let error {
+            print("Failed to sign out: \(error.localizedDescription)")
+        }
+    }
+    
+    @IBAction func goToHistoryTapped(_ sender: UIButton) {
+        let historyStoryboard = UIStoryboard(name: "History", bundle: nil)
+        
+        if let initialVC = historyStoryboard.instantiateInitialViewController() {
+            initialVC.modalPresentationStyle = .fullScreen
+            self.present(initialVC, animated: true, completion: nil)
+        } else {
+            print("Please set the 'Is Initial View Controller' in History.storyboard")
+        }
+    }
+    
+}

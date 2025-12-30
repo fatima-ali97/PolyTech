@@ -294,6 +294,24 @@
                                             <segue destination="Rhb-qm-4hk" kind="show" id="LIX-id-z2J"/>
                                         </connections>
                                     </button>
+                                    <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="eCD-yZ-8sO" userLabel="LogOutButton">
+                                        <rect key="frame" x="0.0" y="544" width="393" height="71"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                        <state key="normal" title="Button"/>
+                                        <buttonConfiguration key="configuration" style="plain"/>
+                                        <connections>
+                                            <action selector="logoutButtonTapped:" destination="4YU-c1-hhC" eventType="touchUpInside" id="hv5-eN-BDr"/>
+                                        </connections>
+                                    </button>
+                                    <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="91r-uG-Fd3" userLabel="HistoryButton">
+                                        <rect key="frame" x="0.0" y="197" width="393" height="73"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                        <state key="normal" title="Button"/>
+                                        <buttonConfiguration key="configuration" style="plain"/>
+                                        <connections>
+                                            <action selector="goToHistoryTapped:" destination="4YU-c1-hhC" eventType="touchUpInside" id="xRg-bC-OlO"/>
+                                        </connections>
+                                    </button>
                                 </subviews>
                                 <viewLayoutGuide key="contentLayoutGuide" id="GhR-vr-pAc"/>
                                 <viewLayoutGuide key="frameLayoutGuide" id="ppZ-Nu-1P3"/>
@@ -312,7 +330,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="xt7-4n-h61" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1223.6641221374045" y="7.042253521126761"/>
+            <point key="canvasLocation" x="1223.6641221374045" y="14.788732394366198"/>
         </scene>
         <!--Edit Profile-->
         <scene sceneID="UrC-ax-1hV">
