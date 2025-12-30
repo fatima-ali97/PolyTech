@@ -25,7 +25,7 @@
             </objects>
             <point key="canvasLocation" x="483" y="9"/>
         </scene>
-        <!--Tasks View Controller-->
+        <!--Tasks-->
         <scene sceneID="Xsj-tH-sft">
             <objects>
                 <viewController modalPresentationStyle="fullScreen" id="1Ji-5D-WUp" customClass="TasksViewController" customModule="PolyTech" customModuleProvider="target" sceneMemberID="viewController">
@@ -210,13 +210,6 @@ Due: 2025-11-15</string>
                                     </button>
                                 </subviews>
                             </stackView>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Tasks" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="U36-yW-2GC">
-                                <rect key="frame" x="160" y="59" width="72" height="33"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <fontDescription key="fontDescription" type="boldSystem" pointSize="27"/>
-                                <nil key="textColor"/>
-                                <nil key="highlightedColor"/>
-                            </label>
                             <label opaque="NO" userInteractionEnabled="NO" alpha="0.0" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="No Tasks Found" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ihQ-zH-p5Q">
                                 <rect key="frame" x="135" y="256" width="122" height="21"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
@@ -228,7 +221,7 @@ Due: 2025-11-15</string>
                         <viewLayoutGuide key="safeArea" id="CdM-Nt-BPO"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                     </view>
-                    <navigationItem key="navigationItem" id="DZq-Es-N3f"/>
+                    <navigationItem key="navigationItem" title="Tasks" id="DZq-Es-N3f"/>
                     <connections>
                         <outlet property="filterStackView" destination="V63-8O-Amz" id="kXU-xI-0f8"/>
                         <outlet property="noTasksLabel" destination="ihQ-zH-p5Q" id="1wz-Nk-i6i"/>
@@ -240,7 +233,7 @@ Due: 2025-11-15</string>
             </objects>
             <point key="canvasLocation" x="2222" y="9"/>
         </scene>
-        <!--Details Tasks View Controller-->
+        <!--Task Details-->
         <scene sceneID="VPl-g8-5kw">
             <objects>
                 <viewController storyboardIdentifier="DetailsVC" modalPresentationStyle="fullScreen" id="0F8-MV-RmU" customClass="DetailsTasksViewController" customModule="PolyTech" customModuleProvider="target" sceneMemberID="viewController">
@@ -248,13 +241,6 @@ Due: 2025-11-15</string>
                         <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Task Details" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="cqX-Dy-reN">
-                                <rect key="frame" x="121" y="63" width="151" height="33"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <fontDescription key="fontDescription" type="boldSystem" pointSize="27"/>
-                                <nil key="textColor"/>
-                                <nil key="highlightedColor"/>
-                            </label>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Task Details" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="QdP-Y5-dJa">
                                 <rect key="frame" x="16" y="118" width="157" height="27"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
@@ -409,7 +395,7 @@ Due: 2025-11-15</string>
                         <viewLayoutGuide key="safeArea" id="uLh-MK-jcc"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                     </view>
-                    <navigationItem key="navigationItem" id="w1b-CD-WqO"/>
+                    <navigationItem key="navigationItem" title="Task Details" id="w1b-CD-WqO"/>
                     <connections>
                         <outlet property="AddressLabel" destination="pJq-o8-y1c" id="Uzf-D2-lJl"/>
                         <outlet property="clientLabel" destination="0Oe-5Z-CsM" id="7e8-qZ-srX"/>
@@ -424,7 +410,7 @@ Due: 2025-11-15</string>
             </objects>
             <point key="canvasLocation" x="1362.5954198473282" y="705.63380281690149"/>
         </scene>
-        <!--Technician Dashboard View Controller-->
+        <!--Technician Dashboard-->
         <scene sceneID="WZC-73-NZm">
             <objects>
                 <viewController modalPresentationStyle="fullScreen" id="QFQ-2a-HY4" customClass="TechnicianDashboardViewController" customModule="PolyTech" customModuleProvider="target" sceneMemberID="viewController">
@@ -594,18 +580,11 @@ Due: 2025-11-15</string>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                 <color key="tintColor" red="0.1058823466" green="0.1607843041" blue="0.2588235438" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                             </view>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Technician Dashboard" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="krd-mC-KZW">
-                                <rect key="frame" x="16" y="86" width="249" height="32"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="26"/>
-                                <nil key="textColor"/>
-                                <nil key="highlightedColor"/>
-                            </label>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="eOZ-Oe-BV6"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                     </view>
-                    <navigationItem key="navigationItem" id="yK8-Iz-hzE"/>
+                    <navigationItem key="navigationItem" title="Technician Dashboard" id="yK8-Iz-hzE"/>
                     <connections>
                         <outlet property="StatusCard" destination="qJu-xs-gbh" id="IFC-fu-iiu"/>
                         <outlet property="completedCard" destination="dTj-bi-wDL" id="BdB-b1-BhR"/>
