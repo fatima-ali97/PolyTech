@@ -17,11 +17,11 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="F8X-sl-1RF">
-                                <rect key="frame" x="130" y="776" width="133" height="39"/>
+                                <rect key="frame" x="166" y="776" width="61" height="39"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <color key="tintColor" red="0.086274509799999996" green="0.1647058824" blue="0.2666666667" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                                 <state key="normal" title="Button"/>
-                                <buttonConfiguration key="configuration" style="filled" title="Save Changes" cornerStyle="capsule"/>
+                                <buttonConfiguration key="configuration" style="filled" title="Save" cornerStyle="capsule"/>
                                 <connections>
                                     <action selector="Savebtn:" destination="iUh-Uj-aok" eventType="touchUpInside" id="cNB-Pa-o6K"/>
                                 </connections>
@@ -152,7 +152,6 @@
                         <outlet property="backBtn" destination="3Jz-Zf-yvS" id="Xx1-zq-72C"/>
                         <outlet property="category" destination="O5p-4W-SpH" id="urU-UV-6gJ"/>
                         <outlet property="categoryDropDown" destination="eA6-uy-09t" id="URD-ek-wlf"/>
-                        <outlet property="imageUpload" destination="VVv-96-c6C" id="8VW-8m-1Qf"/>
                         <outlet property="location" destination="jEs-HO-JZY" id="BWE-dO-6YN"/>
                         <outlet property="pageTitle" destination="mSt-YA-kRE" id="w7u-sl-iuW"/>
                         <outlet property="requestName" destination="y7O-ik-8p4" id="pfK-Pf-Pm1"/>
