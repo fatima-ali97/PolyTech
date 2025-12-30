@@ -75,4 +75,15 @@ class ProfileViewController: UIViewController {
         }
     }
     
+    @IBAction func goToHistoryTapped(_ sender: UIButton) {
+        let historyStoryboard = UIStoryboard(name: "History", bundle: nil)
+        
+        if let initialVC = historyStoryboard.instantiateInitialViewController() {
+            initialVC.modalPresentationStyle = .fullScreen
+            self.present(initialVC, animated: true, completion: nil)
+        } else {
+            print("Please set the 'Is Initial View Controller' in History.storyboard")
+        }
+    }
+    
 }
