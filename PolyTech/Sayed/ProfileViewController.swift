@@ -26,24 +26,25 @@ class ProfileViewController: UIViewController {
     }
     
     func setupScrollViewUI() {
-            scrollView.contentInsetAdjustmentBehavior = .never
-            scrollView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 1050, right: 0)
-        }
+        scrollView.contentInsetAdjustmentBehavior = .never
+        scrollView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 1050, right: 0)
+    }
     
     func fetchUserData() {
-            guard let uid = Auth.auth().currentUser?.uid else { return }
+        guard let uid = Auth.auth().currentUser?.uid else { return }
+        
+        db.collection("users").document(uid).addSnapshotListener { [weak self] snapshot, error in
+            guard let data = snapshot?.data(), error == nil else {
+                print("Error fetching profile data")
+                return
+            }
             
-            db.collection("users").document(uid).addSnapshotListener { [weak self] snapshot, error in
-                guard let data = snapshot?.data(), error == nil else {
-                    print("Error fetching profile data")
-                    return
-                }
-                
-                DispatchQueue.main.async {
-                    self?.nameLabel.text = data["fullName"] as? String ?? "No Name"
-                    self?.emailLabel.text = data["email"] as? String ?? "No Email"
-                }
+            DispatchQueue.main.async {
+                self?.nameLabel.text = data["fullName"] as? String ?? "No Name"
+                self?.emailLabel.text = data["email"] as? String ?? "No Email"
             }
         }
+    }
     
-}
+    }
+
