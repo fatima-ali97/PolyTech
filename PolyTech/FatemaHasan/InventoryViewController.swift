@@ -7,7 +7,6 @@ class InventoryViewController: UIViewController {
     // MARK: - IBOutlets
     @IBOutlet weak var tableView: UITableView!
     
-    @IBOutlet weak var returnInventoryBtn: UIButton!
     
     @IBOutlet weak var AddInventory: UIButton!
     
@@ -64,25 +63,6 @@ class InventoryViewController: UIViewController {
         present(vc, animated: true)
     }
 
-    
-    
-    
-    
-    @IBAction func returnButtonTapped(_ sender: UIButton) {
-        print("Return button tapped!") // Debugging log
-        
-        let storyboard = UIStoryboard(name: "ReturnInventory", bundle: nil)
-        guard let vc = storyboard.instantiateViewController(withIdentifier: "ReturnInventoryViewController") as? ReturnInventoryViewController else {
-            print("ReturnInventoryViewController not found in storyboard")
-            return
-        }
-
-        print("ReturnInventoryViewController successfully instantiated")
-        
-        navigationController?.pushViewController(vc, animated: true)
-    }
-    
-    
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         listener?.remove()

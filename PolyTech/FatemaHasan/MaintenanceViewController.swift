@@ -7,7 +7,6 @@ class MaintenanceViewController: UIViewController {
     // MARK: - IBOutlets
     @IBOutlet weak var tableView: UITableView!
     
-    @IBOutlet weak var EditBtn: UIButton!
     @IBOutlet weak var Addbtn: UIButton!
     // MARK: - Properties
     private var maintenanceItems: [NotificationModel] = []
@@ -89,7 +88,7 @@ class MaintenanceViewController: UIViewController {
     }
     // MARK: - EMPTY STATE
     private func setupEmptyState() {
-        guard let tableView = tableView else {
+        guard tableView != nil else {
             print("ERROR: Cannot setup empty state - tableView outlet is not connected!")
             return
         }
