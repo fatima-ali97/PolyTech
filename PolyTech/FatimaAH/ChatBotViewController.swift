@@ -8,11 +8,11 @@ struct Message {
 }
 
 // MARK: - ChatBot View Controller
-class ChatBotViewController: UIViewController {
+final class ChatBotViewController: UIViewController {
 
     // MARK: - IBOutlets (UI elements from Storyboard)
     @IBOutlet weak var tableView: UITableView!          // Displays chat messages
-    @IBOutlet weak var messageTextField: UITextField!  // Input field for user text
+    @IBOutlet weak var messageTextField: UITextField!   // Input field for user text
     @IBOutlet weak var sendButton: UIButton!            // Send message button
     @IBOutlet weak var inputContainerView: UIView!      // Bottom container (text field + send button)
     @IBOutlet weak var backButton: UIImageView!         // Back button (image)
@@ -129,39 +129,79 @@ class ChatBotViewController: UIViewController {
     }
 
     // MARK: - Bot Reply Logic
-    // Decides which response to send based on input
     private func botReply(for input: String) -> String {
-        let trimmed = input.trimmingCharacters(in: .whitespacesAndNewlines)
         let normalized = normalize(input)
 
-        // If user entered a number (menu choice)
-        if let choice = Int(trimmed) {
+        // ✅ Use normalized for number detection so "7)", "7." etc still works
+        if let choice = Int(normalized) {
             switch choice {
+
             case 0:
                 return menuText
+
             case 1:
-                return "Moodle login / access 📘\nFollow the steps shown."
+                return "Moodle login / access 📘\n1) Open Polytechnic website > Moodle\n2) Login with your username + password."
+
             case 2:
-                return "Banner login 🧾\nUse your Student ID and password."
+                return "Banner login 🧾\n1) Open Polytechnic website > Banner\n2) Enter Student ID + password."
+
             case 3:
-                return "Reset password 🔐\nReply 3-1, 3-2, or 3-3."
+                return "Reset password 🔐\nWhich account?\n1) Moodle\n2) Banner\n3) Email/Office\nReply: 3-1, 3-2, or 3-3"
+
             case 4:
-                return "Wi-Fi / Internet 📶\nTry reconnecting to the network."
+                return "Wi-Fi / Internet 📶\n1) Turn Wi-Fi off/on\n2) Forget network & re-join\n3) Restart device."
+
             case 5:
-                return "Contact IT / Get Help 🧑‍💻\nUse the Get Help page."
+                return "Contact IT / Get Help 🧑‍💻\nUse the Get Help page in the app."
+
+            case 6:
+                return "Technician availability 🛠️\nOpen Get Help and submit your issue with details + location."
+
+            case 7:
+                return "Email setup ✉️\nTry logging in via browser first. If it fails, reset or contact IT."
+
+            case 8:
+                return "Microsoft Teams / Office 365 💼\nSign out/in, update the app, or reinstall if stuck."
+
+            case 9:
+                return "Authenticator / 2FA 🔑\nSet phone time to Automatic and re-add the account if approvals fail."
+
+            case 10:
+                return "VPN 🌍\nCheck internet, re-enter credentials, try another network, restart VPN app."
+
+            case 11:
+                return "Printing 🖨️\nBe on campus Wi-Fi, pick correct printer, try a small test page."
+
+            case 12:
+                return "Library / eResources 📚\nTry on campus first, off campus may need VPN (reply 10)."
+
+            case 13:
+                return "Attendance / Registration 📝\nCheck Banner registration and send course code + error if any."
+
+            case 14:
+                return "Laptop / Software 💻\nKeep storage free, update OS, install required apps (Teams/Office)."
+
+            case 15:
+                return "VM / VMware 🧩\nRestart laptop, update VMware, check VM folder path, share exact error."
+
             default:
                 return "I don’t have that option. Type 0 to see the menu."
             }
         }
 
+        // Special reset choices like 3-1, 3-2, 3-3 -> normalized becomes "31" "32" "33"
+        if normalized == "31" { return "Moodle reset 🔐\nUse “Forgot password?” on Moodle login page." }
+        if normalized == "32" { return "Banner reset 🔐\nBanner resets are usually handled by IT. Reply 5." }
+        if normalized == "33" { return "Email reset 🔐\nUse Microsoft “Forgot password?” or reply 5 for IT." }
+
         // Keyword-based fallback replies
         if normalized.contains("menu") { return menuText }
-        if normalized.contains("moodle") { return "Reply 1 for Moodle help." }
-        if normalized.contains("banner") { return "Reply 2 for Banner help." }
-        if normalized.contains("password") { return "Reply 3 to reset password." }
-        if normalized.contains("wifi") { return "Reply 4 for Wi-Fi help." }
+        if normalized.contains("moodle") { return "Reply 1 for Moodle help. Type 0 for menu." }
+        if normalized.contains("banner") { return "Reply 2 for Banner help. Type 0 for menu." }
+        if normalized.contains("password") { return "Reply 3 to reset password. Type 0 for menu." }
+        if normalized.contains("wifi") { return "Reply 4 for Wi-Fi help. Type 0 for menu." }
 
-        return "Reply with a number (0–15) so I can help you faster."
+        return "Reply with a number (0–15) so I can help you faster. Type 0 to see the menu."
     }
 
     // MARK: - Reload & Scroll

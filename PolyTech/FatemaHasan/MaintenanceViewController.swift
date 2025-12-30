@@ -7,7 +7,8 @@ class MaintenanceViewController: UIViewController {
     // MARK: - IBOutlets
     @IBOutlet weak var tableView: UITableView!
     
-    @IBOutlet weak var AddMaintenance: UIImageView!
+    @IBOutlet weak var EditBtn: UIButton!
+    @IBOutlet weak var Addbtn: UIButton!
     // MARK: - Properties
     private var maintenanceItems: [NotificationModel] = []
     private let db = Firestore.firestore()
@@ -31,27 +32,27 @@ class MaintenanceViewController: UIViewController {
         setupTableView()
         setupEmptyState()
         loadMaintenanceItems()
-        setUpAddBtn()
+       //setUpAddBtn()
     }
     
-    private func setUpAddBtn() {
-
-        AddMaintenance.isUserInteractionEnabled = true
-
-        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(addTapped))
-        AddMaintenance.addGestureRecognizer(tapGesture)
-    }
-    
-    @objc func addTapped() {
-
-        let storyboard = UIStoryboard(name: "NewMaintenance", bundle: nil)
-        guard let vc = storyboard.instantiateViewController(withIdentifier: "NewMaintenanceViewController") as? NewMaintenanceViewController else {
-            print("NewMaintenanceViewController not found in storyboard")
-            return
-        }
-        
-        navigationController?.pushViewController(vc, animated: true)
-    }
+//    private func setUpAddBtn() {
+//
+//        AddMaintenance.isUserInteractionEnabled = true
+//
+//        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(addTapped))
+//        AddMaintenance.addGestureRecognizer(tapGesture)
+//    }
+//    
+//    @objc func addTapped() {
+//
+//        let storyboard = UIStoryboard(name: "NewMaintenance", bundle: nil)
+//        guard let vc = storyboard.instantiateViewController(withIdentifier: "NewMaintenanceViewController") as? NewMaintenanceViewController else {
+//            print("NewMaintenanceViewController not found in storyboard")
+//            return
+//        }
+//        
+//        navigationController?.pushViewController(vc, animated: true)
+//    }
     
     
     override func viewWillDisappear(_ animated: Bool) {

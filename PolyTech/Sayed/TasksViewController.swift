@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import FirebaseFirestore
 
 enum TaskFilter: String, CaseIterable {
     case all = "All"
@@ -19,27 +20,23 @@ protocol TaskCellDelegate: AnyObject {
     func didTapStatusButton(on cell: TaskTableViewCell)
 }
 
-
 class TasksViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, UISearchBarDelegate {
 
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var searchBar: UISearchBar!
     @IBOutlet weak var filterStackView: UIStackView!
     @IBOutlet weak var noTasksLabel: UILabel!
-
-    let allTasks: [TaskModel] = [
-        TaskModel(id: "001", client: "Ali", dueDate: "2025-12-20", status: "Pending", description: "Install new HVAC system.", Address: "Compus A"),
-        TaskModel(id: "002", client: "Mohammed", dueDate: "2025-12-25", status: "In Progress", description: "Install new HVAC system.", Address: "Compus A"),
-        TaskModel(id: "003", client: "Layla", dueDate: "2025-12-28", status: "Completed", description: "Install new HVAC system.", Address: "Compus A"),
-        TaskModel(id: "004", client: "Sara", dueDate: "2025-12-30", status: "Pending", description: "Install HVAC system.", Address: "Compus A")
-    ]
+    
+    let db = Firestore.firestore()
+    var allTasksFromFirebase: [TaskModel] = []
 
     var tasks: [TaskModel] = []
     var currentFilter: TaskFilter = .all
 
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        fetchTasksFromFirebase()
+        
         guard let tableView = tableView,
               let searchBar = searchBar,
               let filterStackView = filterStackView else {
@@ -78,16 +75,16 @@ class TasksViewController: UIViewController, UITableViewDataSource, UITableViewD
     func filterTasks(by filter: TaskFilter) {
         self.currentFilter = filter
 
+        var filteredResults: [TaskModel] = []
+        
         switch filter {
         case .all:
-            tasks = allTasks
-        case .pending:
-            tasks = allTasks.filter { $0.status == TaskFilter.pending.rawValue }
-        case .inProgress:
-            tasks = allTasks.filter { $0.status == TaskFilter.inProgress.rawValue }
-        case .completed:
-            tasks = allTasks.filter { $0.status == TaskFilter.completed.rawValue }
+            filteredResults = allTasksFromFirebase
+        case .pending, .inProgress, .completed:
+            filteredResults = allTasksFromFirebase.filter { $0.status == filter.rawValue }
         }
+
+        self.tasks = filteredResults.sorted(by: { $0.dueDate > $1.dueDate })
 
         updateNoTasksLabel()
         tableView.reloadData()
@@ -140,7 +137,7 @@ class TasksViewController: UIViewController, UITableViewDataSource, UITableViewD
 
         let lowercasedSearchText = searchText.lowercased()
 
-        tasks = allTasks.filter { task in
+        tasks = allTasksFromFirebase.filter { task in
             let matchesSearchText = task.client.lowercased().contains(lowercasedSearchText) ||
                 task.id.lowercased().contains(lowercasedSearchText) ||
                 task.status.lowercased().contains(lowercasedSearchText)
@@ -165,10 +162,6 @@ class TasksViewController: UIViewController, UITableViewDataSource, UITableViewD
         }
     }
 
-
-
-
-
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
         searchBar.resignFirstResponder()
     }
@@ -176,13 +169,13 @@ class TasksViewController: UIViewController, UITableViewDataSource, UITableViewD
 
 
 extension TasksViewController: TaskCellDelegate {
-
+    
     func didTapViewDetails(on cell: TaskTableViewCell) {
         guard let indexPath = tableView.indexPath(for: cell) else { return }
         let task = tasks[indexPath.row]
         print("Details tapped for Task ID: \(task.id) - Attempting transition to DetailsTasksViewController")
         
-        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+        let storyboard = UIStoryboard(name: "Technician", bundle: nil)
         
         guard let detailsVC = storyboard.instantiateViewController(withIdentifier: "DetailsVC") as? DetailsTasksViewController else {
             print("Error: Could not instantiate DetailsTasksViewController. Check Storyboard ID.")
@@ -196,6 +189,26 @@ extension TasksViewController: TaskCellDelegate {
     func didTapStatusButton(on cell: TaskTableViewCell) {
         guard let indexPath = tableView.indexPath(for: cell) else { return }
         let task = tasks[indexPath.row]
-        print("Status button tapped for Task ID: \(task.id) - Current Status: \(task.status)")
     }
+    
+    func fetchTasksFromFirebase() {
+        db.collection("tasks").addSnapshotListener { (querySnapshot, error) in
+            if let error = error {
+                print("Error getting documents: \(error)")
+                return
+            }
+
+            self.allTasksFromFirebase = []
+            
+            querySnapshot?.documents.forEach { document in
+                let data = document.data()
+                if let task = TaskModel(dictionary: data) {
+                    self.allTasksFromFirebase.append(task)
+                }
+            }
+            
+            self.filterTasks(by: self.currentFilter)
+        }
+    }
+    
 }
