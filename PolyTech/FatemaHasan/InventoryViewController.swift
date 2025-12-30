@@ -7,9 +7,11 @@ class InventoryViewController: UIViewController {
     // MARK: - IBOutlets
     @IBOutlet weak var tableView: UITableView!
     
-    @IBOutlet weak var AddInventory: UIImageView!
-    
     @IBOutlet weak var returnInventoryBtn: UIButton!
+    
+    @IBOutlet weak var AddInventory: UIButton!
+    
+ 
     
     // MARK: - Properties
     private var inventoryItems: [NotificationModel] = []
@@ -57,25 +59,6 @@ class InventoryViewController: UIViewController {
     }
     
     
-//    
-//    private func setUpReturnBtn() {
-//
-//        returnInventoryBtn.isUserInteractionEnabled = true
-//
-//        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(returnTapped))
-//        returnInventoryBtn.addGestureRecognizer(tapGesture)
-//    }
-//    
-//    @objc func returnTapped() {
-//
-//        let storyboard = UIStoryboard(name: "ReturnInventory", bundle: nil)
-//        guard let vc = storyboard.instantiateViewController(withIdentifier: "ReturnInventoryViewController") as? ReturnInventoryViewController else {
-//            print("ReturnInventoryViewController not found in storyboard")
-//            return
-//        }
-//        
-//        navigationController?.pushViewController(vc, animated: true)
-//    }
     
     @IBAction func returnButtonTapped(_ sender: UIButton) {
         print("Return button tapped!") // Debugging log
@@ -126,7 +109,7 @@ class InventoryViewController: UIViewController {
     }
     // MARK: - EMPTY STATE
     private func setupEmptyState() {
-        guard let tableView = tableView else {
+        guard tableView != nil else {
             print("ERROR: Cannot setup empty state - tableView outlet is not connected!")
             return
         }
