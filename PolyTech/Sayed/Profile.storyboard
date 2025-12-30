@@ -30,7 +30,7 @@
             <objects>
                 <viewController id="4YU-c1-hhC" customClass="ProfileViewController" customModule="PolyTech" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="FtI-iv-jXg">
-                        <rect key="frame" x="0.0" y="0.0" width="393" height="916"/>
+                        <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Sayed Husain" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="DHK-kQ-jB4">
@@ -313,7 +313,6 @@
                         <color key="tintColor" red="0.25098040700000002" green="0.25490197539999998" blue="0.26666668059999998" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                     </view>
                     <navigationItem key="navigationItem" title="Profile" id="oBo-bv-SZT"/>
-                    <size key="freeformSize" width="393" height="916"/>
                     <connections>
                         <outlet property="emailLabel" destination="tUA-AR-Z8e" id="hyI-pL-5bh"/>
                         <outlet property="nameLabel" destination="DHK-kQ-jB4" id="l3o-Om-zKn"/>
