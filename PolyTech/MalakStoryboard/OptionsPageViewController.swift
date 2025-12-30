@@ -11,7 +11,8 @@ class OptionsPageViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setupNewInventoryButton()
-
+        setupNewMaintenanceButton()
+        setupReturnInventoryButton()
     }
     
     private func setupNewInventoryButton() {
@@ -27,6 +28,44 @@ class OptionsPageViewController: UIViewController {
         let storyboard = UIStoryboard(name: "NewInventory", bundle: nil)
         guard let vc = storyboard.instantiateViewController(withIdentifier: "NewInventoryViewController") as? NewInventoryViewController else {
             print("NewInventoryViewController not found in storyboard")
+            return
+        }
+        
+        navigationController?.pushViewController(vc, animated: true)
+    }
+    
+    private func setupNewMaintenanceButton() {
+
+        newMaintenance.isUserInteractionEnabled = true
+
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(newMaintenanceTapped))
+        newMaintenance.addGestureRecognizer(tapGesture)
+    }
+    
+    @objc func newMaintenanceTapped() {
+
+        let storyboard = UIStoryboard(name: "NewMaintenance", bundle: nil)
+        guard let vc = storyboard.instantiateViewController(withIdentifier: "NewMaintenanceViewController") as? NewMaintenanceViewController else {
+            print("NewMaintenanceViewController not found in storyboard")
+            return
+        }
+        
+        navigationController?.pushViewController(vc, animated: true)
+    }
+    
+    private func setupReturnInventoryButton() {
+
+        returnInventory.isUserInteractionEnabled = true
+
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(returnInventoryTapped))
+        returnInventory.addGestureRecognizer(tapGesture)
+    }
+    
+    @objc func returnInventoryTapped() {
+
+        let storyboard = UIStoryboard(name: "ReturnInventory", bundle: nil)
+        guard let vc = storyboard.instantiateViewController(withIdentifier: "ReturnInventoryViewController") as? ReturnInventoryViewController else {
+            print("ReturnInventoryViewController not found in storyboard")
             return
         }
         
