@@ -23,8 +23,9 @@ class NewMaintenanceViewController: UIViewController {
     @IBOutlet weak var pageTitle: UILabel!
     @IBOutlet weak var categoryDropDown: UIImageView!
     @IBOutlet weak var urgencyDropDown: UIImageView!
-    @IBOutlet weak var Backbtn: UIImageView!
     @IBOutlet weak var uploadImage: UIImageView!
+    @IBOutlet weak var backBtn: UIImageView!
+    
 
     private let categoryPicker = UIPickerView()
     private let urgencyPicker = UIPickerView()
@@ -61,7 +62,7 @@ class NewMaintenanceViewController: UIViewController {
         initCloudinary()
         setupPickers()
         setupDropdownTap()
-        setupBackBtn()
+        setupBackBtnButton()
         setupImageTap()
         configureEditMode()
     }
@@ -173,15 +174,23 @@ class NewMaintenanceViewController: UIViewController {
         }
     }
 
-    private func setupBackBtn() {
-        Backbtn.isUserInteractionEnabled = true
-        Backbtn.addGestureRecognizer(
-            UITapGestureRecognizer(target: self, action: #selector(backBtnTapped))
-        )
-    }
+    private func setupBackBtnButton() {
 
-    @objc private func backBtnTapped() {
-        navigationController?.popViewController(animated: true)
+        backBtn.isUserInteractionEnabled = true
+
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(backBtnTapped))
+        backBtn.addGestureRecognizer(tapGesture)
+    }
+    
+    @objc func backBtnTapped() {
+
+        let storyboard = UIStoryboard(name: "HomePage", bundle: nil)
+        guard let vc = storyboard.instantiateViewController(withIdentifier: "HomeViewController") as? HomeViewController else {
+            print("HomeViewController not found in storyboard")
+            return
+        }
+        
+        navigationController?.pushViewController(vc, animated: true)
     }
 
     private func setupPickers() {
