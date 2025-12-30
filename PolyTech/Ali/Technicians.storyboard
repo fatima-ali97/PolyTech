@@ -115,33 +115,46 @@
                                                         </view>
                                                     </subviews>
                                                 </stackView>
-                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Available" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="fS4-Qr-mUs">
-                                                    <rect key="frame" x="276.66666666666669" y="2.6666666666666679" width="67.333333333333314" height="20.333333333333332"/>
-                                                    <color key="backgroundColor" systemColor="systemBlueColor"/>
-                                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                                    <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                                    <nil key="highlightedColor"/>
-                                                    <userDefinedRuntimeAttributes>
-                                                        <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
-                                                            <integer key="value" value="5"/>
-                                                        </userDefinedRuntimeAttribute>
-                                                    </userDefinedRuntimeAttributes>
-                                                </label>
+                                                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Ltb-d6-EsO">
+                                                    <rect key="frame" x="270" y="3" width="69" height="24"/>
+                                                    <subviews>
+                                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Available" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="fS4-Qr-mUs">
+                                                            <rect key="frame" x="0.0" y="2" width="69" height="20.333333333333332"/>
+                                                            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                            <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                            <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                            <nil key="highlightedColor"/>
+                                                            <userDefinedRuntimeAttributes>
+                                                                <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
+                                                                    <integer key="value" value="5"/>
+                                                                </userDefinedRuntimeAttribute>
+                                                            </userDefinedRuntimeAttributes>
+                                                        </label>
+                                                    </subviews>
+                                                    <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                                    <constraints>
+                                                        <constraint firstItem="fS4-Qr-mUs" firstAttribute="leading" secondItem="Ltb-d6-EsO" secondAttribute="leading" id="1fw-vA-ChH"/>
+                                                        <constraint firstItem="fS4-Qr-mUs" firstAttribute="top" secondItem="Ltb-d6-EsO" secondAttribute="top" constant="2" id="kxH-kg-a2K"/>
+                                                        <constraint firstAttribute="trailing" secondItem="fS4-Qr-mUs" secondAttribute="trailing" id="l2P-7S-Del"/>
+                                                        <constraint firstAttribute="bottom" secondItem="fS4-Qr-mUs" secondAttribute="bottom" constant="1.6666666666666679" id="pQb-Kc-o58"/>
+                                                    </constraints>
+                                                </view>
                                             </subviews>
                                             <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                             <constraints>
-                                                <constraint firstItem="fS4-Qr-mUs" firstAttribute="baseline" secondItem="2bB-Zh-NPp" secondAttribute="baseline" id="8hQ-5r-e0B"/>
+                                                <constraint firstItem="Y1s-xx-ujt" firstAttribute="top" secondItem="Ltb-d6-EsO" secondAttribute="bottom" constant="24.000000000000007" id="EO3-TU-y9G"/>
                                                 <constraint firstItem="Y1s-xx-ujt" firstAttribute="top" secondItem="2bB-Zh-NPp" secondAttribute="bottom" constant="28.000000000000007" id="HaY-RY-Isc"/>
                                                 <constraint firstItem="2bB-Zh-NPp" firstAttribute="leading" secondItem="CgT-bz-ob5" secondAttribute="trailing" constant="8" symbolic="YES" id="Rqw-MT-iE7"/>
                                                 <constraint firstItem="Y1s-xx-ujt" firstAttribute="trailing" secondItem="r2X-vA-u0w" secondAttribute="trailingMargin" id="Sdo-nJ-Y60"/>
                                                 <constraint firstItem="2bB-Zh-NPp" firstAttribute="leading" secondItem="r2X-vA-u0w" secondAttribute="leading" constant="26" id="XcO-NB-7k6"/>
                                                 <constraint firstItem="CgT-bz-ob5" firstAttribute="leading" secondItem="Y1s-xx-ujt" secondAttribute="leading" id="e9g-K9-zAp"/>
+                                                <constraint firstItem="Ltb-d6-EsO" firstAttribute="leading" secondItem="r2X-vA-u0w" secondAttribute="leading" constant="270" id="eA3-UA-gb1"/>
                                                 <constraint firstAttribute="bottom" secondItem="CgT-bz-ob5" secondAttribute="bottom" constant="110" id="iep-9F-fEh"/>
                                                 <constraint firstItem="CgT-bz-ob5" firstAttribute="leading" secondItem="r2X-vA-u0w" secondAttribute="leadingMargin" id="qbE-Sa-pbx"/>
-                                                <constraint firstAttribute="trailing" secondItem="fS4-Qr-mUs" secondAttribute="trailing" constant="8.9999999999999432" id="qe9-1T-f9J"/>
                                                 <constraint firstItem="2bB-Zh-NPp" firstAttribute="top" secondItem="r2X-vA-u0w" secondAttribute="top" constant="3" id="xJs-ju-gLs"/>
                                                 <constraint firstItem="2bB-Zh-NPp" firstAttribute="centerY" secondItem="CgT-bz-ob5" secondAttribute="centerY" id="xlq-Qj-RZq"/>
                                                 <constraint firstItem="CgT-bz-ob5" firstAttribute="top" secondItem="r2X-vA-u0w" secondAttribute="topMargin" id="zjf-cC-yXY"/>
+                                                <constraint firstAttribute="trailing" secondItem="Ltb-d6-EsO" secondAttribute="trailing" constant="14" id="zzz-IV-3UP"/>
                                             </constraints>
                                         </view>
                                     </subviews>
@@ -159,6 +172,7 @@
                                     <outlet property="hoursViewCard" destination="9iv-WZ-8ZE" id="kKD-4n-gdI"/>
                                     <outlet property="nameLabel" destination="2bB-Zh-NPp" id="aRL-oa-P4K"/>
                                     <outlet property="statusLabel" destination="fS4-Qr-mUs" id="6b5-S0-GXs"/>
+                                    <outlet property="statusPillView" destination="Ltb-d6-EsO" id="qNQ-sj-qYC"/>
                                     <outlet property="tasksValueLabel" destination="7GC-pX-QgP" id="WA0-S8-7oI"/>
                                     <outlet property="tasksViewCard" destination="8BM-gH-7cd" id="lyU-5P-1hv"/>
                                 </connections>

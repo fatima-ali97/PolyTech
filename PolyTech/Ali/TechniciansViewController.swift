@@ -56,11 +56,11 @@ class TechniciansViewController: UITableViewController {
         switch tech.availability {
         case .available:
             cell.statusLabel.text = "Available"
-            cell.statusLabel.backgroundColor = UIColor.systemBlue
+            cell.statusPillView.backgroundColor = UIColor.systemBlue
             cell.dotView.backgroundColor = UIColor.systemBlue
         case .busy:
             cell.statusLabel.text = "Busy"
-            cell.statusLabel.backgroundColor = UIColor.systemRed
+            cell.statusPillView.backgroundColor = UIColor.systemRed
             cell.dotView.backgroundColor = UIColor.systemRed
         }
         

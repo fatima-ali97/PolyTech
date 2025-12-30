@@ -10,6 +10,7 @@ import UIKit
 
 final class TechnicianCardCell: UITableViewCell {
     
+    @IBOutlet weak var statusPillView: UIView!
     @IBOutlet weak var hoursViewCard: UIView!
     @IBOutlet weak var tasksViewCard: UIView!
     @IBOutlet weak var cardView: UIView!
@@ -26,8 +27,10 @@ final class TechnicianCardCell: UITableViewCell {
         dotView.layer.cornerRadius = dotView.bounds.height / 2
         dotView.clipsToBounds = true
         
-        statusLabel.layer.cornerRadius = 5
-        statusLabel.clipsToBounds = true
+        statusLabel.backgroundColor = .clear
+        
+        statusPillView.layer.cornerRadius = 12
+        statusPillView.clipsToBounds = true
         
         cardView.layer.cornerRadius = 16
         cardView.layer.masksToBounds = false
