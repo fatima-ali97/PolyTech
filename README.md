@@ -54,3 +54,63 @@ logout btn
         present(alert, animated: true)
     }
 ```
+
+
+## code-snippet-4
+```swift
+/*
+ BACK BUTTON IMPLEMENTATION SUMMARY:
+ 
+ 1. **Automatic Back Button** (Easiest):
+    - Just push VC using: navigationController?.pushViewController(vc, animated: true)
+    - Back button appears automatically
+ 
+ 2. **Custom Back Button**:
+    - Add this to viewDidLoad():
+      ```swift
+      let backButton = UIBarButtonItem(
+          image: UIImage(systemName: "chevron.left"),
+          style: .plain,
+          target: self,
+          action: #selector(goBack)
+      )
+      navigationItem.leftBarButtonItem = backButton
+      ```
+    
+    - Add action:
+      ```swift
+      @objc private func goBack() {
+          navigationController?.popViewController(animated: true)
+      }
+      ```
+ 
+ 3. **Close Button for Modal VCs**:
+    - Add this to viewDidLoad():
+      ```swift
+      let closeButton = UIBarButtonItem(
+          image: UIImage(systemName: "xmark"),
+          style: .plain,
+          target: self,
+          action: #selector(dismissVC)
+      )
+      navigationItem.leftBarButtonItem = closeButton
+      ```
+    
+    - Add action:
+      ```swift
+      @objc private func dismissVC() {
+          dismiss(animated: true)
+      }
+      ```
+ 
+ 4. **Smart Back/Close Button** (Handles both cases):
+    ```swift
+    @objc private func handleBackAction() {
+        if presentingViewController != nil {
+            dismiss(animated: true)  // Modal
+        } else {
+            navigationController?.popViewController(animated: true)  // Pushed
+        }
+    }
+    ```
+*/

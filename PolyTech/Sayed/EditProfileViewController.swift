@@ -79,7 +79,7 @@ class EditProfileViewController: UIViewController {
         }
     @IBAction func saveChangesButtonTapped(_ sender: UIButton) {
         guard let uid = Auth.auth().currentUser?.uid else {
-            print("❌ Error: No user logged in")
+            print("Error: No user logged in")
             return
         }
         
@@ -95,10 +95,10 @@ class EditProfileViewController: UIViewController {
 
         db.collection("users").document(uid).setData(updatedData, merge: true) { [weak self] error in
             if let error = error {
-                print("❌ Update Error: \(error.localizedDescription)")
+                print("Update Error: \(error.localizedDescription)")
                 self?.showAlert(title: "Update Failed", message: error.localizedDescription)
             } else {
-                print("✅ Profile Updated Successfully!")
+                print("Profile Updated Successfully!")
                 
                 self?.showAlert(title: "Success", message: "Your profile has been updated.") {
                     self?.navigationController?.popViewController(animated: true)
