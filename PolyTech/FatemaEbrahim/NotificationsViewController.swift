@@ -30,7 +30,7 @@ class NotificationsViewController: UIViewController {
         config.image = UIImage(systemName: "trash.fill")
         config.imagePlacement = .leading
         config.imagePadding = 8
-        config.baseBackgroundColor = .primary
+        config.baseBackgroundColor = .accent
         config.baseForegroundColor = .white
         config.cornerStyle = .medium
         config.contentInsets = NSDirectionalEdgeInsets(top: 16, leading: 20, bottom: 16, trailing: 20)
@@ -51,7 +51,7 @@ class NotificationsViewController: UIViewController {
         var config = UIButton.Configuration.filled()
         config.image = UIImage(systemName: "checkmark.circle.fill")
         config.baseBackgroundColor = .accent
-        config.baseForegroundColor = .onBackground
+        config.baseForegroundColor = .onPrimary
         config.cornerStyle = .capsule
         config.contentInsets = NSDirectionalEdgeInsets(top: 14, leading: 14, bottom: 14, trailing: 14)
         
@@ -167,12 +167,12 @@ class NotificationsViewController: UIViewController {
             // Clear all button (bottom) - Set this FIRST
             clearAllButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
             clearAllButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
-            clearAllButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -50),
+            clearAllButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -20),
             clearAllButton.heightAnchor.constraint(equalToConstant: 54),
             
             // Mark all read button (floating)
             markAllReadButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
-            markAllReadButton.bottomAnchor.constraint(equalTo: clearAllButton.topAnchor, constant: -16),
+            markAllReadButton.bottomAnchor.constraint(equalTo: clearAllButton.topAnchor, constant: -8),
             markAllReadButton.widthAnchor.constraint(equalToConstant: 56),
             markAllReadButton.heightAnchor.constraint(equalToConstant: 56),
             
@@ -180,7 +180,7 @@ class NotificationsViewController: UIViewController {
             tableView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
             tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            tableView.bottomAnchor.constraint(equalTo: markAllReadButton.topAnchor, constant: -6),
+            tableView.bottomAnchor.constraint(equalTo: markAllReadButton.topAnchor, constant: -2),
             
             // Empty state
             emptyStateView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
