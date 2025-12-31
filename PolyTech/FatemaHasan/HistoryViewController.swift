@@ -4,22 +4,23 @@ import FirebaseFirestore
 class HistoryViewController: UIViewController {
 
     @IBOutlet weak var SearchBar: UISearchBar!
-    // MARK: - IBOutlets
     @IBOutlet weak var tableView: UITableView!
     
     // MARK: - Properties
     private var historyItems: [NotificationModel] = []
+    private var filteredItems: [NotificationModel] = []
+    private var isSearching = false
+    
     private let db = Firestore.firestore()
     private var listener: ListenerRegistration?
     
     // TODO: Replace with actual user ID from your auth system
-    private let currentUserId = "4gEMMK7yMPfJv3Xghk0iFefRBvH3"
+    private let currentUserId = UserDefaults.standard.string(forKey: "userId")
     
     private let refreshControl = UIRefreshControl()
     private let emptyStateView = EmptyStateView()
     
     // MARK: - Lifecycle
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -27,6 +28,9 @@ class HistoryViewController: UIViewController {
         setupTableView()
         setupEmptyState()
         loadHistoryItems()
+        
+        // ✅ Hook up search bar delegate
+        SearchBar.delegate = self
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -35,7 +39,6 @@ class HistoryViewController: UIViewController {
     }
     
     // MARK: - Setup
-    
     private func setupUI() {
         title = "History"
         navigationController?.navigationBar.prefersLargeTitles = true
@@ -57,19 +60,18 @@ class HistoryViewController: UIViewController {
         
         tableView.register(InventoryTableViewCell.self, forCellReuseIdentifier: "InventoryCell")
         
-        // refresh control
         refreshControl.addTarget(self, action: #selector(refreshHistoryItems), for: .valueChanged)
         tableView.refreshControl = refreshControl
     }
-    // MARK: - EMPTY STATE
+    
+    // MARK: - Empty State
     private func setupEmptyState() {
-        guard let tableView = tableView else {
+        guard tableView != nil else {
             print("ERROR: Cannot setup empty state - tableView outlet is not connected!")
             return
         }
         
         emptyStateView.configure(
-            //icon: UIImage(systemName: "bell.slash.fill"),
             title: "No History Items For Now.",
             message: "Once a request status gets updated, we will notify you immediately."
         )
@@ -86,13 +88,11 @@ class HistoryViewController: UIViewController {
     }
     
     // MARK: - Data Loading
-    
     private func loadHistoryItems() {
-        print("load history items for userId: \(currentUserId)")
+        print("load history items for userId: \(currentUserId ?? "nil")")
         
-        // Real-time listener for history items
         listener = db.collection("Notifications")
-            .whereField("userId", isEqualTo: currentUserId)
+            .whereField("userId", isEqualTo: currentUserId ?? "")
             .addSnapshotListener { [weak self] querySnapshot, error in
                 guard let self = self else { return }
                 
@@ -103,7 +103,7 @@ class HistoryViewController: UIViewController {
                 }
                 
                 guard let documents = querySnapshot?.documents else {
-                    print(" No history items for this user!!")
+                    print("No history items for this user!!")
                     self.updateEmptyState()
                     return
                 }
@@ -117,18 +117,16 @@ class HistoryViewController: UIViewController {
                     return item
                 }
                 
-                print(" Successfully parsed \(self.historyItems.count) history items")
+                print("Successfully parsed \(self.historyItems.count) history items")
                 
                 DispatchQueue.main.async {
-                    guard let tableView = self.tableView else { return }
-                    tableView.reloadData()
+                    self.tableView?.reloadData()
                     self.updateEmptyState()
                 }
             }
     }
     
     @objc private func refreshHistoryItems() {
-        // Refresh is handled automatically by the real-time listener
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
             self.refreshControl.endRefreshing()
         }
@@ -141,7 +139,6 @@ class HistoryViewController: UIViewController {
     }
     
     // MARK: - Actions
-    
     private func markAsRead(item: NotificationModel) {
         guard !item.isRead else { return }
         
@@ -155,7 +152,7 @@ class HistoryViewController: UIViewController {
     }
     
     private func deleteItem(at indexPath: IndexPath) {
-        let item = historyItems[indexPath.row]
+        let item = isSearching ? filteredItems[indexPath.row] : historyItems[indexPath.row]
         
         db.collection("Notifications")
             .document(item.id)
@@ -170,7 +167,6 @@ class HistoryViewController: UIViewController {
     }
     
     // MARK: - UI Helpers
-    
     private func showError(_ message: String) {
         let alert = UIAlertController(title: "Error", message: message, preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: "OK", style: .default))
@@ -185,74 +181,12 @@ class HistoryViewController: UIViewController {
             toast.dismiss(animated: true)
         }
     }
-    
-    // MARK: - Sample Data (for testing)
-    
-    private func addSampleHistoryItems() {
-        let sampleItems: [[String: Any]] = [
-            [
-                "userId": currentUserId,
-                "title": "New Message",
-                "message": "John Doe sent you a message",
-                "type": "message",
-                "iconName": "envelope.fill",
-                "isRead": false,
-                "timestamp": Timestamp(date: Date().addingTimeInterval(-300))
-            ],
-            [
-                "userId": currentUserId,
-                "title": "Success!",
-                "message": "Your profile was updated successfully",
-                "type": "success",
-                "iconName": "checkmark.circle.fill",
-                "isRead": false,
-                "timestamp": Timestamp(date: Date().addingTimeInterval(-3600))
-            ],
-            [
-                "userId": currentUserId,
-                "title": "New Follower",
-                "message": "Jane Smith started following you",
-                "type": "follow",
-                "iconName": "person.badge.plus.fill",
-                "isRead": true,
-                "timestamp": Timestamp(date: Date().addingTimeInterval(-7200))
-            ],
-            [
-                "userId": currentUserId,
-                "title": "Warning",
-                "message": "Your storage is almost full",
-                "type": "warning",
-                "iconName": "exclamationmark.triangle.fill",
-                "isRead": true,
-                "timestamp": Timestamp(date: Date().addingTimeInterval(-86400))
-            ],
-            [
-                "userId": currentUserId,
-                "title": "You got a like!",
-                "message": "Sarah Johnson liked your post",
-                "type": "like",
-                "iconName": "heart.fill",
-                "isRead": false,
-                "timestamp": Timestamp(date: Date().addingTimeInterval(-1800))
-            ]
-        ]
-        
-        for item in sampleItems {
-            db.collection("Notifications").addDocument(data: item) { error in
-                if let error = error {
-                    print("Error adding sample item: \(error.localizedDescription)")
-                }
-            }
-        }
-    }
 }
 
 // MARK: - UITableViewDataSource
-
 extension HistoryViewController: UITableViewDataSource {
-    
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return historyItems.count
+        return isSearching ? filteredItems.count : historyItems.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -263,9 +197,8 @@ extension HistoryViewController: UITableViewDataSource {
             return UITableViewCell()
         }
         
-        let item = historyItems[indexPath.row]
+        let item = isSearching ? filteredItems[indexPath.row] : historyItems[indexPath.row]
         cell.configure(with: item) { [weak self] actionUrl in
-            // Handle action button tap
             print("Action tapped for URL: \(actionUrl)")
             self?.handleItemAction(actionUrl: actionUrl, item: item)
         }
@@ -275,21 +208,16 @@ extension HistoryViewController: UITableViewDataSource {
 }
 
 // MARK: - UITableViewDelegate
-
 extension HistoryViewController: UITableViewDelegate {
-    
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let item = historyItems[indexPath.row]
+        let item = isSearching ? filteredItems[indexPath.row] : historyItems[indexPath.row]
         
-        // Mark as read
         markAsRead(item: item)
         
-        // Handle action
         if let actionUrl = item.actionUrl {
             handleItemAction(actionUrl: actionUrl, item: item)
         }
         
-        // Add haptic feedback
         let generator = UIImpactFeedbackGenerator(style: .light)
         generator.impactOccurred()
         
@@ -299,18 +227,8 @@ extension HistoryViewController: UITableViewDelegate {
     private func handleItemAction(actionUrl: String, item: NotificationModel) {
         print("Navigate to: \(actionUrl)")
         // TODO: Implement navigation based on actionUrl
-        // Example: Navigate to different view controllers based on the URL or item type
-        
-        // You can parse the actionUrl and navigate accordingly
-        // For example:
-        // if actionUrl.contains("request") {
-        //     navigateToRequestDetails(requestId: ...)
-        // } else if actionUrl.contains("location") {
-        //     navigateToLocationTracking(...)
-        // }
     }
     
-    // Swipe to delete
     func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
         let deleteAction = UIContextualAction(style: .destructive, title: "Delete") { [weak self] _, _, completion in
             self?.deleteItem(at: indexPath)
@@ -318,13 +236,12 @@ extension HistoryViewController: UITableViewDelegate {
         }
         deleteAction.image = UIImage(systemName: "minus")
         
-        let item = historyItems[indexPath.row]
+        let item = isSearching ? filteredItems[indexPath.row] : historyItems[indexPath.row]
         if !item.isRead {
             let markReadAction = UIContextualAction(style: .normal, title: "Mark Read") { [weak self] _, _, completion in
                 self?.markAsRead(item: item)
                 completion(true)
             }
-            // TODO: change this to read
             markReadAction.backgroundColor = .secondary
             markReadAction.image = UIImage(systemName: "checkmark")
             
@@ -332,5 +249,45 @@ extension HistoryViewController: UITableViewDelegate {
         }
         
         return UISwipeActionsConfiguration(actions: [deleteAction])
+    }
+}
+// MARK: - UISearchBarDelegate
+extension HistoryViewController: UISearchBarDelegate {
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        let query = searchText.trimmingCharacters(in: .whitespacesAndNewlines)
+
+        if query.isEmpty {
+            isSearching = false
+            filteredItems.removeAll()
+        } else {
+            isSearching = true
+            filteredItems = historyItems.filter { item in
+                // Safely check type via rawValue (e.g., "message", "success", "request")
+                let isRequest = item.type.rawValue.lowercased() == "request"
+
+                // If title/message are optionals, coalesce to empty string
+                let titleText = (item.title as String?) ?? ""
+                let messageText = (item.message as String?) ?? ""
+
+                let titleMatch = titleText.range(of: query, options: .caseInsensitive) != nil
+                let messageMatch = messageText.range(of: query, options: .caseInsensitive) != nil
+
+                return isRequest && (titleMatch || messageMatch)
+            }
+        }
+
+        tableView.reloadData()
+    }
+
+    func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
+        isSearching = false
+        searchBar.text = ""
+        filteredItems.removeAll()
+        tableView.reloadData()
+        searchBar.resignFirstResponder()
+    }
+
+    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        searchBar.resignFirstResponder()
     }
 }

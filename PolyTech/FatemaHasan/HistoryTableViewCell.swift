@@ -301,5 +301,7 @@ class HistoryTableViewCell: UITableViewCell {
                 self.containerView.transform = .identity
             }
         }
+        
     }
+    
 }
