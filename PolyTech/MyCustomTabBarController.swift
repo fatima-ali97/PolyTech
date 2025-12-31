@@ -185,23 +185,23 @@ class TechnicianTabBarController: BaseCustomTabBarController {
     override func setupViewControllers() {
         print("📱 Setting up Technician Tab Bar")
         
+        let technicianStoryboard = UIStoryboard(name: "Technician", bundle: nil)
+        
         let homeVC = createNavControllerFromStoryboard(
             storyboardName: "Technician",
             title: "Home",
             image: UIImage(systemName: "house.fill")
         )
         
-        let requestsVC = createNavControllerFromStoryboard(
-            storyboardName: "dummy", // TODO: change this
-            title: "Requests",
-            image: UIImage(systemName: "doc.text.fill")
-        )
+        let tasksViewController = technicianStoryboard.instantiateViewController(withIdentifier: "TasksVC")
+        let tasksVC = UINavigationController(rootViewController: tasksViewController)
+        tasksVC.tabBarItem.title = "Requests"
+        tasksVC.tabBarItem.image = UIImage(systemName: "checklist")
         
-        let tasksVC = createNavControllerFromStoryboard(
-            storyboardName: "dummy",// TODO: change this
-            title: "Tasks",
-            image: UIImage(systemName: "checklist")
-        )
+        let requestsViewController = technicianStoryboard.instantiateViewController(withIdentifier: "RequestsVC")
+        let requestsVC = UINavigationController(rootViewController: requestsViewController)
+        requestsVC.tabBarItem.title = "MyTasks"
+        requestsVC.tabBarItem.image = UIImage(systemName: "doc.text.fill")
         
         let profileVC = createNavControllerFromStoryboard(
             storyboardName: "Profile",

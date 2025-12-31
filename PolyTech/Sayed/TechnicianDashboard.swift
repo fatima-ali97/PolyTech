@@ -1,4 +1,5 @@
 import UIKit
+import FirebaseAuth
 import FirebaseFirestore
 
 class TechnicianDashboardViewController: UIViewController {
@@ -31,23 +32,38 @@ class TechnicianDashboardViewController: UIViewController {
     }
     
     func fetchDashboardData() {
-            db.collection("tasks").addSnapshotListener { [weak self] (querySnapshot, error) in
-                guard let documents = querySnapshot?.documents else {
-                    print("Error fetching tasks: \(error?.localizedDescription ?? "Unknown error")")
-                    return
-                }
+        guard let currentUserID = Auth.auth().currentUser?.uid else { return }
 
-                let total = documents.count
-                let pending = documents.filter { ($0.data()["status"] as? String) == "Pending" }.count
-                let inProgress = documents.filter { ($0.data()["status"] as? String) == "In Progress" }.count
-                let completed = documents.filter { ($0.data()["status"] as? String) == "Completed" }.count
+        db.collection("TasksRequests").addSnapshotListener { [weak self] (querySnapshot, error) in
+            guard let documents = querySnapshot?.documents else {
+                print("Error fetching tasks: \(error?.localizedDescription ?? "Unknown error")")
+                return
+            }
 
-                DispatchQueue.main.async {
-                    self?.updateDashboardUI(total: total, pending: pending, inProgress: inProgress, completed: completed)
-                    self?.updateChartData(pending: pending, inProgress: inProgress, completed: completed)
+            let visibleTasks = documents.filter { doc in
+                let data = doc.data()
+                let status = data["status"] as? String ?? ""
+                let techID = data["technicianID"] as? String ?? ""
+                let declinedBy = data["declinedBy"] as? [String] ?? []
+
+                if status == "Pending" {
+                    return !declinedBy.contains(currentUserID)
+                } else {
+                    return techID == currentUserID
                 }
             }
+
+            let total = visibleTasks.count
+            let pending = visibleTasks.filter { ($0.data()["status"] as? String) == "Pending" }.count
+            let inProgress = visibleTasks.filter { ($0.data()["status"] as? String) == "In Progress" }.count
+            let completed = visibleTasks.filter { ($0.data()["status"] as? String) == "Completed" }.count
+
+            DispatchQueue.main.async {
+                self?.updateDashboardUI(total: total, pending: pending, inProgress: inProgress, completed: completed)
+                self?.updateChartData(pending: pending, inProgress: inProgress, completed: completed)
+            }
         }
+    }
     
     func updateDashboardUI(total: Int, pending: Int, inProgress: Int, completed: Int) {
         totalCountLabel.text = "\(total)"
