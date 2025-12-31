@@ -52,7 +52,7 @@ class DonutChartView: UIView {
         let center = CGPoint(x: bounds.midX, y: bounds.midY)
         let radius = min(bounds.width, bounds.height) / 2 - lineWidth / 2
         
-        let startAngle: CGFloat = -.pi / 2
+        var startAngle: CGFloat = -.pi / 2
         
         for seg in segments {
             let endAngle = startAngle + (2 * .pi) * (seg.value / total)
@@ -69,6 +69,8 @@ class DonutChartView: UIView {
             
             self.layer.addSublayer(layer)
             segmentLayers.append(layer)
+            
+            startAngle = endAngle
         }
         
         let hole = UIBezierPath(

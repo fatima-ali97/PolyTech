@@ -50,7 +50,6 @@
                     <connections>
                         <outlet property="AddInventory" destination="j6F-qX-nL2" id="Z8O-nq-Fw8"/>
                         <outlet property="tableView" destination="CNB-c3-eOE" id="rX4-X8-BZq"/>
-                        <segue destination="Gfy-IN-bOK" kind="push" identifier="segueToNewInventory" id="mB7-EE-E2x"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="olj-4Y-vBE" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
@@ -62,7 +61,7 @@
             <objects>
                 <viewController storyboardIdentifier="NewInventoryViewController" id="Gfy-IN-bOK" customClass="NewInventoryViewController" customModule="PolyTech" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="ji1-de-TD2">
-                        <rect key="frame" x="0.0" y="0.0" width="393" height="783"/>
+                        <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="vEd-nb-Wxe">
@@ -240,7 +239,7 @@
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>
         <systemColor name="systemGray2Color">
-            <color red="0.68235294120000001" green="0.68235294120000001" blue="0.69803921570000005" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.68235294117647061" green="0.68235294117647061" blue="0.69803921568627447" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
     </resources>
 </document>

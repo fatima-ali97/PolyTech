@@ -71,8 +71,32 @@ class NewMaintenanceViewController: UIViewController {
         setupBackBtnButton()
         setupImageTap()
         configureEditMode()
+        setupNavigationBackButton()
     }
-
+    
+ 
+    private func setupNavigationBackButton() {
+        let backButton = UIBarButtonItem(
+            image: UIImage(systemName: "chevron.left"),
+            style: .plain,
+            target: self,
+            action: #selector(goBack)
+        )
+        navigationItem.leftBarButtonItem = backButton
+    }
+    
+    
+    @objc private func goBack() {
+        // Check if presented modally or pushed
+        if presentingViewController != nil {
+            // Was presented modally - dismiss it
+            dismiss(animated: true)
+        } else {
+            // Was pushed - pop it
+            navigationController?.popViewController(animated: true)
+        }
+    }
+    
     // Initialize Cloudinary
     private func initCloudinary() {
         let config = CLDConfiguration(cloudName: cloudName, secure: true)
@@ -187,20 +211,23 @@ class NewMaintenanceViewController: UIViewController {
         }
     }
 
+    // ✅ FIXED: Setup storyboard back button
     private func setupBackBtnButton() {
         backBtn.isUserInteractionEnabled = true
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(backBtnTapped))
         backBtn.addGestureRecognizer(tapGesture)
     }
     
+    // ✅ FIXED: Use dismiss for modal presentation
     @objc func backBtnTapped() {
-        let storyboard = UIStoryboard(name: "HomePage", bundle: nil)
-        guard let vc = storyboard.instantiateViewController(withIdentifier: "HomeViewController") as? HomeViewController else {
-            print("HomeViewController not found in storyboard")
-            return
+        // Check if presented modally or pushed
+        if presentingViewController != nil {
+            // Was presented modally - dismiss it
+            dismiss(animated: true)
+        } else {
+            // Was pushed - pop it
+            navigationController?.popViewController(animated: true)
         }
-        
-        navigationController?.pushViewController(vc, animated: true)
     }
 
     private func setupPickers() {
@@ -249,7 +276,12 @@ class NewMaintenanceViewController: UIViewController {
         )
 
         alert.addAction(UIAlertAction(title: "OK", style: .default) { _ in
-            self.navigationController?.popViewController(animated: true)
+            // ✅ FIXED: Handle both modal and navigation dismissal
+            if self.presentingViewController != nil {
+                self.dismiss(animated: true)
+            } else {
+                self.navigationController?.popViewController(animated: true)
+            }
         })
 
         present(alert, animated: true)

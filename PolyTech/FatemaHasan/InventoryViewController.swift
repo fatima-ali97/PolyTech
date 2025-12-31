@@ -45,6 +45,9 @@ class InventoryViewController: UIViewController {
 //
 //        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(addTapped))
 //        AddInventory.addGestureRecognizer(tapGesture)
+        
+        
+        
         AddInventory.isUserInteractionEnabled = true
         AddInventory.addTarget(self, action: #selector(addTapped), for: .touchUpInside)
 
