@@ -73,10 +73,50 @@ class NotificationsViewController: UIViewController {
         super.viewDidLoad()
         
         setupUI()
+        setupNavigationBar()  // Add this
         setupTableView()
         setupEmptyState()
         setupConstraints()
         loadNotifications()
+    }
+    
+    private func setupNavigationBar() {
+        // Option A: Standard back button (auto-generated when pushed)
+        // No code needed - automatically appears when pushed from another VC
+        
+        // Option B: Custom back button (if presented modally)
+//        if presentingViewController != nil {
+//            // We're presented modally, so add a close button
+//            let closeButton = UIBarButtonItem(
+//                image: UIImage(systemName: "xmark"),
+//                style: .plain,
+//                target: self,
+//                action: #selector(dismissViewController)
+//            )
+//            navigationItem.leftBarButtonItem = closeButton
+//        }
+//        
+//        // Option C: Force custom back button (if you want custom styling)
+//        let backButton = UIBarButtonItem(
+//            image: UIImage(systemName: "chevron.left"),
+//            style: .plain,
+//            target: self,
+//            action: #selector(goBack)
+//        )
+//        backButton.tintColor = .primary
+//        navigationItem.leftBarButtonItem = backButton
+    }
+
+    @objc private func dismissViewController() {
+        dismiss(animated: true)
+    }
+
+    @objc private func goBack() {
+        if presentingViewController != nil {
+            dismiss(animated: true)
+        } else {
+            navigationController?.popViewController(animated: true)
+        }
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -89,7 +129,7 @@ class NotificationsViewController: UIViewController {
     private func setupUI() {
         title = "Notifications"
         navigationController?.navigationBar.prefersLargeTitles = true
-        view.backgroundColor = .clear
+        view.backgroundColor = .background
         
         // Add subviews
         view.addSubview(tableView)

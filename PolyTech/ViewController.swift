@@ -381,7 +381,7 @@ class LoginViewController: UIViewController {
         showFieldError(for: highlightFields.first ?? academicIdTextField, message: message, highlightMultiple: highlightFields)
         
         // Add shake animation
-        shakeView(loginButton)
+        //shakeView(loginButton)
     }
     
     private func signOutUser() {
@@ -417,8 +417,8 @@ class LoginViewController: UIViewController {
         passwordTextField.layer.cornerRadius = 8.0
         
         // Shake animation only on fields
-        shakeView(academicIdTextField)
-        shakeView(passwordTextField)
+        //shakeView(academicIdTextField)
+        //shakeView(passwordTextField)
     }
     
     private func showFieldError(for textField: UITextField, message: String, highlightMultiple: [UITextField]? = nil) {
@@ -434,7 +434,7 @@ class LoginViewController: UIViewController {
             field.layer.cornerRadius = 8.0
             
             // Shake animation
-            shakeView(field)
+            //shakeView(field)
         }
     }
     
