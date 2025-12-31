@@ -425,7 +425,7 @@ class EmptyStateView: UIView {
     private let titleLabel: UILabel = {
         let label = UILabel()
         label.font = .systemFont(ofSize: 20, weight: .semibold)
-        label.textColor = .onPrimary
+        label.textColor = .primary
         label.textAlignment = .center
         label.numberOfLines = 0
         return label
@@ -434,7 +434,7 @@ class EmptyStateView: UIView {
     private let messageLabel: UILabel = {
         let label = UILabel()
         label.font = .systemFont(ofSize: 16, weight: .regular)
-        label.textColor = .onPrimary
+        label.textColor = .primary
         label.textAlignment = .center
         label.numberOfLines = 0
         return label
