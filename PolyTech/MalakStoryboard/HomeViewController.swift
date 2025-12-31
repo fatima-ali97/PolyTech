@@ -55,14 +55,18 @@ class HomeViewController: UIViewController {
     }
     
     @objc func notificationTapped() {
-
-        let storyboard = UIStoryboard(name: "NotificationStoryboard", bundle: nil)
-        guard let vc = storyboard.instantiateViewController(withIdentifier: "NotificationsViewController") as? NotificationsViewController else {
-            print("NotificationsViewController not found in storyboard")
-            return
-        }
         
-        navigationController?.pushViewController(vc, animated: true)
+        let notificationsVC = NotificationsViewController()
+        let navController = UINavigationController(rootViewController: notificationsVC)
+        present(navController, animated: true)
+
+//        let storyboard = UIStoryboard(name: "NotificationStoryboard", bundle: nil)
+//        guard let vc = storyboard.instantiateViewController(withIdentifier: "NotificationsViewController") as? NotificationsViewController else {
+//            print("NotificationsViewController not found in storyboard")
+//            return
+//        }
+//        
+//        navigationController?.pushViewController(vc, animated: true)
     }
     
     private func loadData() {

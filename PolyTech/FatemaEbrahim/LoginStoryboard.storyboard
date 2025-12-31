@@ -9,21 +9,6 @@
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
-        <!--Notifications View Controller-->
-        <scene sceneID="s0d-6b-0kx">
-            <objects>
-                <viewController storyboardIdentifier="NotificationsViewController" id="Y6W-OH-hqX" customClass="NotificationsViewController" customModule="PolyTech" customModuleProvider="target" sceneMemberID="viewController">
-                    <view key="view" contentMode="scaleToFill" id="5EZ-qb-Rvc">
-                        <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <viewLayoutGuide key="safeArea" id="vDu-zF-Fre"/>
-                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
-                    </view>
-                </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="Ief-a0-LHa" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="155" y="24"/>
-        </scene>
         <!--Login View Controller-->
         <scene sceneID="z3y-FX-k3u">
             <objects>
@@ -101,6 +86,15 @@
                                     <action selector="loginButtonTapped:" destination="c2G-Vq-KFb" eventType="touchUpInside" id="3Fw-XX-3ne"/>
                                 </connections>
                             </button>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Password" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="1ew-Q4-KA6">
+                                <rect key="frame" x="49" y="548" width="303" height="21"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="303" id="vUB-rC-c7U"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="QHe-eM-cKd"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
@@ -109,6 +103,7 @@
                             <constraint firstItem="4zZ-cq-ZXR" firstAttribute="leading" secondItem="QHe-eM-cKd" secondAttribute="leading" constant="49" id="5ed-RL-MPa"/>
                             <constraint firstItem="iOD-5D-BCH" firstAttribute="top" secondItem="yCk-ps-sUh" secondAttribute="bottom" constant="8" symbolic="YES" id="GfQ-HF-35K"/>
                             <constraint firstItem="yCk-ps-sUh" firstAttribute="leading" secondItem="QHe-eM-cKd" secondAttribute="leading" constant="49" id="MRC-s9-1g8"/>
+                            <constraint firstItem="1ew-Q4-KA6" firstAttribute="top" secondItem="4zZ-cq-ZXR" secondAttribute="bottom" constant="7.3333333333332575" id="QPH-as-Nqq"/>
                             <constraint firstItem="0Uj-hZ-9VY" firstAttribute="top" secondItem="uSQ-Gh-7ZU" secondAttribute="bottom" constant="14" id="TMb-Sa-byF"/>
                             <constraint firstItem="iOD-5D-BCH" firstAttribute="leading" secondItem="QHe-eM-cKd" secondAttribute="leading" constant="45" id="Wcp-cz-Jdf"/>
                             <constraint firstItem="2sG-Js-gSi" firstAttribute="leading" secondItem="QHe-eM-cKd" secondAttribute="leading" constant="45" id="aOT-kA-5z6"/>
@@ -119,12 +114,14 @@
                             <constraint firstItem="yCk-ps-sUh" firstAttribute="top" secondItem="0Uj-hZ-9VY" secondAttribute="bottom" constant="51.666666666666657" id="pa7-dE-Mz2"/>
                             <constraint firstItem="uSQ-Gh-7ZU" firstAttribute="centerX" secondItem="QHe-eM-cKd" secondAttribute="centerX" id="srk-sQ-eb9"/>
                             <constraint firstItem="0Uj-hZ-9VY" firstAttribute="trailing" secondItem="uSQ-Gh-7ZU" secondAttribute="trailing" id="tlq-QL-nUj"/>
+                            <constraint firstItem="1ew-Q4-KA6" firstAttribute="leading" secondItem="4zZ-cq-ZXR" secondAttribute="leading" id="y9J-ic-44o"/>
                             <constraint firstItem="4zZ-cq-ZXR" firstAttribute="top" secondItem="Sxe-pj-ujm" secondAttribute="bottom" constant="22" id="yXY-PK-FsN"/>
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" largeTitleDisplayMode="never" id="7C0-CA-nRf"/>
                     <connections>
                         <outlet property="academicIdTextField" destination="iOD-5D-BCH" id="CoZ-oO-qJc"/>
+                        <outlet property="errorLabel" destination="1ew-Q4-KA6" id="ADO-Pi-gbZ"/>
                         <outlet property="loginButton" destination="2sG-Js-gSi" id="PqT-ss-wV0"/>
                         <outlet property="passwordTextField" destination="4zZ-cq-ZXR" id="s7U-Uc-niR"/>
                     </connections>

@@ -3,20 +3,69 @@ import FirebaseFirestore
 
 class NotificationsViewController: UIViewController {
 
-    // MARK: - IBOutlets
-    @IBOutlet weak var tableView: UITableView!
-    @IBOutlet weak var clearAllButton: UIButton!
-    
     // MARK: - Properties
     private var notifications: [NotificationModel] = []
     private let db = Firestore.firestore()
     private var listener: ListenerRegistration?
-    
-    // TODO: Replace with actual user ID from your auth system
-    private let currentUserId = "4gEMMK7yMPfJv3Xghk0iFefRBvH3"
-    
+    private let currentUserId = UserDefaults.standard.string(forKey: "userId")
     private let refreshControl = UIRefreshControl()
     private let emptyStateView = EmptyStateView()
+    
+    // MARK: - UI Components (Programmatic)
+    
+    private let tableView: UITableView = {
+        let tv = UITableView()
+        tv.separatorStyle = .none
+        tv.backgroundColor = .clear
+        tv.rowHeight = UITableView.automaticDimension
+        tv.estimatedRowHeight = 150
+        tv.translatesAutoresizingMaskIntoConstraints = false
+        return tv
+    }()
+    
+    private let clearAllButton: UIButton = {
+        let button = UIButton(type: .system)
+        var config = UIButton.Configuration.filled()
+        config.title = "Clear All Notifications"
+        config.image = UIImage(systemName: "trash.fill")
+        config.imagePlacement = .leading
+        config.imagePadding = 8
+        config.baseBackgroundColor = .primary
+        config.baseForegroundColor = .white
+        config.cornerStyle = .medium
+        config.contentInsets = NSDirectionalEdgeInsets(top: 16, leading: 20, bottom: 16, trailing: 20)
+        
+        config.titleTextAttributesTransformer = UIConfigurationTextAttributesTransformer { incoming in
+            var outgoing = incoming
+            outgoing.font = UIFont.systemFont(ofSize: 16, weight: .semibold)
+            return outgoing
+        }
+        
+        button.configuration = config
+        button.translatesAutoresizingMaskIntoConstraints = false
+        return button
+    }()
+    
+    private let markAllReadButton: UIButton = {
+        let button = UIButton(type: .system)
+        var config = UIButton.Configuration.filled()
+        config.image = UIImage(systemName: "checkmark.circle.fill")
+        config.baseBackgroundColor = .accent
+        config.baseForegroundColor = .onBackground
+        config.cornerStyle = .capsule
+        config.contentInsets = NSDirectionalEdgeInsets(top: 14, leading: 14, bottom: 14, trailing: 14)
+        
+        button.configuration = config
+        button.translatesAutoresizingMaskIntoConstraints = false
+        
+        // Add shadow for floating effect
+        button.layer.shadowColor = UIColor.black.cgColor
+        button.layer.shadowOffset = CGSize(width: 0, height: 4)
+        button.layer.shadowRadius = 8
+        button.layer.shadowOpacity = 0.25
+        
+        return button
+    }()
     
     // MARK: - Lifecycle
     
@@ -24,9 +73,50 @@ class NotificationsViewController: UIViewController {
         super.viewDidLoad()
         
         setupUI()
+        setupNavigationBar()  // Add this
         setupTableView()
         setupEmptyState()
+        setupConstraints()
         loadNotifications()
+    }
+    
+    private func setupNavigationBar() {
+        // Option A: Standard back button (auto-generated when pushed)
+        // No code needed - automatically appears when pushed from another VC
+        
+        // Option B: Custom back button (if presented modally)
+//        if presentingViewController != nil {
+//            // We're presented modally, so add a close button
+//            let closeButton = UIBarButtonItem(
+//                image: UIImage(systemName: "xmark"),
+//                style: .plain,
+//                target: self,
+//                action: #selector(dismissViewController)
+//            )
+//            navigationItem.leftBarButtonItem = closeButton
+//        }
+//        
+//        // Option C: Force custom back button (if you want custom styling)
+//        let backButton = UIBarButtonItem(
+//            image: UIImage(systemName: "chevron.left"),
+//            style: .plain,
+//            target: self,
+//            action: #selector(goBack)
+//        )
+//        backButton.tintColor = .primary
+//        navigationItem.leftBarButtonItem = backButton
+    }
+
+    @objc private func dismissViewController() {
+        dismiss(animated: true)
+    }
+
+    @objc private func goBack() {
+        if presentingViewController != nil {
+            dismiss(animated: true)
+        } else {
+            navigationController?.popViewController(animated: true)
+        }
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -41,52 +131,58 @@ class NotificationsViewController: UIViewController {
         navigationController?.navigationBar.prefersLargeTitles = true
         view.backgroundColor = .background
         
-        // Add "Mark All Read" button
-        let markAllButton = UIBarButtonItem(
-            title: "Mark All Read",
-            style: .plain,
-            target: self,
-            action: #selector(markAllAsRead)
-        )
+        // Add subviews
+        view.addSubview(tableView)
+        view.addSubview(clearAllButton)
+        view.addSubview(markAllReadButton)
+        view.addSubview(emptyStateView)
         
-        // Add "Clear All" button
-        let clearAllButton = UIBarButtonItem(
-            title: "Clear All",
-            style: .plain,
-            target: self,
-            action: #selector(clearAllNotifications)
-        )
-        clearAllButton.tintColor = .error
+        // Add targets
+        clearAllButton.addTarget(self, action: #selector(clearAllNotifications), for: .touchUpInside)
+        markAllReadButton.addTarget(self, action: #selector(markAllAsRead), for: .touchUpInside)
         
-        navigationItem.rightBarButtonItems = [markAllButton, clearAllButton]
+        // Setup refresh control
+        refreshControl.addTarget(self, action: #selector(refreshNotifications), for: .valueChanged)
+        tableView.refreshControl = refreshControl
     }
     
     private func setupTableView() {
         tableView.delegate = self
         tableView.dataSource = self
-        tableView.separatorStyle = .none
-        tableView.backgroundColor = .clear
-        tableView.rowHeight = UITableView.automaticDimension
-        tableView.estimatedRowHeight = 100
-        
-        //tableView.register(NotificationTableViewCell.self, forCellReuseIdentifier: "NotificationCell")
-        
-        // refresh control
-        refreshControl.addTarget(self, action: #selector(refreshNotifications), for: .valueChanged)
-        tableView.refreshControl = refreshControl
+        tableView.register(NotificationTableViewCell.self, forCellReuseIdentifier: "NotificationCell")
     }
-    // MARK: - EMPTY STATE
+    
     private func setupEmptyState() {
         emptyStateView.configure(
-            //icon: UIImage(systemName: "bell.slash.fill"),
             title: "No Notifications For Now.",
             message: "Once a request status gets updated, we will notify you immediately."
         )
         emptyStateView.isHidden = true
-        view.addSubview(emptyStateView)
-        
+    }
+    
+    private func setupConstraints() {
         emptyStateView.translatesAutoresizingMaskIntoConstraints = false
+        
         NSLayoutConstraint.activate([
+            // Clear all button (bottom) - Set this FIRST
+            clearAllButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
+            clearAllButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
+            clearAllButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -50),
+            clearAllButton.heightAnchor.constraint(equalToConstant: 54),
+            
+            // Mark all read button (floating)
+            markAllReadButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
+            markAllReadButton.bottomAnchor.constraint(equalTo: clearAllButton.topAnchor, constant: -16),
+            markAllReadButton.widthAnchor.constraint(equalToConstant: 56),
+            markAllReadButton.heightAnchor.constraint(equalToConstant: 56),
+            
+            // Table view
+            tableView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            tableView.bottomAnchor.constraint(equalTo: markAllReadButton.topAnchor, constant: -6),
+            
+            // Empty state
             emptyStateView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             emptyStateView.centerYAnchor.constraint(equalTo: view.centerYAnchor),
             emptyStateView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 40),
@@ -97,11 +193,12 @@ class NotificationsViewController: UIViewController {
     // MARK: - Data Loading
     
     private func loadNotifications() {
-        print("load notifications for userId: \(currentUserId)")
+        guard let userId = currentUserId else { return }
+        print("load notifications for userId: \(userId)")
         
-        // Real-time listener for notifications
         listener = db.collection("Notifications")
-            .whereField("userId", isEqualTo: currentUserId)
+            .whereField("userId", isEqualTo: userId)
+            .order(by: "timestamp", descending: true)
             .addSnapshotListener { [weak self] querySnapshot, error in
                 guard let self = self else { return }
                 
@@ -112,7 +209,7 @@ class NotificationsViewController: UIViewController {
                 }
                 
                 guard let documents = querySnapshot?.documents else {
-                    print(" No notifications for this user!!")
+                    print("No notifications for this user!!")
                     self.updateEmptyState()
                     return
                 }
@@ -126,7 +223,7 @@ class NotificationsViewController: UIViewController {
                     return notification
                 }
                 
-                print(" Successfully parsed \(self.notifications.count) notifications")
+                print("Successfully parsed \(self.notifications.count) notifications")
                 
                 DispatchQueue.main.async {
                     self.tableView.reloadData()
@@ -137,23 +234,27 @@ class NotificationsViewController: UIViewController {
     }
     
     @objc private func refreshNotifications() {
-        // Refresh is handled automatically by the real-time listener
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
             self.refreshControl.endRefreshing()
         }
     }
     
     private func updateEmptyState() {
-        emptyStateView.isHidden = !notifications.isEmpty
-        tableView.isHidden = notifications.isEmpty
+        let isEmpty = notifications.isEmpty
+        emptyStateView.isHidden = !isEmpty
+        tableView.isHidden = isEmpty
+        clearAllButton.isHidden = isEmpty
+        markAllReadButton.isHidden = isEmpty
     }
     
     private func updateMarkAllReadButton() {
         let hasUnread = notifications.contains { !$0.isRead }
-        navigationItem.rightBarButtonItem?.isEnabled = hasUnread
+        markAllReadButton.isEnabled = hasUnread
         
-        // Update clear all button visibility
-        clearAllButton?.isHidden = notifications.isEmpty
+        UIView.animate(withDuration: 0.2) {
+            self.markAllReadButton.alpha = hasUnread ? 1.0 : 0.4
+            self.markAllReadButton.transform = hasUnread ? .identity : CGAffineTransform(scaleX: 0.9, y: 0.9)
+        }
     }
     
     // MARK: - Actions
@@ -161,6 +262,19 @@ class NotificationsViewController: UIViewController {
     @objc private func markAllAsRead() {
         let unreadNotifications = notifications.filter { !$0.isRead }
         guard !unreadNotifications.isEmpty else { return }
+        
+        // Haptic feedback
+        let generator = UIImpactFeedbackGenerator(style: .medium)
+        generator.impactOccurred()
+        
+        // Animate button
+        UIView.animate(withDuration: 0.1, animations: {
+            self.markAllReadButton.transform = CGAffineTransform(scaleX: 0.85, y: 0.85)
+        }) { _ in
+            UIView.animate(withDuration: 0.1) {
+                self.markAllReadButton.transform = .identity
+            }
+        }
         
         let batch = db.batch()
         
@@ -183,13 +297,13 @@ class NotificationsViewController: UIViewController {
         guard !notifications.isEmpty else { return }
         
         let alert = UIAlertController(
-            title: "Warning",
-            message: "This action cannot be undone.\nDo you wish to proceed?",
+            title: "Clear All Notifications",
+            message: "This action cannot be undone. Do you wish to proceed?",
             preferredStyle: .alert
         )
         
         alert.addAction(UIAlertAction(title: "Cancel", style: .cancel))
-        alert.addAction(UIAlertAction(title: "Proceed", style: .destructive) { [weak self] _ in
+        alert.addAction(UIAlertAction(title: "Clear All", style: .destructive) { [weak self] _ in
             self?.performClearAll()
         })
         
@@ -197,6 +311,9 @@ class NotificationsViewController: UIViewController {
     }
     
     private func performClearAll() {
+        let generator = UINotificationFeedbackGenerator()
+        generator.notificationOccurred(.warning)
+        
         let batch = db.batch()
         
         for notification in notifications {
@@ -209,7 +326,7 @@ class NotificationsViewController: UIViewController {
                 print("Error clearing all notifications: \(error.localizedDescription)")
                 self?.showError("Failed to clear notifications")
             } else {
-                self?.showSuccessToast(message: "All notifications cleared.")
+                self?.showSuccessToast(message: "All notifications cleared")
             }
         }
     }
@@ -257,66 +374,6 @@ class NotificationsViewController: UIViewController {
             toast.dismiss(animated: true)
         }
     }
-    
-    // MARK: - Sample Data (for testing)
-    
-    private func addSampleNotifications() {
-        let sampleNotifications: [[String: Any]] = [
-            [
-                "userId": currentUserId,
-                "title": "New Message",
-                "message": "John Doe sent you a message",
-                "type": "message",
-                "iconName": "envelope.fill",
-                "isRead": false,
-                "timestamp": Timestamp(date: Date().addingTimeInterval(-300))
-            ],
-            [
-                "userId": currentUserId,
-                "title": "Success!",
-                "message": "Your profile was updated successfully",
-                "type": "success",
-                "iconName": "checkmark.circle.fill",
-                "isRead": false,
-                "timestamp": Timestamp(date: Date().addingTimeInterval(-3600))
-            ],
-            [
-                "userId": currentUserId,
-                "title": "New Follower",
-                "message": "Jane Smith started following you",
-                "type": "follow",
-                "iconName": "person.badge.plus.fill",
-                "isRead": true,
-                "timestamp": Timestamp(date: Date().addingTimeInterval(-7200))
-            ],
-            [
-                "userId": currentUserId,
-                "title": "Warning",
-                "message": "Your storage is almost full",
-                "type": "warning",
-                "iconName": "exclamationmark.triangle.fill",
-                "isRead": true,
-                "timestamp": Timestamp(date: Date().addingTimeInterval(-86400))
-            ],
-            [
-                "userId": currentUserId,
-                "title": "You got a like!",
-                "message": "Sarah Johnson liked your post",
-                "type": "like",
-                "iconName": "heart.fill",
-                "isRead": false,
-                "timestamp": Timestamp(date: Date().addingTimeInterval(-1800))
-            ]
-        ]
-        
-        for notification in sampleNotifications {
-            db.collection("Notifications").addDocument(data: notification) { error in
-                if let error = error {
-                    print("Error adding sample notification: \(error.localizedDescription)")
-                }
-            }
-        }
-    }
 }
 
 // MARK: - UITableViewDataSource
@@ -337,7 +394,6 @@ extension NotificationsViewController: UITableViewDataSource {
         
         let notification = notifications[indexPath.row]
         cell.configure(with: notification) { [weak self] actionUrl in
-            // Handle action button tap
             print("Action tapped for URL: \(actionUrl)")
             self?.handleNotificationAction(actionUrl: actionUrl, notification: notification)
         }
@@ -353,15 +409,12 @@ extension NotificationsViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let notification = notifications[indexPath.row]
         
-        // Mark as read
         markAsRead(notification: notification)
         
-        // Handle action
         if let actionUrl = notification.actionUrl {
             handleNotificationAction(actionUrl: actionUrl, notification: notification)
         }
         
-        // Add haptic feedback
         let generator = UIImpactFeedbackGenerator(style: .light)
         generator.impactOccurred()
         
@@ -371,24 +424,14 @@ extension NotificationsViewController: UITableViewDelegate {
     private func handleNotificationAction(actionUrl: String, notification: NotificationModel) {
         print("Navigate to: \(actionUrl)")
         // TODO: Implement navigation based on actionUrl
-        // Example: Navigate to different view controllers based on the URL or notification type
-        
-        // You can parse the actionUrl and navigate accordingly
-        // For example:
-        // if actionUrl.contains("request") {
-        //     navigateToRequestDetails(requestId: ...)
-        // } else if actionUrl.contains("location") {
-        //     navigateToLocationTracking(...)
-        // }
     }
     
-    // Swipe to delete
     func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
         let deleteAction = UIContextualAction(style: .destructive, title: "Delete") { [weak self] _, _, completion in
             self?.deleteNotification(at: indexPath)
             completion(true)
         }
-        deleteAction.image = UIImage(systemName: "minus")
+        deleteAction.image = UIImage(systemName: "trash.fill")
         
         let notification = notifications[indexPath.row]
         if !notification.isRead {
@@ -396,9 +439,8 @@ extension NotificationsViewController: UITableViewDelegate {
                 self?.markAsRead(notification: notification)
                 completion(true)
             }
-            // TODO: change this to read
-            markReadAction.backgroundColor = .secondary
-            markReadAction.image = UIImage(systemName: "checkmark")
+            markReadAction.backgroundColor = .accent
+            markReadAction.image = UIImage(systemName: "checkmark.circle.fill")
             
             return UISwipeActionsConfiguration(actions: [deleteAction, markReadAction])
         }
@@ -411,30 +453,30 @@ extension NotificationsViewController: UITableViewDelegate {
 
 class EmptyStateView: UIView {
     
-//    private let iconImageView: UIImageView = {
-//        let iv = UIImageView()
-//        iv.contentMode = .scaleAspectFit
-//        iv.tintColor = .secondary
-//        iv.translatesAutoresizingMaskIntoConstraints = false
-//        return iv
-//    }()
+    private let stackView: UIStackView = {
+        let stack = UIStackView()
+        stack.axis = .vertical
+        stack.spacing = 12
+        stack.alignment = .center
+        stack.translatesAutoresizingMaskIntoConstraints = false
+        return stack
+    }()
     
     private let titleLabel: UILabel = {
         let label = UILabel()
         label.font = .systemFont(ofSize: 20, weight: .semibold)
-        label.textColor = .secondary
+        label.textColor = .primary
         label.textAlignment = .center
-        label.translatesAutoresizingMaskIntoConstraints = false
+        label.numberOfLines = 0
         return label
     }()
     
     private let messageLabel: UILabel = {
         let label = UILabel()
         label.font = .systemFont(ofSize: 16, weight: .regular)
-        label.textColor = .secondary
+        label.textColor = .primary
         label.textAlignment = .center
         label.numberOfLines = 0
-        label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
     
@@ -449,35 +491,19 @@ class EmptyStateView: UIView {
     }
     
     private func setupUI() {
-//        addSubview(iconImageView)
-        addSubview(titleLabel)
-        addSubview(messageLabel)
+        addSubview(stackView)
+        stackView.addArrangedSubview(titleLabel)
+        stackView.addArrangedSubview(messageLabel)
         
         NSLayoutConstraint.activate([
-//            iconImageView.centerXAnchor.constraint(equalTo: centerXAnchor),
-//            iconImageView.topAnchor.constraint(equalTo: topAnchor),
-//            iconImageView.widthAnchor.constraint(equalToConstant: 80),
-//            iconImageView.heightAnchor.constraint(equalToConstant: 80),
-//
-            
-            titleLabel.centerXAnchor.constraint(equalTo: centerXAnchor),
-            titleLabel.topAnchor.constraint(equalTo: topAnchor),
-//            titleLabel.widthAnchor.constraint(equalToConstant: 80),
-//            titleLabel.heightAnchor.constraint(equalToConstant: 80),
-            
-//            titleLabel.topAnchor.constraint(equalTo: iconImageView.bottomAnchor, constant: 20),
-//            titleLabel.leadingAnchor.constraint(equalTo: leadingAnchor),
-//            titleLabel.trailingAnchor.constraint(equalTo: trailingAnchor),
-//
-            messageLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 12),
-            messageLabel.leadingAnchor.constraint(equalTo: leadingAnchor),
-            messageLabel.trailingAnchor.constraint(equalTo: trailingAnchor),
-            messageLabel.bottomAnchor.constraint(equalTo: bottomAnchor)
+            stackView.topAnchor.constraint(equalTo: topAnchor),
+            stackView.leadingAnchor.constraint(equalTo: leadingAnchor),
+            stackView.trailingAnchor.constraint(equalTo: trailingAnchor),
+            stackView.bottomAnchor.constraint(equalTo: bottomAnchor)
         ])
     }
     
-    func configure( title: String, message: String) {
-        
+    func configure(title: String, message: String) {
         titleLabel.text = title
         messageLabel.text = message
     }
