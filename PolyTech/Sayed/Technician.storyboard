@@ -236,7 +236,6 @@ Due: 2025-11-15</string>
         <!--All Requests-->
         <scene sceneID="coy-s7-jdf">
             <objects>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="c3p-JD-LoF" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
                 <viewController storyboardIdentifier="RequestsVC" useStoryboardIdentifierAsRestorationIdentifier="YES" id="NgD-cz-qd3" customClass="RequestsViewController" customModule="PolyTech" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="8XG-qu-1Is">
                         <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
@@ -272,6 +271,9 @@ Due: 2025-11-15</string>
                                                                     <integer key="value" value="250"/>
                                                                 </userDefinedRuntimeAttribute>
                                                             </userDefinedRuntimeAttributes>
+                                                            <connections>
+                                                                <action selector="acceptTaskButtonPressed:" destination="NgD-cz-qd3" eventType="touchUpInside" id="9ed-oG-GKM"/>
+                                                            </connections>
                                                         </button>
                                                         <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="naB-Qy-Cv1">
                                                             <rect key="frame" x="119" y="54" width="72" height="39"/>
@@ -317,6 +319,7 @@ Due: 2025-11-15</string>
                         <outlet property="tableView" destination="BJW-1I-BdR" id="HAb-XT-UBk"/>
                     </connections>
                 </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="c3p-JD-LoF" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="3817.5572519083967" y="57.74647887323944"/>
         </scene>

@@ -7,45 +7,85 @@
 
 import UIKit
 import FirebaseFirestore
+import FirebaseAuth
 
 class RequestsViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
 
     @IBOutlet weak var tableView: UITableView!
     
+    let db = Firestore.firestore()
+    var requestsList: [TaskRequest] = []
+
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        tableView.separatorStyle = .none
         
+        tableView.separatorStyle = .none
         tableView.dataSource = self
         tableView.delegate = self
+        
+        fetchRequestsFromFirebase()
+    }
+
+    func fetchRequestsFromFirebase() {
+        db.collection("TasksRequests")
+            .whereField("status", isEqualTo: "Pending")
+            .addSnapshotListener { (querySnapshot, error) in
+                if let error = error {
+                    print("Error: \(error.localizedDescription)")
+                    return
+                }
+
+                self.requestsList = querySnapshot?.documents.compactMap { document in
+                    return TaskRequest(docID: document.documentID, dictionary: document.data())
+                } ?? []
+
+                self.tableView.reloadData()
+            }
     }
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 5
+        return requestsList.count
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "RequestCell", for: indexPath)
+        let request = requestsList[indexPath.row]
         
         if let cardView = cell.viewWithTag(200) {
             cardView.layer.borderColor = UIColor.systemGray4.cgColor
             cardView.layer.borderWidth = 1.0
-            cardView.layer.cornerRadius = 12
-            
-            cardView.layer.shadowColor = UIColor.black.cgColor
-            cardView.layer.shadowOffset = CGSize(width: 0, height: 2)
-            cardView.layer.shadowRadius = 4
-            cardView.layer.shadowOpacity = 0.1
-            cardView.layer.masksToBounds = false
+            cardView.layer.cornerRadius = 15
         }
 
         if let titleLabel = cell.viewWithTag(101) as? UILabel {
-            titleLabel.text = "Computer maintenance request"
+            titleLabel.text = request.description
         }
         
         cell.selectionStyle = .none
-        
         return cell
+    }
+
+    @IBAction func acceptTaskButtonPressed(_ sender: UIButton) {
+        let buttonPosition = sender.convert(CGPoint.zero, to: self.tableView)
+        guard let indexPath = self.tableView.indexPathForRow(at: buttonPosition) else { return }
+        
+        let selectedRequest = requestsList[indexPath.row]
+        
+        guard let currentUserID = Auth.auth().currentUser?.uid else {
+            print("Error: You must log in first")
+            return
+        }
+        
+        db.collection("TasksRequests").document(selectedRequest.documentID).updateData([
+            "status": "In Progress",
+            "technicianID": currentUserID,
+            "acceptedDate": Timestamp()
+        ]) { error in
+            if let error = error {
+                print("An error occurred during acceptance: \(error.localizedDescription)")
+            } else {
+                print("Success: Task accepted")
+            }
+        }
     }
 }

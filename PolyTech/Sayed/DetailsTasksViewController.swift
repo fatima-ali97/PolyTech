@@ -10,116 +10,97 @@ import FirebaseFirestore
 
 class DetailsTasksViewController: UIViewController {
     
-    var task: TaskModel?
+    var task: TaskRequest?
     let db = Firestore.firestore()
     
     @IBOutlet weak var clientLabel: UILabel!
     @IBOutlet weak var taskIDLabel: UILabel!
     @IBOutlet weak var descriptionLabel: UILabel!
-    @IBOutlet weak var statusSegmentedControl:UISegmentedControl!
+    @IBOutlet weak var statusSegmentedControl: UISegmentedControl!
     @IBOutlet weak var notesTextView: UITextView!
     @IBOutlet weak var dueDateLabel: UILabel!
     @IBOutlet weak var AddressLabel: UILabel!
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        
         setupTextViewUI()
         
         if let currentTask = task {
             updateUI(with: currentTask)
         } else {
-            clientLabel.text = "Error: Task data missing"
-            taskIDLabel.text = "Error: Task data missing"
-            descriptionLabel.text = "Error: Task data missing"
-            dueDateLabel.text = "Error: Task data missing"
-            AddressLabel.text = "Error: Task data missing"
+            setErrorMessage()
         }
         
-        let normalAttributes = [NSAttributedString.Key.foregroundColor: UIColor.lightGray]
-        statusSegmentedControl.setTitleTextAttributes(normalAttributes, for: .normal)
-        
-        let selectedAttributes = [NSAttributedString.Key.foregroundColor: UIColor.white]
-        statusSegmentedControl.setTitleTextAttributes(selectedAttributes, for: .selected)
+        setupSegmentedControlAppearance()
     }
 
-    func updateUI(with task: TaskModel) {
+    func updateUI(with task: TaskRequest) {
         clientLabel.text = "Client: \(task.client)"
         taskIDLabel.text = "Task ID: \(task.id)"
-        descriptionLabel.text = task.description ?? "No Description"
+        descriptionLabel.text = task.description
         dueDateLabel.text = "Scheduled for \(task.dueDate)"
-        AddressLabel.text = task.Address ?? "No Address"
-        
-        notesTextView.text = task.note ?? ""
-        
+        AddressLabel.text = "Address: \(task.address)"
+        notesTextView.text = task.note
         switch task.status {
-        case TaskFilter.pending.rawValue:
-            statusSegmentedControl.selectedSegmentIndex = 0 // pending
-        case TaskFilter.inProgress.rawValue:
-            statusSegmentedControl.selectedSegmentIndex = 1 // in progress
-        case TaskFilter.completed.rawValue:
-            statusSegmentedControl.selectedSegmentIndex = 2 // completed
+        case "Pending":
+            statusSegmentedControl.selectedSegmentIndex = 0
+        case "In Progress":
+            statusSegmentedControl.selectedSegmentIndex = 1
+        case "Completed":
+            statusSegmentedControl.selectedSegmentIndex = 2
         default:
-            statusSegmentedControl.selectedSegmentIndex = UISegmentedControl.noSegment
+            statusSegmentedControl.selectedSegmentIndex = 1
         }
     }
-
-
-    func setupTextViewUI() {
-            notesTextView.layer.borderWidth = 1.0
-            notesTextView.layer.borderColor = UIColor.lightGray.cgColor
-            notesTextView.layer.cornerRadius = 8.0
-            notesTextView.clipsToBounds = true
-        }
 
     @IBAction func updateStatusTapped(_ sender: UIButton) {
         saveChangesToFirebase()
     }
     
     func saveChangesToFirebase() {
-            guard let taskId = task?.id else { return }
-            
-            let selectedIndex = statusSegmentedControl.selectedSegmentIndex
-            var newStatus = TaskFilter.pending.rawValue
-            
-            if selectedIndex == 1 { newStatus = TaskFilter.inProgress.rawValue }
-            else if selectedIndex == 2 { newStatus = TaskFilter.completed.rawValue }
-            
-            let newNote = notesTextView.text ?? ""
+        guard let docID = task?.documentID else { return }
+        
+        let selectedIndex = statusSegmentedControl.selectedSegmentIndex
+        var newStatus = "In Progress"
+        
+        if selectedIndex == 0 { newStatus = "Pending" }
+        else if selectedIndex == 2 { newStatus = "Completed" }
+        
+        let newNote = notesTextView.text ?? ""
 
-            db.collection("tasks").whereField("id", isEqualTo: taskId).getDocuments { (snapshot, error) in
-                if let error = error {
-                    print("Error: \(error.localizedDescription)")
-                    return
-                }
-
-                guard let document = snapshot?.documents.first else {
-                    print("No document found with ID: \(taskId)")
-                    return
-                }
-
-                document.reference.updateData([
-                    "status": newStatus,
-                    "note": newNote
-                ]) { err in
-                    if let err = err {
-                        print("Error updating document: \(err)")
-                    } else {
-                        print("Document successfully updated")
-                        self.showSuccessAlert()
-                    }
-                }
+        db.collection("TasksRequests").document(docID).updateData([
+                "status": newStatus,
+                "note": newNote
+            ]) { error in
+            if let error = error {
+                print("Error updating document: \(error.localizedDescription)")
+            } else {
+                print("Success: Task updated to \(newStatus)")
+                self.showSuccessAlert()
             }
         }
+    }
+
+    func setupTextViewUI() {
+        notesTextView.layer.borderWidth = 1.0
+        notesTextView.layer.borderColor = UIColor.lightGray.cgColor
+        notesTextView.layer.cornerRadius = 8.0
+    }
+    
+    func setErrorMessage() {
+        clientLabel.text = "Error: Data missing"
+    }
+    
+    func setupSegmentedControlAppearance() {
+        statusSegmentedControl.setTitleTextAttributes([.foregroundColor: UIColor.lightGray], for: .normal)
+        statusSegmentedControl.setTitleTextAttributes([.foregroundColor: UIColor.white], for: .selected)
+    }
 
     func showSuccessAlert() {
-        let alert = UIAlertController(
-            title: "Success",
-            message: "Changes have been saved successfully to Firebase",
-            preferredStyle: .alert
-        )
-        
-        alert.addAction(UIAlertAction(title: "OK", style: .default))
+        let alert = UIAlertController(title: "Success", message: "Changes saved", preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "OK", style: .default) { _ in
+            self.navigationController?.popViewController(animated: true)
+        })
         present(alert, animated: true)
     }
 }
