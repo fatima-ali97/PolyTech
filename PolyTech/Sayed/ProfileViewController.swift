@@ -31,7 +31,7 @@ class ProfileViewController: UIViewController {
     
     func setupScrollViewUI() {
         scrollView.contentInsetAdjustmentBehavior = .never
-        scrollView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 1050, right: 0)
+        scrollView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 900, right: 0)
     }
     
     func fetchUserData() {
@@ -95,10 +95,10 @@ class ProfileViewController: UIViewController {
         
         if isEnabled {
             Messaging.messaging().subscribe(toTopic: "all_users")
-            print("✅ Local: Notifications Enabled")
+            print("Local: Notifications Enabled")
         } else {
             Messaging.messaging().unsubscribe(fromTopic: "all_users")
-            print("❌ Local: Notifications Disabled")
+            print("Local: Notifications Disabled")
         }
     }
     
