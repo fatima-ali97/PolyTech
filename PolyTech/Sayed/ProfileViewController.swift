@@ -31,17 +31,14 @@ class ProfileViewController: UIViewController {
     
     func setupScrollViewUI() {
         scrollView.contentInsetAdjustmentBehavior = .never
-        scrollView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 1050, right: 0)
+        scrollView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 900, right: 0)
     }
     
     func fetchUserData() {
         guard let uid = Auth.auth().currentUser?.uid else { return }
         
         db.collection("users").document(uid).addSnapshotListener { [weak self] snapshot, error in
-            guard let data = snapshot?.data(), error == nil else {
-                print("Error fetching profile data")
-                return
-            }
+            guard let data = snapshot?.data(), error == nil else { return }
             
             DispatchQueue.main.async {
                 self?.nameLabel.text = data["fullName"] as? String ?? "No Name"
@@ -93,11 +90,15 @@ class ProfileViewController: UIViewController {
     @IBOutlet weak var notificationSwitch: UISwitch!
 
     @IBAction func notificationSwitchChanged(_ sender: UISwitch) {
-        print("Changing notification status to: \(sender.isOn)")
-        if sender.isOn {
-            enableNotifications()
+        let isEnabled = sender.isOn
+        UserDefaults.standard.set(isEnabled, forKey: "pushNotificationsEnabled")
+        
+        if isEnabled {
+            Messaging.messaging().subscribe(toTopic: "all_users")
+            print("Local: Notifications Enabled")
         } else {
-            disableNotifications()
+            Messaging.messaging().unsubscribe(fromTopic: "all_users")
+            print("Local: Notifications Disabled")
         }
     }
     
