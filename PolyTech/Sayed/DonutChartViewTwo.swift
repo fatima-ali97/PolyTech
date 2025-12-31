@@ -2,12 +2,12 @@
 //  DonutChartView.swift
 //  PolyTech
 //
-//  Created by BP-19-130-05 on 15/12/2025.
+//  Created by BP-36-212-01 on 21/12/2025.
 //
 
 import UIKit
 
-class DonutChartView: UIView {
+class DonutChartViewTwo: UIView {
     
     struct Segment {
         let value: CGFloat
@@ -52,13 +52,19 @@ class DonutChartView: UIView {
         let center = CGPoint(x: bounds.midX, y: bounds.midY)
         let radius = min(bounds.width, bounds.height) / 2 - lineWidth / 2
         
-        var startAngle: CGFloat = -.pi / 2
+        var currentStartAngle: CGFloat = -.pi / 2
         
         for seg in segments {
-            let endAngle = startAngle + (2 * .pi) * (seg.value / total)
+            let segmentAngle = (2 * .pi) * (seg.value / total)
+            let endAngle = currentStartAngle + segmentAngle
             
             let path = UIBezierPath(
-                arcCenter: center, radius: radius, startAngle: startAngle, endAngle: endAngle, clockwise: true)
+                arcCenter: center,
+                radius: radius,
+                startAngle: currentStartAngle,
+                endAngle: endAngle,
+                clockwise: true
+            )
             
             let layer = CAShapeLayer()
             layer.path = path.cgPath
@@ -70,25 +76,12 @@ class DonutChartView: UIView {
             self.layer.addSublayer(layer)
             segmentLayers.append(layer)
             
-            startAngle = endAngle
+            currentStartAngle = endAngle
         }
         
         let hole = UIBezierPath(
             arcCenter: center, radius: radius - lineWidth / 2, startAngle: 0, endAngle: 2 * .pi, clockwise: true)
-        
         ringLayer.path = hole.cgPath
-        ringLayer.fillColor = UIColor.systemBackground.cgColor
-        ringLayer.strokeColor = UIColor.clear.cgColor
-        
-        
+        ringLayer.fillColor = UIColor.clear.cgColor
     }
-
-    /*
-    // Only override draw() if you perform custom drawing.
-    // An empty implementation adversely affects performance during animation.
-    override func draw(_ rect: CGRect) {
-        // Drawing code
-    }
-    */
-
 }

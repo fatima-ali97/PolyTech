@@ -1,20 +1,26 @@
 import UIKit
 
+// MARK: - Message Model
+// Represents one chat message (either from user or bot)
 struct Message {
-    let text: String
-    let isUser: Bool
+    let text: String      // Message text
+    let isUser: Bool      // true = user message, false = bot message
 }
 
+// MARK: - ChatBot View Controller
 final class ChatBotViewController: UIViewController {
 
-    @IBOutlet weak var tableView: UITableView!
-    @IBOutlet weak var messageTextField: UITextField!
-    @IBOutlet weak var sendButton: UIButton!
-    @IBOutlet weak var inputContainerView: UIView!
-    @IBOutlet weak var backButton: UIImageView!
+    // MARK: - IBOutlets (UI elements from Storyboard)
+    @IBOutlet weak var tableView: UITableView!          // Displays chat messages
+    @IBOutlet weak var messageTextField: UITextField!   // Input field for user text
+    @IBOutlet weak var sendButton: UIButton!            // Send message button
+    @IBOutlet weak var inputContainerView: UIView!      // Bottom container (text field + send button)
+    @IBOutlet weak var backButton: UIImageView!         // Back button (image)
 
-    private var messages: [Message] = []
+    // MARK: - Data Source
+    private var messages: [Message] = []                // All chat messages
 
+    // MARK: - Main Menu Text (Bot welcome message)
     private var menuText: String {
         return """
         Hi 👋 I can help with these topics. Reply with a number:
@@ -41,11 +47,13 @@ final class ChatBotViewController: UIViewController {
         """
     }
 
+    // MARK: - View Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
 
         title = "Chat Bot"
 
+        // TableView setup
         tableView.dataSource = self
         tableView.delegate = self
         tableView.keyboardDismissMode = .interactive
@@ -54,51 +62,65 @@ final class ChatBotViewController: UIViewController {
         tableView.rowHeight = UITableView.automaticDimension
         tableView.contentInsetAdjustmentBehavior = .never
 
+        // TextField delegate
         messageTextField.delegate = self
 
+        // Style input container
         inputContainerView.layer.cornerRadius = 16
         inputContainerView.clipsToBounds = true
 
+        // Style send button
         sendButton.layer.cornerRadius = 10
         sendButton.clipsToBounds = true
 
+        // Enable tap on back image
         setupBackImageTap()
 
+        // Initial bot message (menu)
         messages = [Message(text: menuText, isUser: false)]
         reloadAndScrollToBottom()
     }
 
+    // MARK: - Back Button (Image Tap)
     private func setupBackImageTap() {
         backButton.isUserInteractionEnabled = true
         let tap = UITapGestureRecognizer(target: self, action: #selector(backImageTapped))
         backButton.addGestureRecognizer(tap)
     }
 
+    // Action when back image is tapped
     @objc private func backImageTapped() {
         navigationController?.popViewController(animated: true)
     }
 
+    // MARK: - Send Button Action
     @IBAction func sendButtonTapped(_ sender: UIButton) {
         sendMessage()
     }
 
+    // MARK: - Send Message Logic
     private func sendMessage() {
         let rawText = messageTextField.text ?? ""
         let text = rawText.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !text.isEmpty else { return }
 
+        // Add user message
         messages.append(Message(text: text, isUser: true))
         messageTextField.text = ""
         reloadAndScrollToBottom()
 
+        // Get bot reply
         let reply = botReply(for: text)
 
+        // Simulate typing delay
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.35) {
             self.messages.append(Message(text: reply, isUser: false))
             self.reloadAndScrollToBottom()
         }
     }
 
+    // MARK: - Normalize Input
+    // Cleans user input (lowercase, remove symbols)
     private func normalize(_ text: String) -> String {
         let trimmed = text.trimmingCharacters(in: .whitespacesAndNewlines)
         let lower = trimmed.lowercased()
@@ -106,256 +128,83 @@ final class ChatBotViewController: UIViewController {
         return cleaned
     }
 
+    // MARK: - Bot Reply Logic
     private func botReply(for input: String) -> String {
-        let trimmed = input.trimmingCharacters(in: .whitespacesAndNewlines)
         let normalized = normalize(input)
 
-        if let choice = Int(trimmed) {
+        // ✅ Use normalized for number detection so "7)", "7." etc still works
+        if let choice = Int(normalized) {
             switch choice {
 
             case 0:
                 return menuText
 
             case 1:
-                return """
-                Moodle login / access 📘
-                1) Open Bahrain Polytechnic website.
-                2) Scroll down and tap Moodle.
-                3) Choose Student login.
-                4) Enter your username + password.
-
-                If you can’t login:
-                • Try another browser (Safari/Chrome)
-                • Clear cache and try again
-                • If password is wrong, reply 3 (Reset password)
-                """
+                return "Moodle login / access 📘\n1) Open Polytechnic website > Moodle\n2) Login with your username + password."
 
             case 2:
-                return """
-                Banner login 🧾
-                1) Open Bahrain Polytechnic website.
-                2) Tap Banner.
-                3) Enter your Student ID + password.
-
-                If it says wrong password:
-                • Reply 3 (Reset password)
-                • Check Caps Lock and try again
-                """
+                return "Banner login 🧾\n1) Open Polytechnic website > Banner\n2) Enter Student ID + password."
 
             case 3:
-                return """
-                Reset password 🔐
-                Which account do you want to reset?
-
-                1) Moodle
-                2) Banner
-                3) Email / Office 365
-
-                Reply with: 3-1, 3-2, or 3-3
-                """
+                return "Reset password 🔐\nWhich account?\n1) Moodle\n2) Banner\n3) Email/Office\nReply: 3-1, 3-2, or 3-3"
 
             case 4:
-                return """
-                Wi-Fi / Internet 📶
-                Try this order:
-                1) Turn Wi-Fi off/on.
-                2) Forget the network then re-join.
-                3) Restart your phone/laptop.
-                4) If it still doesn’t work, try another device.
-
-                Tell me your device: iPhone / Android / Laptop
-                """
+                return "Wi-Fi / Internet 📶\n1) Turn Wi-Fi off/on\n2) Forget network & re-join\n3) Restart device."
 
             case 5:
-                return """
-                Contact IT / Get Help 🧑‍💻
-                Use the Get Help page in the app.
-
-                To help you faster, send:
-                • Topic (Moodle/Banner/Wi-Fi/etc.)
-                • Your device (iPhone/Android/Laptop)
-                • Screenshot or exact error message
-                """
+                return "Contact IT / Get Help 🧑‍💻\nUse the Get Help page in the app."
 
             case 6:
-                return """
-                Technician availability 🛠️
-                1) Open Get Help in the app.
-                2) Choose your issue type (Wi-Fi / Banner / Moodle / Device).
-                3) Add details + screenshots.
-                4) Submit the request.
-
-                Tip: Add your Student ID and the location (building/room) if on campus.
-                """
+                return "Technician availability 🛠️\nOpen Get Help and submit your issue with details + location."
 
             case 7:
-                return """
-                Email (Polytechnic email setup) ✉️
-                If you can’t login:
-                1) Try signing in on a browser first.
-                2) Check your email format and password.
-                3) If it fails, reply 3-3 to reset Email/Office.
-
-                iPhone setup:
-                • Add Account > Microsoft Exchange
-                • Sign in with your Polytechnic email
-                """
+                return "Email setup ✉️\nTry logging in via browser first. If it fails, reset or contact IT."
 
             case 8:
-                return """
-                Microsoft Teams / Office 365 💼
-                Common fixes:
-                1) Sign out then sign in again.
-                2) Update Teams.
-                3) If stuck on loading, reinstall Teams.
-                4) Try logging in from a browser.
-
-                Tell me your device and what error you see.
-                """
+                return "Microsoft Teams / Office 365 💼\nSign out/in, update the app, or reinstall if stuck."
 
             case 9:
-                return """
-                Two-Factor Authentication (Authenticator) 🔑
-                If codes/approvals don’t work:
-                1) Set phone time to Automatic.
-                2) Make sure you selected the correct account.
-                3) Remove the account from Authenticator and add it again.
-
-                Tell me: iPhone or Android?
-                """
+                return "Authenticator / 2FA 🔑\nSet phone time to Automatic and re-add the account if approvals fail."
 
             case 10:
-                return """
-                VPN (off-campus access) 🌍
-                If VPN won’t connect:
-                1) Make sure your internet works normally.
-                2) Re-enter your username/password carefully.
-                3) Try switching networks (Wi-Fi ↔︎ mobile hotspot).
-                4) Restart the VPN app.
-
-                Tell me your device: Windows / Mac / iPhone / Android
-                """
+                return "VPN 🌍\nCheck internet, re-enter credentials, try another network, restart VPN app."
 
             case 11:
-                return """
-                Printing / printers on campus 🖨️
-                If printing doesn’t work:
-                1) Make sure you are connected to campus Wi-Fi.
-                2) Select the correct printer.
-                3) Try printing a small PDF test page.
-                4) If it queues forever, cancel and try again.
-
-                Tell me which building/printer area you’re using.
-                """
+                return "Printing 🖨️\nBe on campus Wi-Fi, pick correct printer, try a small test page."
 
             case 12:
-                return """
-                Library access / eResources 📚
-                If a database won’t open:
-                1) Try on campus Wi-Fi first.
-                2) If off campus, you may need VPN (reply 10).
-                3) Try another browser or clear cache.
-
-                Tell me the website/resource name you’re trying to access.
-                """
+                return "Library / eResources 📚\nTry on campus first, off campus may need VPN (reply 10)."
 
             case 13:
-                return """
-                Attendance / course registration 📝
-                If your course is missing:
-                1) Check Banner registration status.
-                2) Log out and log in again.
-                3) Wait a few hours after timetable updates.
-
-                If you have a registration error:
-                • Send the course code + error message
-                """
+                return "Attendance / Registration 📝\nCheck Banner registration and send course code + error if any."
 
             case 14:
-                return """
-                Laptop / software requirements 💻
-                General tips:
-                1) Keep at least 20–30GB free storage.
-                2) Update your OS.
-                3) Install required apps: Teams, Office, course software.
-
-                Tell me: Mac/Windows and your RAM (8GB/16GB).
-                """
+                return "Laptop / Software 💻\nKeep storage free, update OS, install required apps (Teams/Office)."
 
             case 15:
-                return """
-                VM / VMware problems 🧩
-                If your VM won’t start:
-                1) Restart your laptop.
-                2) Ensure VMware is up to date.
-                3) Check the VM folder path is correct.
-                4) If “locked” error: close VMware, end tasks, reopen.
-
-                Tell me the exact error message.
-                """
+                return "VM / VMware 🧩\nRestart laptop, update VMware, check VM folder path, share exact error."
 
             default:
                 return "I don’t have that option. Type 0 to see the menu."
             }
         }
 
-        if normalized == "31" {
-            return """
-            Moodle reset 🔐
-            1) Open Moodle login page.
-            2) Tap “Forgot password?”.
-            3) Enter your username/email.
-            4) Check your email and open the reset link.
+        // Special reset choices like 3-1, 3-2, 3-3 -> normalized becomes "31" "32" "33"
+        if normalized == "31" { return "Moodle reset 🔐\nUse “Forgot password?” on Moodle login page." }
+        if normalized == "32" { return "Banner reset 🔐\nBanner resets are usually handled by IT. Reply 5." }
+        if normalized == "33" { return "Email reset 🔐\nUse Microsoft “Forgot password?” or reply 5 for IT." }
 
-            If no email arrives, reply 5 (Contact IT).
-            """
-        }
-
-        if normalized == "32" {
-            return """
-            Banner reset 🔐
-            Banner password resets are usually handled by IT.
-            Reply 5 (Contact IT) and include:
-            • Student ID
-            • The error message / screenshot
-            """
-        }
-
-        if normalized == "33" {
-            return """
-            Email / Office 365 reset 🔐
-            1) Go to Microsoft sign-in page.
-            2) Tap “Forgot password?”.
-            3) Follow the steps and verify your identity.
-
-            If you can’t reset, reply 5 (Contact IT).
-            """
-        }
-
-        if normalized.contains("menu") || normalized.contains("options") {
-            return menuText
-        }
-
-        if normalized.contains("moodle") { return "For Moodle help, reply 1. Type 0 to see all options." }
-        if normalized.contains("banner") { return "For Banner help, reply 2. Type 0 to see all options." }
-        if normalized.contains("password") || normalized.contains("reset") || normalized.contains("forgot") { return "For password reset, reply 3. Type 0 to see all options." }
-        if normalized.contains("wifi") || normalized.contains("internet") || normalized.contains("network") { return "For Wi-Fi help, reply 4. Type 0 to see all options." }
-        if normalized.contains("help") || normalized.contains("support") || normalized.contains("it") { return "To contact IT / Get Help, reply 5. Type 0 to see all options." }
-        if normalized.contains("technician") { return "For technician availability, reply 6. Type 0 to see all options." }
-        if normalized.contains("email") { return "For email setup help, reply 7. Type 0 to see all options." }
-        if normalized.contains("teams") || normalized.contains("office") { return "For Teams/Office 365 help, reply 8. Type 0 to see all options." }
-        if normalized.contains("auth") || normalized.contains("2fa") || normalized.contains("authenticator") { return "For Authenticator/2FA help, reply 9. Type 0 to see all options." }
-        if normalized.contains("vpn") { return "For VPN help, reply 10. Type 0 to see all options." }
-        if normalized.contains("print") { return "For printing help, reply 11. Type 0 to see all options." }
-        if normalized.contains("library") { return "For library help, reply 12. Type 0 to see all options." }
-        if normalized.contains("attendance") || normalized.contains("register") || normalized.contains("registration") { return "For attendance/registration help, reply 13. Type 0 to see all options." }
-        if normalized.contains("laptop") || normalized.contains("software") { return "For laptop/software requirements, reply 14. Type 0 to see all options." }
-        if normalized.contains("vm") || normalized.contains("vmware") { return "For VM/VMware help, reply 15. Type 0 to see all options." }
-        if normalized.contains("hello") || normalized.contains("hi") || normalized.contains("hey") { return menuText }
+        // Keyword-based fallback replies
+        if normalized.contains("menu") { return menuText }
+        if normalized.contains("moodle") { return "Reply 1 for Moodle help. Type 0 for menu." }
+        if normalized.contains("banner") { return "Reply 2 for Banner help. Type 0 for menu." }
+        if normalized.contains("password") { return "Reply 3 to reset password. Type 0 for menu." }
+        if normalized.contains("wifi") { return "Reply 4 for Wi-Fi help. Type 0 for menu." }
 
         return "Reply with a number (0–15) so I can help you faster. Type 0 to see the menu."
     }
 
+    // MARK: - Reload & Scroll
     private func reloadAndScrollToBottom() {
         tableView.reloadData()
         guard !messages.isEmpty else { return }
@@ -364,6 +213,7 @@ final class ChatBotViewController: UIViewController {
     }
 }
 
+// MARK: - TableView DataSource & Delegate
 extension ChatBotViewController: UITableViewDataSource, UITableViewDelegate {
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -372,8 +222,8 @@ extension ChatBotViewController: UITableViewDataSource, UITableViewDelegate {
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "ChatCell", for: indexPath)
-
         let msg = messages[indexPath.row]
+
         cell.textLabel?.text = msg.text
         cell.textLabel?.numberOfLines = 0
         cell.textLabel?.textAlignment = msg.isUser ? .right : .left
@@ -384,6 +234,7 @@ extension ChatBotViewController: UITableViewDataSource, UITableViewDelegate {
     }
 }
 
+// MARK: - TextField Delegate
 extension ChatBotViewController: UITextFieldDelegate {
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         sendMessage()

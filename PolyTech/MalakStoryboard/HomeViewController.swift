@@ -5,12 +5,11 @@ class HomeViewController: UIViewController {
     @IBOutlet weak var Notificationbtn: UIImageView!
     @IBOutlet weak var FAQbtn: UIButton!
     @IBOutlet weak var chatBot: UIImageView!
-    
+    @IBOutlet weak var OptionsBtn: UIButton!
     
     var userId: String?
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        // Ensure tab bar is visible
         if let tabBarController = self.tabBarController as? BaseCustomTabBarController {
             tabBarController.hideCustomTabBar(false, animated: true)
         }
@@ -19,15 +18,34 @@ class HomeViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Get userId from UserDefaults if not passed
                 if userId == nil {
                     userId = UserDefaults.standard.string(forKey: "userId")
                 }
         loadData()
         setupNotificationButton()
         setupChatBotBtn()
+        setupOptionsButton()
     }
 
+    private func setupOptionsButton() {
+
+        OptionsBtn.isUserInteractionEnabled = true
+
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(optionsTapped))
+        OptionsBtn.addGestureRecognizer(tapGesture)
+    }
+    
+    @objc func optionsTapped() {
+
+        let storyboard = UIStoryboard(name: "OptionsPage", bundle: nil)
+        guard let vc = storyboard.instantiateViewController(withIdentifier: "OptionsPageViewController") as? OptionsPageViewController else {
+            print("OptionsPageViewController not found in storyboard")
+            return
+        }
+        
+        navigationController?.pushViewController(vc, animated: true)
+    }
+    
     private func setupNotificationButton() {
 
         Notificationbtn.isUserInteractionEnabled = true
@@ -54,7 +72,6 @@ class HomeViewController: UIViewController {
            }
            
            print("✅ Loading student dashboard for user: \(userId)")
-           // Load student-specific data here
        }
        
     @IBAction func faqButtonTapped(_ sender: UIButton) {
@@ -92,6 +109,7 @@ class HomeViewController: UIViewController {
         
         navigationController?.pushViewController(vc, animated: true)
     }
+    
     
     
     
