@@ -90,41 +90,53 @@ class RequestsViewController: UIViewController, UITableViewDataSource, UITableVi
     }
 
     @IBAction func addRequestTask(_ sender: Any) {
-        let alert = UIAlertController(title: "New Task", message: "Enter task details", preferredStyle: .alert)
+        let alert = UIAlertController(title: "New Task", message: "All fields are required", preferredStyle: .alert)
 
         alert.addTextField { textField in
-                textField.placeholder = "Client Name"
-                textField.textAlignment = .left
-            }
-            alert.addTextField { textField in
-                textField.placeholder = "Task ID (e.g., 001)"
-                textField.textAlignment = .left
-            }
-            alert.addTextField { textField in
-                textField.placeholder = "Description"
-                textField.textAlignment = .left
-            }
-            alert.addTextField { textField in
-                textField.placeholder = "Address"
-                textField.textAlignment = .left
-            }
+            textField.placeholder = "Client Name"
+            textField.textAlignment = .left
+        }
+        alert.addTextField { textField in
+            textField.placeholder = "Task ID (Numbers only)"
+            textField.keyboardType = .numberPad
+            textField.textAlignment = .left
+        }
+        alert.addTextField { textField in
+            textField.placeholder = "Description"
+            textField.textAlignment = .left
+        }
+        alert.addTextField { textField in
+            textField.placeholder = "Address"
+            textField.textAlignment = .left
+        }
 
         let addAction = UIAlertAction(title: "Add", style: .default) { _ in
             let client = alert.textFields?[0].text ?? ""
-            let customID = alert.textFields?[1].text ?? ""
+            let taskIDString = alert.textFields?[1].text ?? ""
             let desc = alert.textFields?[2].text ?? ""
             let addr = alert.textFields?[3].text ?? ""
 
-            if !client.isEmpty && !customID.isEmpty {
-                self.saveTaskToFirestore(client: client, customID: customID, desc: desc, addr: addr)
+            if client.isEmpty || taskIDString.isEmpty || desc.isEmpty || addr.isEmpty {
+                self.showErrorAlert(message: "All fields are required. Please fill in everything.")
+                return
+            }
+
+            if CharacterSet.decimalDigits.isSuperset(of: CharacterSet(charactersIn: taskIDString)) {
+                self.saveTaskToFirestore(client: client, customID: taskIDString, desc: desc, addr: addr)
             } else {
-                print("Validation Error: Fields cannot be empty")
+                self.showErrorAlert(message: "Task ID must contain numbers only.")
             }
         }
 
         alert.addAction(addAction)
         alert.addAction(UIAlertAction(title: "Cancel", style: .cancel))
         present(alert, animated: true)
+    }
+
+    func showErrorAlert(message: String) {
+        let errorAlert = UIAlertController(title: "Error", message: message, preferredStyle: .alert)
+        errorAlert.addAction(UIAlertAction(title: "OK", style: .default))
+        present(errorAlert, animated: true)
     }
     
     func saveTaskToFirestore(client: String, customID: String, desc: String, addr: String) {
