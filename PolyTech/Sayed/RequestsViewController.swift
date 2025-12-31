@@ -27,16 +27,25 @@ class RequestsViewController: UIViewController, UITableViewDataSource, UITableVi
     }
 
     func fetchRequestsFromFirebase() {
+        guard let currentUserID = Auth.auth().currentUser?.uid else { return }
+
         db.collection("TasksRequests")
             .whereField("status", isEqualTo: "Pending")
             .addSnapshotListener { (querySnapshot, error) in
                 if let error = error {
-                    print("Error: \(error.localizedDescription)")
+                    print("Error fetching tasks: \(error.localizedDescription)")
                     return
                 }
 
                 self.requestsList = querySnapshot?.documents.compactMap { document in
-                    return TaskRequest(docID: document.documentID, dictionary: document.data())
+                    let data = document.data()
+                    let declinedBy = data["declinedBy"] as? [String] ?? []
+                    
+                    if declinedBy.contains(currentUserID) {
+                        return nil
+                    }
+                    
+                    return TaskRequest(docID: document.documentID, dictionary: data)
                 } ?? []
 
                 self.tableView.reloadData()
@@ -158,4 +167,74 @@ class RequestsViewController: UIViewController, UITableViewDataSource, UITableVi
             }
         }
     }
+    
+    
+    
+    @IBAction func declineTaskButtonPressed(_ sender: UIButton) {
+        let buttonPosition = sender.convert(CGPoint.zero, to: self.tableView)
+        guard let indexPath = self.tableView.indexPathForRow(at: buttonPosition) else { return }
+        let selectedRequest = requestsList[indexPath.row]
+        guard let currentUserID = Auth.auth().currentUser?.uid else { return }
+
+        let docRef = db.collection("TasksRequests").document(selectedRequest.documentID)
+
+        docRef.updateData([
+            "declinedBy": FieldValue.arrayUnion([currentUserID])
+        ]) { error in
+            if error == nil {
+                self.checkDeclineThreshold(documentID: selectedRequest.documentID, requestData: selectedRequest)
+            }
+        }
+    }
+    
+    func checkDeclineThreshold(documentID: String, requestData: TaskRequest) {
+        self.db.collection("TasksRequests").document(documentID).getDocument { (doc, err) in
+            if let error = err {
+                print("Error fetching document: \(error.localizedDescription)")
+                return
+            }
+            
+            if let data = doc?.data(), let declinedBy = data["declinedBy"] as? [String] {
+                
+                let declineCount = declinedBy.count
+                print("Current Decline Count: \(declineCount)")
+
+                if declineCount >= 3 {
+                    print("Threshold reached (3 declines)! Moving to requests collection...")
+                    self.moveTaskToGlobalRequests(documentID: documentID, data: data)
+                } else {
+                    print("Task declined by \(declineCount) technician(s). Waiting for 3.")
+                }
+            }
+        }
+    }
+
+    func moveTaskToGlobalRequests(documentID: String, data: [String: Any]) {
+        var updatedData = data
+        updatedData["status"] = "Rejected"
+        updatedData["movedAt"] = FieldValue.serverTimestamp()
+        
+        updatedData["rejected"] = true
+        
+        if let desc = data["description"] as? String {
+            updatedData["requestName"] = desc
+        }
+
+        db.collection("requests").document(documentID).setData(updatedData) { error in
+            if let error = error {
+                print("Error moving task: \(error.localizedDescription)")
+            } else {
+                self.db.collection("TasksRequests").document(documentID).updateData([
+                    "status": "Rejected",
+                    "rejected": true
+                ]) { err in
+                    if err == nil {
+                        print("Task successfully migrated with rejected=true field.")
+                    }
+                }
+            }
+        }
+    }
+    
+    
 }
