@@ -26,6 +26,8 @@ class TechniciansViewController: UITableViewController {
     
     private var technicians: [Technician] = []
     
+    var requestIdToReassign: String?
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
