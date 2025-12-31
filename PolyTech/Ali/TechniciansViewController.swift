@@ -15,6 +15,7 @@ class TechniciansViewController: UITableViewController {
     enum Availability: String {
         case available
         case busy
+        case unavailable
     }
     
     struct Technician {
@@ -55,16 +56,26 @@ class TechniciansViewController: UITableViewController {
         cell.tasksValueLabel.text = "\(tech.tasks)"
         cell.hoursValueLabel.text = tech.hours
         
-        switch tech.availability {
+        let withinHours = isNowWithinHours(tech.hours)
+        let displayAvailability: Availability = withinHours ? tech.availability : .unavailable
+
+        switch displayAvailability {
         case .available:
             cell.statusLabel.text = "Available"
-            cell.statusPillView.backgroundColor = UIColor.systemBlue
-            cell.dotView.backgroundColor = UIColor.systemBlue
+            cell.statusPillView.backgroundColor = .systemBlue
+            cell.dotView.backgroundColor = .systemBlue
+
         case .busy:
             cell.statusLabel.text = "Busy"
-            cell.statusPillView.backgroundColor = UIColor.systemRed
-            cell.dotView.backgroundColor = UIColor.systemRed
+            cell.statusPillView.backgroundColor = .systemRed
+            cell.dotView.backgroundColor = .systemRed
+
+        case .unavailable:
+            cell.statusLabel.text = "Unavailable"
+            cell.statusPillView.backgroundColor = .systemGray
+            cell.dotView.backgroundColor = .systemGray
         }
+
         
         return cell
         
@@ -117,6 +128,73 @@ class TechniciansViewController: UITableViewController {
             }
         }
     }
+    
+    private func isNowWithinHours(_ hoursString: String, now: Date = Date()) -> Bool {
+        let s = hoursString.trimmingCharacters(in: .whitespacesAndNewlines)
+        if s.isEmpty { return false }
+
+        let lower = s.lowercased()
+        
+        if lower.contains("24/7") || lower.contains("247") || lower.contains("24x7") || lower.contains("24-7") {
+            return true
+        }
+        
+        if lower.contains("closed") || lower.contains("off") { return false }
+
+        let normalized = s
+            .replacingOccurrences(of: "–", with: "-")
+            .replacingOccurrences(of: "—", with: "-")
+            .replacingOccurrences(of: "to", with: "-")
+            .replacingOccurrences(of: " ", with: "")
+
+        let parts = normalized.split(separator: "-", omittingEmptySubsequences: true)
+        guard parts.count == 2 else { return false }
+
+        let startStr = String(parts[0])
+        let endStr   = String(parts[1])
+
+        let formats = ["HH:mm", "H:mm", "h:mma", "hh:mma", "h:mm a", "hh:mm a", "ha", "h a"]
+
+        func parseTimeToday(_ timeStr: String) -> Date? {
+            let cal = Calendar.current
+            let day = cal.dateComponents([.year, .month, .day], from: now)
+
+            for f in formats {
+                let df = DateFormatter()
+                df.locale = Locale(identifier: "en_US_POSIX")
+                df.dateFormat = f
+
+                if let t = df.date(from: timeStr) {
+                    let tc = cal.dateComponents([.hour, .minute], from: t)
+                    var comps = DateComponents()
+                    comps.year = day.year
+                    comps.month = day.month
+                    comps.day = day.day
+                    comps.hour = tc.hour
+                    comps.minute = tc.minute
+                    return cal.date(from: comps)
+                }
+            }
+            return nil
+        }
+
+        guard let start = parseTimeToday(startStr),
+              let endSameDay = parseTimeToday(endStr) else {
+            return false
+        }
+
+        let cal = Calendar.current
+
+        let end = (endSameDay >= start) ? endSameDay : cal.date(byAdding: .day, value: 1, to: endSameDay)!
+
+        if endSameDay < start {
+            let startYesterday = cal.date(byAdding: .day, value: -1, to: start)!
+            return (now >= startYesterday && now <= end)
+        }
+
+        return (now >= start && now <= end)
+    }
+
     
     deinit {
         listener?.remove()

@@ -30,6 +30,13 @@ final class DelayedRequestsViewController: UIViewController {
     
     private var technicians: [TechnicianItem] = []
     private var techListener: ListenerRegistration?
+    
+    private var delayedOldListener: ListenerRegistration?
+    private var rejectedListener: ListenerRegistration?
+
+    private var oldMap: [String: DelayedRequest] = [:]
+    private var rejectedMap: [String: DelayedRequest] = [:]
+
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -46,7 +53,8 @@ final class DelayedRequestsViewController: UIViewController {
     }
 
     deinit {
-        listener?.remove()
+        delayedOldListener?.remove()
+        rejectedListener?.remove()
         techListener?.remove()
     }
 
@@ -54,40 +62,72 @@ final class DelayedRequestsViewController: UIViewController {
         let cutoffDate = Calendar.current.date(byAdding: .day, value: -delayedAfterDays, to: Date())!
         let cutoffTimestamp = Timestamp(date: cutoffDate)
 
-        listener = db.collection("requests")
+        func rebuildList() {
+            var merged = oldMap
+            rejectedMap.forEach { merged[$0.key] = $0.value }
+
+            self.delayedRequests = Array(merged.values).sorted {
+                $0.title.localizedCaseInsensitiveCompare($1.title) == .orderedAscending
+            }
+
+            DispatchQueue.main.async {
+                self.tableView.reloadData()
+            }
+        }
+
+        delayedOldListener?.remove()
+        delayedOldListener = db.collection("requests")
             .whereField("createdAt", isLessThanOrEqualTo: cutoffTimestamp)
             .addSnapshotListener { [weak self] snapshot, error in
                 guard let self else { return }
-
                 if let error = error {
-                    print("❌ delayed requests error:", error)
+                    print("❌ delayed(old) requests error:", error)
                     return
                 }
 
-                guard let docs = snapshot?.documents else {
-                    self.delayedRequests = []
-                    self.tableView.reloadData()
-                    return
-                }
-
-                self.delayedRequests = docs.compactMap { doc in
+                let docs = snapshot?.documents ?? []
+                self.oldMap = Dictionary(uniqueKeysWithValues: docs.compactMap { doc in
                     let data = doc.data()
 
-                    guard let title = data["requestName"] as? String else { return nil }
-
-                    if let status = data["status"] as? String,
-                       status.lowercased() == "completed" {
+                    // exclude completed
+                    if let status = data["status"] as? String, status.lowercased() == "completed" {
                         return nil
                     }
 
-                    return DelayedRequest(id: doc.documentID, title: title)
+                    guard let title = data["requestName"] as? String else { return nil }
+                    return (doc.documentID, DelayedRequest(id: doc.documentID, title: title))
+                })
+
+                rebuildList()
+            }
+
+        rejectedListener?.remove()
+        rejectedListener = db.collection("requests")
+            .whereField("rejected", isEqualTo: true)
+            .addSnapshotListener { [weak self] snapshot, error in
+                guard let self else { return }
+                if let error = error {
+                    print("❌ rejected requests error:", error)
+                    return
                 }
 
-                DispatchQueue.main.async {
-                    self.tableView.reloadData()
-                }
+                let docs = snapshot?.documents ?? []
+                self.rejectedMap = Dictionary(uniqueKeysWithValues: docs.compactMap { doc in
+                    let data = doc.data()
+
+                    // exclude completed
+                    if let status = data["status"] as? String, status.lowercased() == "completed" {
+                        return nil
+                    }
+
+                    guard let title = data["requestName"] as? String else { return nil }
+                    return (doc.documentID, DelayedRequest(id: doc.documentID, title: title))
+                })
+
+                rebuildList()
             }
     }
+
     
     private func loadTechnicians() {
         techListener = db.collection("technicians")
