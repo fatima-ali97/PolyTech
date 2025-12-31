@@ -85,7 +85,7 @@ class TasksViewController: UIViewController, UITableViewDataSource, UITableViewD
             filteredResults = allTasksFromFirebase.filter { $0.status == filter.rawValue }
         }
 
-        self.tasks = filteredResults.sorted(by: { $0.dueDate > $1.dueDate })
+        self.tasks = filteredResults.sorted(by: { $0.createdAt > $1.createdAt })
         
         updateNoTasksLabel()
         tableView.reloadData()
@@ -121,7 +121,7 @@ class TasksViewController: UIViewController, UITableViewDataSource, UITableViewD
         let task = tasks[indexPath.row]
         cell.taskIdLabel.text = "ID: \(task.id)"
         cell.clientLabel.text = "Client: \(task.client)"
-        cell.dueDateLabel.text = "Due: \(task.dueDate)"
+        cell.dueDateLabel.text = "Due: \(task.createdAt)"
         cell.statusBtn.setTitle(task.status, for: .normal)
 
         cell.delegate = self

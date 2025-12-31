@@ -18,7 +18,7 @@ class DetailsTasksViewController: UIViewController {
     @IBOutlet weak var descriptionLabel: UILabel!
     @IBOutlet weak var statusSegmentedControl: UISegmentedControl!
     @IBOutlet weak var notesTextView: UITextView!
-    @IBOutlet weak var dueDateLabel: UILabel!
+    @IBOutlet weak var acceptedDateLabel: UILabel!
     @IBOutlet weak var AddressLabel: UILabel!
 
     override func viewDidLoad() {
@@ -38,8 +38,8 @@ class DetailsTasksViewController: UIViewController {
         clientLabel.text = "Client: \(task.client)"
         taskIDLabel.text = "Task ID: \(task.id)"
         descriptionLabel.text = task.description
-        dueDateLabel.text = "Scheduled for \(task.dueDate)"
-        AddressLabel.text = "Address: \(task.address)"
+        acceptedDateLabel.text = "Accepted on: \(task.acceptedDate)"
+        AddressLabel.text = "\(task.address)"
         notesTextView.text = task.note
         switch task.status {
         case "Pending":

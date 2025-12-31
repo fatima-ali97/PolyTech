@@ -88,4 +88,62 @@ class RequestsViewController: UIViewController, UITableViewDataSource, UITableVi
             }
         }
     }
+
+    @IBAction func addRequestTask(_ sender: Any) {
+        let alert = UIAlertController(title: "New Task", message: "Enter task details", preferredStyle: .alert)
+
+        alert.addTextField { textField in
+                textField.placeholder = "Client Name"
+                textField.textAlignment = .left
+            }
+            alert.addTextField { textField in
+                textField.placeholder = "Task ID (e.g., 001)"
+                textField.textAlignment = .left
+            }
+            alert.addTextField { textField in
+                textField.placeholder = "Description"
+                textField.textAlignment = .left
+            }
+            alert.addTextField { textField in
+                textField.placeholder = "Address"
+                textField.textAlignment = .left
+            }
+
+        let addAction = UIAlertAction(title: "Add", style: .default) { _ in
+            let client = alert.textFields?[0].text ?? ""
+            let customID = alert.textFields?[1].text ?? ""
+            let desc = alert.textFields?[2].text ?? ""
+            let addr = alert.textFields?[3].text ?? ""
+
+            if !client.isEmpty && !customID.isEmpty {
+                self.saveTaskToFirestore(client: client, customID: customID, desc: desc, addr: addr)
+            } else {
+                print("Validation Error: Fields cannot be empty")
+            }
+        }
+
+        alert.addAction(addAction)
+        alert.addAction(UIAlertAction(title: "Cancel", style: .cancel))
+        present(alert, animated: true)
+    }
+    
+    func saveTaskToFirestore(client: String, customID: String, desc: String, addr: String) {
+        let newTaskData: [String: Any] = [
+            "client": client,
+            "id": customID,
+            "description": desc,
+            "Address": addr,
+            "status": "Pending",
+            "createdAt": FieldValue.serverTimestamp(),
+            "note": ""
+        ]
+
+        db.collection("TasksRequests").addDocument(data: newTaskData) { error in
+            if let error = error {
+                print("Firestore Error: \(error.localizedDescription)")
+            } else {
+                print("Successfully added task with server timestamp")
+            }
+        }
+    }
 }
