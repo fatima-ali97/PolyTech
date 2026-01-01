@@ -10,6 +10,7 @@ import FirebaseCore
 import FirebaseFirestore
 import FirebaseAuth
 import UserNotifications
+import FirebaseMessaging
 
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -24,12 +25,18 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             center.requestAuthorization(options: [.alert, .sound, .badge]) { granted, error in
                 if granted {
                     print("Notification permission granted")
+                    DispatchQueue.main.async {
+                        application.registerForRemoteNotifications()
+                    }
                 } else if let error = error {
                     print("Error requesting notification permission: \(error)")
                 }
             }
       // Use Firebase library
         FirebaseApp.configure()
+        
+        Messaging.messaging().delegate = self
+        
         return true
     }
 
@@ -45,6 +52,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // Called when the user discards a scene session.
         // If any sessions were discarded while the application was not running, this will be called shortly after application:didFinishLaunchingWithOptions.
         // Use this method to release any resources that were specific to the discarded scenes, as they will not return.
+    }
+    
+    func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
+        Messaging.messaging().apnsToken = deviceToken
+        print("APNS Token received and set")
     }
 
 
@@ -66,4 +78,12 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
                                 withCompletionHandler completionHandler: @escaping () -> Void) {
         print("User tapped notification: \(response.notification.request.content.title)")
         completionHandler()
-    }}
+    }
+    
+}
+
+extension AppDelegate: MessagingDelegate {
+    func messaging(_ messaging: Messaging, didReceiveRegistrationToken fcmToken: String?) {
+        print("Firebase registration token: \(String(describing: fcmToken))")
+    }
+}

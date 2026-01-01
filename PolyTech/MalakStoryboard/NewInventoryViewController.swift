@@ -44,7 +44,21 @@ class NewInventoryViewController: UIViewController {
         setupDropdownTap()
         setupQuantityField()
         configureEditMode()
+        
+        
+        //for back navigation
+        let backButton = UIBarButtonItem(
+                  image: UIImage(systemName: "chevron.left"),
+                  style: .plain,
+                  target: self,
+                  action: #selector(goBack)
+              )
+              navigationItem.leftBarButtonItem = backButton
     }
+    
+    @objc private func goBack() {
+              navigationController?.popViewController(animated: true)
+          }
 
     private func setupQuantityField() {
         quantity.delegate = self

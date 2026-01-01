@@ -6,19 +6,26 @@ class MaintenanceViewController: UIViewController {
 
     // MARK: - IBOutlets
     @IBOutlet weak var tableView: UITableView!
-    
-    @IBOutlet weak var EditBtn: UIButton!
     @IBOutlet weak var Addbtn: UIButton!
+    
+    // MARK: - Programmatic UI
+    private let addButton: UIButton = {
+        let button = UIButton(type: .system)
+        button.setTitle("Add", for: .normal)
+        button.setTitleColor(.systemBlue, for: .normal)
+        button.titleLabel?.font = .systemFont(ofSize: 17, weight: .regular)
+        button.translatesAutoresizingMaskIntoConstraints = false
+        return button
+    }()
+    
     // MARK: - Properties
     private var maintenanceItems: [NotificationModel] = []
     private let db = Firestore.firestore()
     private var listener: ListenerRegistration?
     
-    
     private var currentUserId: String {
         Auth.auth().currentUser?.uid ?? ""
     }
-
 
     private let refreshControl = UIRefreshControl()
     private let emptyStateView = EmptyStateView()
@@ -32,28 +39,37 @@ class MaintenanceViewController: UIViewController {
         setupTableView()
         setupEmptyState()
         loadMaintenanceItems()
-       //setUpAddBtn()
+        setupProgrammaticAddButton()  // ✅ NEW: Setup programmatic button
     }
     
-//    private func setUpAddBtn() {
-//
-//        AddMaintenance.isUserInteractionEnabled = true
-//
-//        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(addTapped))
-//        AddMaintenance.addGestureRecognizer(tapGesture)
-//    }
-//    
-//    @objc func addTapped() {
-//
-//        let storyboard = UIStoryboard(name: "NewMaintenance", bundle: nil)
-//        guard let vc = storyboard.instantiateViewController(withIdentifier: "NewMaintenanceViewController") as? NewMaintenanceViewController else {
-//            print("NewMaintenanceViewController not found in storyboard")
-//            return
-//        }
-//        
-//        navigationController?.pushViewController(vc, animated: true)
-//    }
-    
+    // ✅ NEW: Setup programmatic add button in navigation bar
+    private func setupProgrammaticAddButton() {
+        // Add button to navigation bar
+        let addBarButton = UIBarButtonItem(
+            title: "Add",
+            style: .plain,
+            target: self,
+            action: #selector(addTapped)
+        )
+        navigationItem.rightBarButtonItem = addBarButton
+    }
+    @objc func addTapped() {
+        let storyboard = UIStoryboard(name: "NewMaintenance", bundle: nil)
+        guard let vc = storyboard.instantiateViewController(
+            withIdentifier: "NewMaintenanceViewController"
+        ) as? NewMaintenanceViewController else {
+            print("❌ NewMaintenanceViewController not found or wrong class")
+            return
+        }
+        
+        // Use modalPresentationStyle for full screen or push for navigation
+        // Option 1: Present modally (full screen)
+        vc.modalPresentationStyle = .fullScreen
+        present(vc, animated: true)
+        
+        // Option 2: Push with navigation controller (if you have one)
+        // navigationController?.pushViewController(vc, animated: true)
+    }
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
@@ -83,19 +99,17 @@ class MaintenanceViewController: UIViewController {
         
         tableView.register(MaintenanceTableViewCell.self, forCellReuseIdentifier: "MaintenanceCell")
         
-        // refresh control
         refreshControl.addTarget(self, action: #selector(refreshMaintenanceItems), for: .valueChanged)
         tableView.refreshControl = refreshControl
     }
-    // MARK: - EMPTY STATE
+    
     private func setupEmptyState() {
-        guard let tableView = tableView else {
+        guard tableView != nil else {
             print("ERROR: Cannot setup empty state - tableView outlet is not connected!")
             return
         }
         
         emptyStateView.configure(
-            //icon: UIImage(systemName: "bell.slash.fill"),
             title: "No Maintenance Items For Now.",
             message: "Once a request status gets updated, we will notify you immediately."
         )
@@ -114,9 +128,8 @@ class MaintenanceViewController: UIViewController {
     // MARK: - Data Loading
     
     private func loadMaintenanceItems() {
-        print("load maintenance items for userId: \(currentUserId)")
+        print("📥 load maintenance items for userId: \(currentUserId)")
         
-        // Real-time listener for maintenance items
         listener = db.collection("Notifications")
             .whereField("userId", isEqualTo: currentUserId)
             .addSnapshotListener { [weak self] querySnapshot, error in
@@ -129,7 +142,7 @@ class MaintenanceViewController: UIViewController {
                 }
                 
                 guard let documents = querySnapshot?.documents else {
-                    print(" No maintenance items for this user!!")
+                    print("📭 No maintenance items for this user!!")
                     self.updateEmptyState()
                     return
                 }
@@ -143,7 +156,7 @@ class MaintenanceViewController: UIViewController {
                     return item
                 }
                 
-                print(" Successfully parsed \(self.maintenanceItems.count) maintenance items")
+                print("✅ Successfully parsed \(self.maintenanceItems.count) maintenance items")
                 
                 DispatchQueue.main.async {
                     guard let tableView = self.tableView else { return }
@@ -154,7 +167,6 @@ class MaintenanceViewController: UIViewController {
     }
     
     @objc private func refreshMaintenanceItems() {
-        // Refresh is handled automatically by the real-time listener
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
             self.refreshControl.endRefreshing()
         }
@@ -211,66 +223,6 @@ class MaintenanceViewController: UIViewController {
             toast.dismiss(animated: true)
         }
     }
-    
-    // MARK: - Sample Data (for testing)
-    
-    private func addSampleMaintenanceItems() {
-        let sampleItems: [[String: Any]] = [
-            [
-                "userId": currentUserId,
-                "title": "New Message",
-                "message": "John Doe sent you a message",
-                "type": "message",
-                "iconName": "envelope.fill",
-                "isRead": false,
-                "timestamp": Timestamp(date: Date().addingTimeInterval(-300))
-            ],
-            [
-                "userId": currentUserId,
-                "title": "Success!",
-                "message": "Your profile was updated successfully",
-                "type": "success",
-                "iconName": "checkmark.circle.fill",
-                "isRead": false,
-                "timestamp": Timestamp(date: Date().addingTimeInterval(-3600))
-            ],
-            [
-                "userId": currentUserId,
-                "title": "New Follower",
-                "message": "Jane Smith started following you",
-                "type": "follow",
-                "iconName": "person.badge.plus.fill",
-                "isRead": true,
-                "timestamp": Timestamp(date: Date().addingTimeInterval(-7200))
-            ],
-            [
-                "userId": currentUserId,
-                "title": "Warning",
-                "message": "Your storage is almost full",
-                "type": "warning",
-                "iconName": "exclamationmark.triangle.fill",
-                "isRead": true,
-                "timestamp": Timestamp(date: Date().addingTimeInterval(-86400))
-            ],
-            [
-                "userId": currentUserId,
-                "title": "You got a like!",
-                "message": "Sarah Johnson liked your post",
-                "type": "like",
-                "iconName": "heart.fill",
-                "isRead": false,
-                "timestamp": Timestamp(date: Date().addingTimeInterval(-1800))
-            ]
-        ]
-        
-        for item in sampleItems {
-            db.collection("Notifications").addDocument(data: item) { error in
-                if let error = error {
-                    print("Error adding sample item: \(error.localizedDescription)")
-                }
-            }
-        }
-    }
 }
 
 // MARK: - UITableViewDataSource
@@ -291,7 +243,6 @@ extension MaintenanceViewController: UITableViewDataSource {
         
         let item = maintenanceItems[indexPath.row]
         cell.configure(with: item) { [weak self] actionUrl in
-            // Handle action button tap
             print("Action tapped for URL: \(actionUrl)")
             self?.handleItemAction(actionUrl: actionUrl, item: item)
         }
@@ -307,15 +258,12 @@ extension MaintenanceViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let item = maintenanceItems[indexPath.row]
         
-        // Mark as read
         markAsRead(item: item)
         
-        // Handle action
         if let actionUrl = item.actionUrl {
             handleItemAction(actionUrl: actionUrl, item: item)
         }
         
-        // Add haptic feedback
         let generator = UIImpactFeedbackGenerator(style: .light)
         generator.impactOccurred()
         
@@ -324,19 +272,8 @@ extension MaintenanceViewController: UITableViewDelegate {
     
     private func handleItemAction(actionUrl: String, item: NotificationModel) {
         print("Navigate to: \(actionUrl)")
-        // TODO: Implement navigation based on actionUrl
-        // Example: Navigate to different view controllers based on the URL or item type
-        
-        // You can parse the actionUrl and navigate accordingly
-        // For example:
-        // if actionUrl.contains("request") {
-        //     navigateToRequestDetails(requestId: ...)
-        // } else if actionUrl.contains("location") {
-        //     navigateToLocationTracking(...)
-        // }
     }
     
-    // Swipe to delete
     func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
         let deleteAction = UIContextualAction(style: .destructive, title: "Delete") { [weak self] _, _, completion in
             self?.deleteItem(at: indexPath)
@@ -350,7 +287,6 @@ extension MaintenanceViewController: UITableViewDelegate {
                 self?.markAsRead(item: item)
                 completion(true)
             }
-            // TODO: change this to read
             markReadAction.backgroundColor = .secondary
             markReadAction.image = UIImage(systemName: "checkmark")
             

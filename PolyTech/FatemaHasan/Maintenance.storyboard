@@ -30,20 +30,6 @@
                                     </tableViewCell>
                                 </prototypes>
                             </tableView>
-                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Zzo-Hc-jSi">
-                                <rect key="frame" x="50" y="71" width="55" height="39"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <color key="tintColor" red="0.1215686351" green="0.20784312490000001" blue="0.33333334329999997" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
-                                <state key="normal" title="Button"/>
-                                <buttonConfiguration key="configuration" style="plain" title="Add"/>
-                            </button>
-                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="i3u-5W-oaV">
-                                <rect key="frame" x="297" y="71" width="54" height="39"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <color key="tintColor" red="0.1215686351" green="0.20784312490000001" blue="0.33333334329999997" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
-                                <state key="normal" title="Button"/>
-                                <buttonConfiguration key="configuration" style="plain" title="Edit"/>
-                            </button>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="lIY-ld-bnO"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
@@ -55,8 +41,6 @@
                         </constraints>
                     </view>
                     <connections>
-                        <outlet property="Addbtn" destination="Zzo-Hc-jSi" id="XJh-3t-j66"/>
-                        <outlet property="EditBtn" destination="i3u-5W-oaV" id="QeX-cn-fJd"/>
                         <outlet property="tableView" destination="fCt-wn-yq8" id="rYI-W5-e8K"/>
                     </connections>
                 </viewController>

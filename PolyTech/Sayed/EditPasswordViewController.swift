@@ -15,6 +15,67 @@ class EditPasswordViewController: UIViewController {
     @IBOutlet weak var confirmPasswordTextField: UITextField!
     @IBOutlet weak var savePasswordButton: UIButton!
     
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        
+        setupPasswordToggle(for: currentPasswordTextField)
+        setupPasswordToggle(for: newPasswordTextField)
+        setupPasswordToggle(for: confirmPasswordTextField)
+    }
+
+    private func setupPasswordToggle(for textField: UITextField) {
+        let button = UIButton(type: .custom)
+        button.setImage(UIImage(systemName: "eye.slash.fill"), for: .normal)
+        button.setImage(UIImage(systemName: "eye.fill"), for: .selected)
+        button.tintColor = .systemGray
+        
+        button.frame = CGRect(x: 0, y: 0, width: 30, height: 30)
+        button.addTarget(self, action: #selector(toggleVisibility(_:)), for: .touchUpInside)
+        
+        let paddingView = UIView(frame: CGRect(x: 0, y: 0, width: 40, height: 30))
+        button.center = paddingView.center
+        paddingView.addSubview(button)
+        
+        textField.rightView = paddingView
+        textField.rightViewMode = .always
+        textField.isSecureTextEntry = true
+    }
+
+    @objc private func toggleVisibility(_ sender: UIButton) {
+        guard let paddingView = sender.superview,
+              let textField = paddingView.superview as? UITextField else {
+            
+            if sender.isSelected {
+                currentPasswordTextField.rightView?.subviews.contains(sender) == true ? toggle(currentPasswordTextField, btn: sender) : ()
+                newPasswordTextField.rightView?.subviews.contains(sender) == true ? toggle(newPasswordTextField, btn: sender) : ()
+                confirmPasswordTextField.rightView?.subviews.contains(sender) == true ? toggle(confirmPasswordTextField, btn: sender) : ()
+            }
+            return
+        }
+        
+        toggle(textField, btn: sender)
+    }
+
+    private func toggle(_ textField: UITextField, btn: UIButton) {
+        textField.isSecureTextEntry.toggle()
+        btn.isSelected.toggle()
+        
+        if let text = textField.text {
+            textField.text = nil
+            textField.text = text
+        }
+    }
+
+    private func updateTextField(_ textField: UITextField, sender: UIButton) {
+        sender.isSelected.toggle()
+        textField.isSecureTextEntry.toggle()
+        
+        if let text = textField.text {
+            textField.text = nil
+            textField.text = text
+        }
+    }
+    
     @IBAction func savePasswordTapped(_ sender: UIButton) {
         guard let currentPwd = currentPasswordTextField.text, !currentPwd.isEmpty,
               let newPwd = newPasswordTextField.text, !newPwd.isEmpty,

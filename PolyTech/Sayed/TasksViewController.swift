@@ -7,6 +7,7 @@
 
 import UIKit
 import FirebaseFirestore
+import FirebaseAuth
 
 enum TaskFilter: String, CaseIterable {
     case all = "All"
@@ -28,9 +29,9 @@ class TasksViewController: UIViewController, UITableViewDataSource, UITableViewD
     @IBOutlet weak var noTasksLabel: UILabel!
     
     let db = Firestore.firestore()
-    var allTasksFromFirebase: [TaskModel] = []
+    var allTasksFromFirebase: [TaskRequest] = []
 
-    var tasks: [TaskModel] = []
+    var tasks: [TaskRequest] = []
     var currentFilter: TaskFilter = .all
 
     override func viewDidLoad() {
@@ -74,18 +75,18 @@ class TasksViewController: UIViewController, UITableViewDataSource, UITableViewD
 
     func filterTasks(by filter: TaskFilter) {
         self.currentFilter = filter
-
-        var filteredResults: [TaskModel] = []
+        
+        var filteredResults: [TaskRequest] = []
         
         switch filter {
         case .all:
             filteredResults = allTasksFromFirebase
-        case .pending, .inProgress, .completed:
+        default:
             filteredResults = allTasksFromFirebase.filter { $0.status == filter.rawValue }
         }
 
-        self.tasks = filteredResults.sorted(by: { $0.dueDate > $1.dueDate })
-
+        self.tasks = filteredResults.sorted(by: { $0.createdAt > $1.createdAt })
+        
         updateNoTasksLabel()
         tableView.reloadData()
     }
@@ -120,7 +121,7 @@ class TasksViewController: UIViewController, UITableViewDataSource, UITableViewD
         let task = tasks[indexPath.row]
         cell.taskIdLabel.text = "ID: \(task.id)"
         cell.clientLabel.text = "Client: \(task.client)"
-        cell.dueDateLabel.text = "Due: \(task.dueDate)"
+        cell.dueDateLabel.text = "Due: \(task.createdAt)"
         cell.statusBtn.setTitle(task.status, for: .normal)
 
         cell.delegate = self
@@ -192,23 +193,22 @@ extension TasksViewController: TaskCellDelegate {
     }
     
     func fetchTasksFromFirebase() {
-        db.collection("tasks").addSnapshotListener { (querySnapshot, error) in
-            if let error = error {
-                print("Error getting documents: \(error)")
-                return
-            }
+        guard let currentUserID = Auth.auth().currentUser?.uid else { return }
 
-            self.allTasksFromFirebase = []
-            
-            querySnapshot?.documents.forEach { document in
-                let data = document.data()
-                if let task = TaskModel(dictionary: data) {
-                    self.allTasksFromFirebase.append(task)
+        db.collection("TasksRequests")
+            .whereField("technicianID", isEqualTo: currentUserID)
+            .addSnapshotListener { (querySnapshot, error) in
+                if let error = error {
+                    print("Error: \(error.localizedDescription)")
+                    return
                 }
+
+                self.allTasksFromFirebase = querySnapshot?.documents.compactMap { document in
+                    return TaskRequest(docID: document.documentID, dictionary: document.data())
+                } ?? []
+                
+                self.filterTasks(by: self.currentFilter)
             }
-            
-            self.filterTasks(by: self.currentFilter)
-        }
     }
     
 }
