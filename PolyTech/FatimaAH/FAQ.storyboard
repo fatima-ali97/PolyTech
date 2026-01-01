@@ -34,7 +34,7 @@
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                             </tableView>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="XBD-u0-zEH">
-                                <rect key="frame" x="151" y="675.66666666666663" width="91" height="38.333333333333371"/>
+                                <rect key="frame" x="151" y="690.66666666666663" width="91" height="38.333333333333371"/>
                                 <color key="tintColor" red="0.086274509799999996" green="0.1647058824" blue="0.2666666667" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                                 <state key="normal" title="Button"/>
                                 <buttonConfiguration key="configuration" style="filled" title="Get Help" cornerStyle="capsule"/>
@@ -74,7 +74,7 @@
                             <constraint firstItem="kD8-27-O8W" firstAttribute="centerX" secondItem="thZ-yU-2WX" secondAttribute="centerX" id="WTs-yE-9CK"/>
                             <constraint firstItem="nxx-X3-iNT" firstAttribute="bottom" secondItem="kD8-27-O8W" secondAttribute="bottom" constant="86.333333333333258" id="ag0-Du-TgM"/>
                             <constraint firstItem="kD8-27-O8W" firstAttribute="trailing" secondItem="pvR-Qi-Sa8" secondAttribute="trailing" id="ays-dw-Dhk"/>
-                            <constraint firstItem="nxx-X3-iNT" firstAttribute="bottom" secondItem="XBD-u0-zEH" secondAttribute="bottom" constant="70" id="kij-t4-Lkz"/>
+                            <constraint firstItem="nxx-X3-iNT" firstAttribute="bottom" secondItem="XBD-u0-zEH" secondAttribute="bottom" constant="55" id="kij-t4-Lkz"/>
                             <constraint firstItem="kD8-27-O8W" firstAttribute="leading" secondItem="pvR-Qi-Sa8" secondAttribute="leading" id="oaT-EL-6kq"/>
                             <constraint firstItem="nxx-X3-iNT" firstAttribute="trailing" secondItem="fJr-28-ybm" secondAttribute="trailing" constant="5" id="zUV-li-GHW"/>
                         </constraints>
