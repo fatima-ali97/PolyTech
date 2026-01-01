@@ -154,7 +154,7 @@ extension MaintenanceViewController: UITableViewDataSource, UITableViewDelegate 
         guard let vc = storyboard.instantiateViewController(
             withIdentifier: "NewMaintenanceViewController"
         ) as? NewMaintenanceViewController else { return }
-        vc.requestToEdit = item
+        //vc.requestToEdit = item
         navigationController?.pushViewController(vc, animated: true)
     }
 }
