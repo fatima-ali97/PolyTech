@@ -26,12 +26,38 @@ class HistoryViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        setupUI()
+//        setupUI()
         setupTableView()
         setupEmptyState()
         loadHistoryItems()
         
         SearchBar.delegate = self
+        // Setup custom back button (remove the conflicting lines)
+        let backButton = UIBarButtonItem(
+            image: UIImage(systemName: "chevron.left"),
+            style: .plain,
+            target: self,
+            action: #selector(goBack)
+        )
+        backButton.tintColor = .background
+        navigationItem.leftBarButtonItem = backButton
+        
+        // Only hide the default back button if needed
+        navigationItem.hidesBackButton = true
+    }
+
+    
+    @objc private func goBack() {
+        print("🔙 Back button tapped")
+        
+        // Since we're presented modally, use dismiss instead of pop
+        if presentingViewController != nil {
+            dismiss(animated: true, completion: nil)
+        } else if let navController = navigationController, navController.viewControllers.count > 1 {
+            navController.popViewController(animated: true)
+        } else {
+            print("❌ No way to go back")
+        }
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -40,36 +66,38 @@ class HistoryViewController: UIViewController {
         inventoryListener?.remove()
     }
     
-    // MARK: - Setup
-    private func setupUI() {
-        navigationController?.navigationBar.prefersLargeTitles = true
-        view.backgroundColor = .systemBackground
-        
-        // Back to Profile (robust: pop to ProfileVC if found, else pop current)
-        let backButton = UIBarButtonItem(
-            image: UIImage(systemName: "arrow.left"),
-            style: .plain,
-            target: self,
-            action: #selector(backToProfile)
-        )
-        navigationItem.leftBarButtonItem = backButton
-    }
+//    // MARK: - Setup
+//    private func setupUI() {
+//        navigationController?.navigationBar.prefersLargeTitles = true
+//        view.backgroundColor = .systemBackground
+//        
+//        // Back to Profile (robust: pop to ProfileVC if found, else pop current)
+//        let backButton = UIBarButtonItem(
+//            image: UIImage(systemName: "arrow.left"),
+//            style: .plain,
+//            target: self,
+//            action: #selector(backToProfile)
+//        )
+//        navigationItem.leftBarButtonItem = backButton
+//    }
+//    
+//    @objc private func backToProfile() {
+//        // If inside a tab bar, try to switch to Profile tab (index 3 as per your UI screenshot)
+//        if let tab = tabBarController, tab.viewControllers?.count ?? 0 > 3 {
+//            tab.selectedIndex = 3
+//            return
+//        }
+//        // Otherwise, pop to an existing ProfileViewController if present in the stack
+//        if let nav = navigationController {
+//            if let profileVC = nav.viewControllers.first(where: { $0 is ProfileViewController }) {
+//                nav.popToViewController(profileVC, animated: true)
+//            } else {
+//                nav.popViewController(animated: true)
+//            }
+//        }
+//    }
     
-    @objc private func backToProfile() {
-        // If inside a tab bar, try to switch to Profile tab (index 3 as per your UI screenshot)
-        if let tab = tabBarController, tab.viewControllers?.count ?? 0 > 3 {
-            tab.selectedIndex = 3
-            return
-        }
-        // Otherwise, pop to an existing ProfileViewController if present in the stack
-        if let nav = navigationController {
-            if let profileVC = nav.viewControllers.first(where: { $0 is ProfileViewController }) {
-                nav.popToViewController(profileVC, animated: true)
-            } else {
-                nav.popViewController(animated: true)
-            }
-        }
-    }
+    
     
     private func setupTableView() {
         guard let tableView = tableView else {
