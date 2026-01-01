@@ -24,27 +24,8 @@ class HomeViewController: UIViewController {
         loadData()
         setupNotificationButton()
         setupChatBotBtn()
-        setupOptionsButton()
     }
 
-    private func setupOptionsButton() {
-
-        OptionsBtn.isUserInteractionEnabled = true
-
-        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(optionsTapped))
-        OptionsBtn.addGestureRecognizer(tapGesture)
-    }
-    
-    @objc func optionsTapped() {
-
-        let storyboard = UIStoryboard(name: "OptionsPage", bundle: nil)
-        guard let vc = storyboard.instantiateViewController(withIdentifier: "OptionsPageViewController") as? OptionsPageViewController else {
-            print("OptionsPageViewController not found in storyboard")
-            return
-        }
-        
-        navigationController?.pushViewController(vc, animated: true)
-    }
     
     private func setupNotificationButton() {
 
@@ -60,13 +41,6 @@ class HomeViewController: UIViewController {
         let navController = UINavigationController(rootViewController: notificationsVC)
         present(navController, animated: true)
 
-//        let storyboard = UIStoryboard(name: "NotificationStoryboard", bundle: nil)
-//        guard let vc = storyboard.instantiateViewController(withIdentifier: "NotificationsViewController") as? NotificationsViewController else {
-//            print("NotificationsViewController not found in storyboard")
-//            return
-//        }
-//        
-//        navigationController?.pushViewController(vc, animated: true)
     }
     
     private func loadData() {
