@@ -24,7 +24,7 @@ class ServiceFeedbackViewController: UIViewController, UITextViewDelegate {
     
     private let db = Firestore.firestore()
 
-    var requestId: String!
+    //var requestId: String!
     
     override func viewDidLoad() {
         super.viewDidLoad()
