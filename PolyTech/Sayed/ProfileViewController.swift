@@ -79,9 +79,16 @@ class ProfileViewController: UIViewController {
     @IBAction func goToHistoryTapped(_ sender: UIButton) {
         let historyStoryboard = UIStoryboard(name: "History", bundle: nil)
         
-        if let initialVC = historyStoryboard.instantiateInitialViewController() {
-            initialVC.modalPresentationStyle = .fullScreen
-            self.present(initialVC, animated: true, completion: nil)
+        if let historyVC = historyStoryboard.instantiateInitialViewController() {
+            // Option 1: If History storyboard's initial VC is already a NavigationController
+            historyVC.modalPresentationStyle = .fullScreen
+            self.present(historyVC, animated: true, completion: nil)
+            
+            // Option 2: If History storyboard's initial VC is HistoryViewController itself
+            // Wrap it in a navigation controller
+            // let navController = UINavigationController(rootViewController: historyVC)
+            // navController.modalPresentationStyle = .fullScreen
+            // self.present(navController, animated: true, completion: nil)
         } else {
             print("History.storyboard missing 'Is Initial View Controller' setting.")
         }
