@@ -212,10 +212,13 @@
                                                 <color key="tintColor" red="0.42745098469999998" green="0.46274507050000002" blue="0.52156865600000002" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                                                 <preferredSymbolConfiguration key="preferredSymbolConfiguration" weight="bold"/>
                                             </imageView>
-                                            <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Aph-8O-9s5">
+                                            <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="Aph-8O-9s5">
                                                 <rect key="frame" x="338" y="29" width="49" height="31"/>
                                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                                 <color key="onTintColor" red="0.1058823466" green="0.1607843041" blue="0.2588235438" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
+                                                <connections>
+                                                    <action selector="notificationSwitchChanged:" destination="4YU-c1-hhC" eventType="valueChanged" id="30s-K4-1i4"/>
+                                                </connections>
                                             </switch>
                                         </subviews>
                                     </view>
@@ -294,6 +297,24 @@
                                             <segue destination="Rhb-qm-4hk" kind="show" id="LIX-id-z2J"/>
                                         </connections>
                                     </button>
+                                    <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="eCD-yZ-8sO" userLabel="LogOutButton">
+                                        <rect key="frame" x="0.0" y="544" width="393" height="71"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                        <state key="normal" title="Button"/>
+                                        <buttonConfiguration key="configuration" style="plain"/>
+                                        <connections>
+                                            <action selector="logoutButtonTapped:" destination="4YU-c1-hhC" eventType="touchUpInside" id="hv5-eN-BDr"/>
+                                        </connections>
+                                    </button>
+                                    <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="91r-uG-Fd3" userLabel="HistoryButton">
+                                        <rect key="frame" x="0.0" y="197" width="393" height="73"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                        <state key="normal" title="Button"/>
+                                        <buttonConfiguration key="configuration" style="plain"/>
+                                        <connections>
+                                            <action selector="goToHistoryTapped:" destination="4YU-c1-hhC" eventType="touchUpInside" id="xRg-bC-OlO"/>
+                                        </connections>
+                                    </button>
                                 </subviews>
                                 <viewLayoutGuide key="contentLayoutGuide" id="GhR-vr-pAc"/>
                                 <viewLayoutGuide key="frameLayoutGuide" id="ppZ-Nu-1P3"/>
@@ -307,12 +328,13 @@
                     <connections>
                         <outlet property="emailLabel" destination="tUA-AR-Z8e" id="hyI-pL-5bh"/>
                         <outlet property="nameLabel" destination="DHK-kQ-jB4" id="l3o-Om-zKn"/>
+                        <outlet property="notificationSwitch" destination="Aph-8O-9s5" id="3Ha-LI-KMR"/>
                         <outlet property="scrollView" destination="Zkh-Zb-GuP" id="4al-Xz-kBQ"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="xt7-4n-h61" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1223.6641221374045" y="7.042253521126761"/>
+            <point key="canvasLocation" x="1223.6641221374045" y="14.788732394366198"/>
         </scene>
         <!--Edit Profile-->
         <scene sceneID="UrC-ax-1hV">
