@@ -3,66 +3,29 @@ import FirebaseFirestore
 import FirebaseAuth
 
 class InventoryViewController: UIViewController {
-
-    // MARK: - IBOutlets
+    
+    // MARK: - Outlets
     @IBOutlet weak var tableView: UITableView!
-    @IBOutlet weak var Addbtn: UIButton!
     
-    // MARK: - Programmatic UI
-    private let addButton: UIButton = {
-        let button = UIButton(type: .system)
-        button.setTitle("Add", for: .normal)
-        button.setTitleColor(.systemBlue, for: .normal)
-        button.titleLabel?.font = .systemFont(ofSize: 17, weight: .regular)
-        button.translatesAutoresizingMaskIntoConstraints = false
-        return button
-    }()
-    
-    // MARK: - Properties
-    private var inventoryItems: [NotificationModel] = []
+    // MARK: - Data
+    private var inventoryItems: [Inventory] = []
     private let db = Firestore.firestore()
     private var listener: ListenerRegistration?
     private let currentUserId = UserDefaults.standard.string(forKey: "userId")
-//    private var currentUserId: String {
-//        Auth.auth().currentUser?.uid ?? ""
-//    }
-
+    
+    // MARK: - UI Helpers
     private let refreshControl = UIRefreshControl()
     private let emptyStateView = EmptyStateView()
     
     // MARK: - Lifecycle
-    
     override func viewDidLoad() {
         super.viewDidLoad()
-        
         setupUI()
+        setupNavigationButtons()
         setupTableView()
         setupEmptyState()
         loadInventoryItems()
-        setupProgrammaticAddButton()
     }
-    
-    private func setupProgrammaticAddButton() {
-        let addBarButton = UIBarButtonItem(
-            title: "Add",
-            style: .plain,
-            target: self,
-            action: #selector(addTapped)
-        )
-        navigationItem.rightBarButtonItem = addBarButton
-    }
-    @objc func addTapped() {
-        let storyboard = UIStoryboard(name: "NewInventory", bundle: nil)
-        guard let vc = storyboard.instantiateViewController(
-            withIdentifier: "NewInventoryViewController"
-        ) as? NewInventoryViewController else {
-            print("❌ NewInventoryViewController not found or wrong class")
-            return
-        }
-        
-        navigationController?.pushViewController(vc, animated: true)
-    }
-
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
@@ -70,11 +33,48 @@ class InventoryViewController: UIViewController {
     }
     
     // MARK: - Setup
-    
     private func setupUI() {
         title = "Inventory"
         navigationController?.navigationBar.prefersLargeTitles = true
-        view.backgroundColor = .background
+        view.backgroundColor = .systemBackground
+    }
+    
+    private func setupNavigationButtons() {
+        // Right: plus icon
+        let addBarButton = UIBarButtonItem(
+            barButtonSystemItem: .add,
+            target: self,
+            action: #selector(addTapped)
+        )
+        // Left: Return text
+        let returnBarButton = UIBarButtonItem(
+            title: "Return",
+            style: .plain,
+            target: self,
+            action: #selector(returnInventoryTapped)
+        )
+        navigationItem.rightBarButtonItem = addBarButton
+        navigationItem.leftBarButtonItem = returnBarButton
+    }
+    
+    @objc private func addTapped() {
+        let storyboard = UIStoryboard(name: "NewInventory", bundle: nil)
+        guard let vc = storyboard.instantiateViewController(withIdentifier: "NewInventoryViewController")
+                as? NewInventoryViewController else {
+            print("❌ NewInventoryViewController not found or wrong class")
+            return
+        }
+        navigationController?.pushViewController(vc, animated: true)
+    }
+    
+    @objc private func returnInventoryTapped() {
+        let storyboard = UIStoryboard(name: "ReturnInventory", bundle: nil)
+        guard let vc = storyboard.instantiateViewController(withIdentifier: "ReturnInventoryViewController")
+                as? ReturnInventoryViewController else {
+            print("❌ ReturnInventoryViewController not found or wrong class")
+            return
+        }
+        navigationController?.pushViewController(vc, animated: true)
     }
     
     private func setupTableView() {
@@ -82,14 +82,12 @@ class InventoryViewController: UIViewController {
             print("ERROR: tableView outlet is not connected!")
             return
         }
-        
         tableView.delegate = self
         tableView.dataSource = self
         tableView.separatorStyle = .none
         tableView.backgroundColor = .clear
         tableView.rowHeight = UITableView.automaticDimension
-        tableView.estimatedRowHeight = 100
-        
+        tableView.estimatedRowHeight = 120
         tableView.register(InventoryTableViewCell.self, forCellReuseIdentifier: "InventoryCell")
         
         refreshControl.addTarget(self, action: #selector(refreshInventoryItems), for: .valueChanged)
@@ -97,18 +95,13 @@ class InventoryViewController: UIViewController {
     }
     
     private func setupEmptyState() {
-        guard tableView != nil else {
-            print("ERROR: Cannot setup empty state - tableView outlet is not connected!")
-            return
-        }
-        
+        guard tableView != nil else { return }
         emptyStateView.configure(
-            title: "No Inventory Items For Now.",
-            message: "Once a request status gets updated, we will notify you immediately."
+            title: "No Inventory Items",
+            message: "Tap '+' to create a new inventory request."
         )
         emptyStateView.isHidden = true
         view.addSubview(emptyStateView)
-        
         emptyStateView.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
             emptyStateView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
@@ -118,56 +111,46 @@ class InventoryViewController: UIViewController {
         ])
     }
     
-    // MARK: - Data Loading
-    
+    // MARK: - Data
     private func loadInventoryItems() {
-        print("📥 load inventory items for userId: \(currentUserId)")
+        print("📥 Loading inventory items for userId: \(currentUserId ?? "nil")")
+        guard let uid = currentUserId, !uid.isEmpty else {
+            print("❌ currentUserId is nil or empty")
+            updateEmptyState()
+            return
+        }
         
-        listener = db.collection("Notifications")
-            .whereField("userId", isEqualTo: currentUserId)
-            .addSnapshotListener { [weak self] querySnapshot, error in
+        listener = db.collection("inventoryRequest")
+            .whereField("userId", isEqualTo: uid)
+            .addSnapshotListener { [weak self] snapshot, error in
                 guard let self = self else { return }
-                
                 if let error = error {
-                    print("**Error fetching inventory items: \(error.localizedDescription)")
+                    print("❌ Error fetching inventory items: \(error.localizedDescription)")
                     self.showError("Failed to load inventory items")
+                    self.updateEmptyState()
                     return
                 }
-                
-                guard let documents = querySnapshot?.documents else {
-                    print("📭 No inventory items for this user!!")
+                guard let documents = snapshot?.documents else {
+                    print("📭 No inventory items found")
+                    self.inventoryItems.removeAll()
                     self.updateEmptyState()
                     return
                 }
                 
-                self.inventoryItems = documents.compactMap { document in
-                    let item = NotificationModel(dictionary: document.data(), id: document.documentID)
-                    if item == nil {
-                        print("Failed to parse document: \(document.documentID)")
-                        print("   Data: \(document.data())")
-                    }
-                    return item
+                self.inventoryItems = documents.compactMap {
+                    Inventory(dictionary: $0.data(), id: $0.documentID)
                 }
                 
-                print("✅ Successfully parsed \(self.inventoryItems.count) inventory items")
+                // Sort newest first
+                self.inventoryItems.sort { ($0.timestamp ?? Date()) > ($1.timestamp ?? Date()) }
                 
                 DispatchQueue.main.async {
-                    guard let tableView = self.tableView else { return }
-                    tableView.reloadData()
+                    self.tableView?.reloadData()
                     self.updateEmptyState()
                 }
             }
     }
-    private func handleItemAction(actionUrl: String, item: NotificationModel) {
-        print("Navigate to: \(actionUrl)")
-        // Example: navigate to a ReturnInventory page if needed
-        let storyboard = UIStoryboard(name: "ReturnInventory", bundle: nil)
-        if let vc = storyboard.instantiateViewController(withIdentifier: "ReturnInventoryViewController") as? ReturnInventoryViewController {
-            vc.modalPresentationStyle = .fullScreen
-            present(vc, animated: true)
-        }
-    }
-
+    
     @objc private func refreshInventoryItems() {
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
             self.refreshControl.endRefreshing()
@@ -176,41 +159,73 @@ class InventoryViewController: UIViewController {
     
     private func updateEmptyState() {
         guard let tableView = tableView else { return }
-        emptyStateView.isHidden = !inventoryItems.isEmpty
-        tableView.isHidden = inventoryItems.isEmpty
+        let isEmpty = inventoryItems.isEmpty
+        emptyStateView.isHidden = !isEmpty
+        tableView.isHidden = isEmpty
     }
     
-    // MARK: - Actions
-    
-    private func markAsRead(item: NotificationModel) {
-        guard !item.isRead else { return }
+    // MARK: - Details/Edit/Delete
+    private func showDetailsPopup(for item: Inventory) {
+        let formatter = DateFormatter()
+        formatter.dateStyle = .medium
+        formatter.timeStyle = .short
         
-        db.collection("Notifications")
-            .document(item.id)
-            .updateData(["isRead": true]) { error in
-                if let error = error {
-                    print("Error marking item as read: \(error.localizedDescription)")
-                }
-            }
+        let details = """
+        📦 Item Name: \(item.itemName)
+        🔢 Quantity: \(item.quantity)
+        🏷️ Category: \(item.category.capitalized)
+        📍 Location: \(item.location)
+        📝 Request Name: \(item.requestName)
+        🕐 Created: \(formatter.string(from: item.createdAt.dateValue()))
+        🔄 Updated: \(formatter.string(from: item.updatedAt.dateValue()))
+        """
+        
+        let alert = UIAlertController(title: "Inventory Details", message: details, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "Close", style: .cancel))
+        present(alert, animated: true)
+    }
+    
+    private func navigateToEdit(item: Inventory) {
+        let storyboard = UIStoryboard(name: "NewInventory", bundle: nil)
+        guard let vc = storyboard.instantiateViewController(withIdentifier: "NewInventoryViewController")
+                as? NewInventoryViewController else {
+            print("❌ NewInventoryViewController not found or wrong class")
+            return
+        }
+        // Ensure NewInventoryViewController has: var itemToEdit: Inventory?
+        vc.itemToEdit = item
+        navigationController?.pushViewController(vc, animated: true)
     }
     
     private func deleteItem(at indexPath: IndexPath) {
         let item = inventoryItems[indexPath.row]
-        
-        db.collection("Notifications")
+        let alert = UIAlertController(
+            title: "Delete Inventory",
+            message: "Are you sure you want to delete this inventory item?",
+            preferredStyle: .alert
+        )
+        alert.addAction(UIAlertAction(title: "Cancel", style: .cancel))
+        alert.addAction(UIAlertAction(title: "Delete", style: .destructive) { [weak self] _ in
+            self?.performDelete(item: item)
+        })
+        present(alert, animated: true)
+    }
+    
+    private func performDelete(item: Inventory) {
+        db.collection("inventoryRequest")
             .document(item.id)
             .delete { [weak self] error in
                 if let error = error {
-                    print("Error deleting item: \(error.localizedDescription)")
+                    print("❌ Error deleting item: \(error.localizedDescription)")
                     self?.showError("Failed to delete item")
                 } else {
-                    self?.showSuccessToast(message: "Item deleted")
+                    print("✅ Item deleted successfully")
+                    self?.showSuccessToast(message: "Inventory deleted successfully")
                 }
             }
     }
     
-    // MARK: - UI Helpers
-    
+    // MARK: - UI Alerts
     private func showError(_ message: String) {
         let alert = UIAlertController(title: "Error", message: message, preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: "OK", style: .default))
@@ -220,7 +235,6 @@ class InventoryViewController: UIViewController {
     private func showSuccessToast(message: String) {
         let toast = UIAlertController(title: nil, message: message, preferredStyle: .alert)
         present(toast, animated: true)
-        
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
             toast.dismiss(animated: true)
         }
@@ -228,14 +242,13 @@ class InventoryViewController: UIViewController {
 }
 
 // MARK: - UITableViewDataSource
-
 extension InventoryViewController: UITableViewDataSource {
-    
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return inventoryItems.count
+        inventoryItems.count
     }
     
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+    func tableView(_ tableView: UITableView,
+                   cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(
             withIdentifier: "InventoryCell",
             for: indexPath
@@ -244,55 +257,49 @@ extension InventoryViewController: UITableViewDataSource {
         }
         
         let item = inventoryItems[indexPath.row]
-        cell.configure(with: item) { [weak self] actionUrl in
-            print("Action tapped for URL: \(actionUrl)")
-            self?.handleItemAction(actionUrl: actionUrl, item: item)
-        }
-        
+        cell.configure(with: item,
+                       viewCallback: { [weak self] in self?.showDetailsPopup(for: item) },
+                       editCallback: { [weak self] in self?.navigateToEdit(item: item) })
         return cell
     }
 }
 
 // MARK: - UITableViewDelegate
-
 extension InventoryViewController: UITableViewDelegate {
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        tableView.deselectRow(at: indexPath, animated: true)
+        showDetailsPopup(for: inventoryItems[indexPath.row])
+    }
     
-    func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
+    // Keep swipe actions for flexibility (View, Edit, Delete)
+    func tableView(_ tableView: UITableView,
+                   trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath)
+    -> UISwipeActionsConfiguration? {
+        // Delete
         let deleteAction = UIContextualAction(style: .destructive, title: "Delete") { [weak self] _, _, completion in
             self?.deleteItem(at: indexPath)
             completion(true)
         }
-        deleteAction.image = UIImage(systemName: "minus")
+        deleteAction.image = UIImage(systemName: "trash")
         
-        let item = inventoryItems[indexPath.row]
-        
-        // ✅ New Edit action
+        // Edit
         let editAction = UIContextualAction(style: .normal, title: "Edit") { [weak self] _, _, completion in
-            guard let self = self else { return }
-            
-            let storyboard = UIStoryboard(name: "ReturnInventory", bundle: nil)
-            if let vc = storyboard.instantiateViewController(withIdentifier: "ReturnInventoryViewController") as? ReturnInventoryViewController {
-                vc.modalPresentationStyle = .fullScreen
-                self.present(vc, animated: true)
-            } else {
-                print("❌ ReturnInventoryViewController not found or wrong class")
-            }
+            guard let self = self else { completion(false); return }
+            self.navigateToEdit(item: self.inventoryItems[indexPath.row])
             completion(true)
         }
         editAction.backgroundColor = .systemBlue
         editAction.image = UIImage(systemName: "pencil")
         
-        if !item.isRead {
-            let markReadAction = UIContextualAction(style: .normal, title: "Mark Read") { [weak self] _, _, completion in
-                self?.markAsRead(item: item)
-                completion(true)
-            }
-            markReadAction.backgroundColor = .secondary
-            markReadAction.image = UIImage(systemName: "checkmark")
-            
-            return UISwipeActionsConfiguration(actions: [deleteAction, editAction, markReadAction])
+        // View
+        let viewAction = UIContextualAction(style: .normal, title: "Details") { [weak self] _, _, completion in
+            guard let self = self else { completion(false); return }
+            self.showDetailsPopup(for: self.inventoryItems[indexPath.row])
+            completion(true)
         }
+        viewAction.backgroundColor = .systemGreen
+        viewAction.image = UIImage(systemName: "info.circle")
         
-        return UISwipeActionsConfiguration(actions: [deleteAction, editAction])
+        return UISwipeActionsConfiguration(actions: [deleteAction, editAction, viewAction])
     }
 }

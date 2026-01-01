@@ -8,7 +8,8 @@
 import UIKit
 
 class ServiceFeedbackViewController: UIViewController, UITextViewDelegate {
-    
+    var requestType: String?
+    var requestId: String?
     @IBOutlet weak var submitButton: UIButton!
     @IBOutlet weak var notesTextView: UITextView!
     @IBOutlet var starButtons: [UIButton]!

@@ -3,7 +3,7 @@ import FirebaseFirestore
 import FirebaseAuth
 
 class NewInventoryViewController: UIViewController {
-    
+    var itemToEdit: Inventory?
     var isEditMode = false
     var documentId: String?
     var existingData: [String: Any]?
