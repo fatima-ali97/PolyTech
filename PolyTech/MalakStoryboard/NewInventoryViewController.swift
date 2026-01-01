@@ -3,7 +3,7 @@ import FirebaseFirestore
 import FirebaseAuth
 
 class NewInventoryViewController: UIViewController {
-    
+    var itemToEdit: Inventory?
     var isEditMode = false
     var documentId: String?
     var existingData: [String: Any]?
@@ -39,13 +39,15 @@ class NewInventoryViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        setupBackBtnButton()
+//        setupBackBtnButton()
         setupPickers()
         setupDropdownTap()
         setupQuantityField()
         configureEditMode()
         
-        
+        navigationItem.hidesBackButton = true
+        navigationItem.leftBarButtonItem = nil
+
         //for back navigation
         let backButton = UIBarButtonItem(
                   image: UIImage(systemName: "chevron.left"),
@@ -53,6 +55,7 @@ class NewInventoryViewController: UIViewController {
                   target: self,
                   action: #selector(goBack)
               )
+            backButton.tintColor = .background
               navigationItem.leftBarButtonItem = backButton
     }
     
@@ -181,24 +184,6 @@ class NewInventoryViewController: UIViewController {
         }
     }
     
-    private func setupBackBtnButton() {
-
-        backBtn.isUserInteractionEnabled = true
-
-        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(backBtnTapped))
-        backBtn.addGestureRecognizer(tapGesture)
-    }
-    
-    @objc func backBtnTapped() {
-
-        let storyboard = UIStoryboard(name: "HomePage", bundle: nil)
-        guard let vc = storyboard.instantiateViewController(withIdentifier: "HomeViewController") as? HomeViewController else {
-            print("HomeViewController not found in storyboard")
-            return
-        }
-        
-        navigationController?.pushViewController(vc, animated: true)
-    }
 
     func newRequest(data: [String: Any]) {
         var newData = data
