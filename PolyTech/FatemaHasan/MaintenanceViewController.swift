@@ -64,11 +64,11 @@ class MaintenanceViewController: UIViewController {
         
         // Use modalPresentationStyle for full screen or push for navigation
         // Option 1: Present modally (full screen)
-        vc.modalPresentationStyle = .fullScreen
-        present(vc, animated: true)
-        
+//        vc.modalPresentationStyle = .fullScreen
+//        present(vc, animated: true)
+//        
         // Option 2: Push with navigation controller (if you have one)
-        // navigationController?.pushViewController(vc, animated: true)
+         navigationController?.pushViewController(vc, animated: true)
     }
     
     override func viewWillDisappear(_ animated: Bool) {
