@@ -1,18 +1,10 @@
-//
-//  newLoginViewController.swift
-//  PolyTech
-//
-//  Created by BP-36-213-19 on 01/01/2026.
-//
-
 import UIKit
 import FirebaseAuth
 import FirebaseFirestore
 import LocalAuthentication
 
 class newLoginViewController: UIViewController {
-
-    @IBOutlet weak var loginLogo: UIImageView!
+    
     // MARK: - Properties
     private let db = Firestore.firestore()
     private let studentEmailSuffix = "@student.polytechnic.bh"
