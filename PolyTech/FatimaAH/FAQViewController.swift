@@ -322,7 +322,7 @@ final class FAQCell: UITableViewCell {
         backgroundColor = .clear
         contentView.backgroundColor = .clear
 
-        cardView.backgroundColor = .white
+        cardView.backgroundColor = .background
         cardView.layer.cornerRadius = 12
         cardView.layer.borderWidth = 1
         cardView.layer.borderColor = UIColor.systemGray5.cgColor
@@ -330,12 +330,12 @@ final class FAQCell: UITableViewCell {
 
         questionLabel.numberOfLines = 0
         questionLabel.font = .systemFont(ofSize: 14, weight: .medium)
-        questionLabel.textColor = .label
+        questionLabel.textColor = .onBackground
         questionLabel.translatesAutoresizingMaskIntoConstraints = false
 
         answerLabel.numberOfLines = 0
         answerLabel.font = .systemFont(ofSize: 13, weight: .regular)
-        answerLabel.textColor = .secondaryLabel
+        answerLabel.textColor = .onBackground
         answerLabel.translatesAutoresizingMaskIntoConstraints = false
 
         chevron.tintColor = .secondaryLabel
