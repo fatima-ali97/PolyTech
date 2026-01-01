@@ -147,9 +147,9 @@ class AdminDashboardViewController: UIViewController {
             
             DispatchQueue.main.async {
                 self.donutChartView.segments = [
-                    .init(value: CGFloat(pending), color: .systemOrange),
-                    .init(value: CGFloat(inProgress), color: .systemBlue),
-                    .init(value: CGFloat(completed), color: .systemGreen)
+                    .init(value: CGFloat(pending), color: .statusPending),
+                    .init(value: CGFloat(inProgress), color: .statusInProgress),
+                    .init(value: CGFloat(completed), color: .statusCompleted)
                 ]
             }
         }

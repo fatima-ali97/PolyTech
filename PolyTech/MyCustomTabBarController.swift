@@ -157,7 +157,7 @@ class AdminTabBarController: BaseCustomTabBarController {
         )
         
         let requestsVC = createNavControllerFromStoryboard(
-            storyboardName: "dummy", // TODO: change this
+            storyboardName: "DelayedRequests", // TODO: change this
             title: "Requests",
             image: UIImage(systemName: "doc.text.fill")
         )

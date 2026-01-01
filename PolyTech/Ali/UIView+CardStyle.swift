@@ -28,3 +28,9 @@ extension UIView {
         backgroundColor = .systemBackground
     }
 }
+
+extension UIColor {
+    static let statusCompleted  = UIColor(red: 116/255, green: 146/255, blue: 188/255, alpha: 1) // #7492BC
+    static let statusInProgress = UIColor(red:  56/255, green:  95/255, blue: 189/255, alpha: 1) // #385FBD
+    static let statusPending    = UIColor(red: 119/255, green: 127/255, blue: 141/255, alpha: 1) // #777F8D
+}
