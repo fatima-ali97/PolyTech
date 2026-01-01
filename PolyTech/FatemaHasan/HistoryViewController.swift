@@ -45,7 +45,7 @@ class HistoryViewController: UIViewController {
         navigationController?.navigationBar.prefersLargeTitles = true
         view.backgroundColor = .systemBackground
         
-        // Back to Profile
+        // Back to Profile (robust: pop to ProfileVC if found, else pop current)
         let backButton = UIBarButtonItem(
             image: UIImage(systemName: "arrow.left"),
             style: .plain,
@@ -56,7 +56,19 @@ class HistoryViewController: UIViewController {
     }
     
     @objc private func backToProfile() {
-        navigationController?.popViewController(animated: true)
+        // If inside a tab bar, try to switch to Profile tab (index 3 as per your UI screenshot)
+        if let tab = tabBarController, tab.viewControllers?.count ?? 0 > 3 {
+            tab.selectedIndex = 3
+            return
+        }
+        // Otherwise, pop to an existing ProfileViewController if present in the stack
+        if let nav = navigationController {
+            if let profileVC = nav.viewControllers.first(where: { $0 is ProfileViewController }) {
+                nav.popToViewController(profileVC, animated: true)
+            } else {
+                nav.popViewController(animated: true)
+            }
+        }
     }
     
     private func setupTableView() {
@@ -124,7 +136,6 @@ class HistoryViewController: UIViewController {
                     MaintenanceRequestModel(dictionary: $0.data(), id: $0.documentID)
                 }
                 
-                // Newest first
                 self.maintenanceRequests.sort { $0.createdAt.dateValue() > $1.createdAt.dateValue() }
                 
                 DispatchQueue.main.async {
@@ -133,7 +144,7 @@ class HistoryViewController: UIViewController {
                 }
             }
         
-        // Inventory Requests (note: ensure collection name matches your Firestore)
+        // Inventory Requests (ensure collection name matches your Firestore; if you use "inventoryRequest", change it here)
         inventoryListener = db.collection("Inventory")
             .whereField("userId", isEqualTo: currentUserId ?? "")
             .addSnapshotListener { [weak self] querySnapshot, error in
@@ -155,7 +166,6 @@ class HistoryViewController: UIViewController {
                     Inventory(dictionary: $0.data(), id: $0.documentID)
                 }
                 
-                // Newest first
                 self.inventoryRequests.sort { $0.createdAt.dateValue() > $1.createdAt.dateValue() }
                 
                 DispatchQueue.main.async {
@@ -181,6 +191,11 @@ class HistoryViewController: UIViewController {
     // MARK: - Navigation
     private func navigateToFeedback(for requestType: String, requestId: String) {
         // Ensure this VC is embedded in a UINavigationController
+        guard let nav = navigationController else {
+            print("❌ No navigationController; embed HistoryViewController in a UINavigationController.")
+            return
+        }
+        
         let storyboard = UIStoryboard(name: "ServiceFeedback", bundle: nil)
         guard let vc = storyboard.instantiateViewController(
             withIdentifier: "ServiceFeedbackViewController"
@@ -193,7 +208,7 @@ class HistoryViewController: UIViewController {
         vc.requestType = requestType
         vc.requestId = requestId
         
-        navigationController?.pushViewController(vc, animated: true)
+        nav.pushViewController(vc, animated: true)
     }
     
     // MARK: - Helpers
@@ -235,13 +250,13 @@ extension HistoryViewController: UITableViewDataSource {
         let itemData = getItemType(at: indexPath.row)
         
         if itemData.type == "maintenance", let item = itemData.item as? MaintenanceRequestModel {
-            cell.configure(with: item) { [weak self] in
+            cell.configure(with: item, feedbackCallback: { [weak self] in
                 self?.navigateToFeedback(for: "maintenance", requestId: item.id)
-            }
+            })
         } else if itemData.type == "inventory", let item = itemData.item as? Inventory {
-            cell.configure(with: item) { [weak self] in
+            cell.configure(with: item, feedbackCallback: { [weak self] in
                 self?.navigateToFeedback(for: "inventory", requestId: item.id)
-            }
+            })
         }
         
         return cell
@@ -269,9 +284,8 @@ extension HistoryViewController: UITableViewDelegate {
                     : self.maintenanceRequests.count
                 if indexPath.row < maintenanceCount {
                     let itemIndex = indexPath.row
-                    self.db.collection("maintenanceRequest").document(
-                        (self.isSearching ? self.filteredMaintenanceRequests[itemIndex] : self.maintenanceRequests[itemIndex]).id
-                    ).delete { error in
+                    let id = (self.isSearching ? self.filteredMaintenanceRequests[itemIndex] : self.maintenanceRequests[itemIndex]).id
+                    self.db.collection("maintenanceRequest").document(id).delete { error in
                         if let error = error { self.showError("Failed to delete: \(error.localizedDescription)") }
                     }
                 }
@@ -313,7 +327,6 @@ extension HistoryViewController: UISearchBarDelegate {
         } else {
             isSearching = true
             
-            // Filter maintenance requests
             filteredMaintenanceRequests = maintenanceRequests.filter { item in
                 let nameMatch = item.requestName.range(of: query, options: .caseInsensitive) != nil
                 let locationMatch = item.location.range(of: query, options: .caseInsensitive) != nil
@@ -321,7 +334,6 @@ extension HistoryViewController: UISearchBarDelegate {
                 return nameMatch || locationMatch || categoryMatch
             }
             
-            // Filter inventory requests
             filteredInventoryRequests = inventoryRequests.filter { item in
                 let nameMatch = item.requestName.range(of: query, options: .caseInsensitive) != nil
                 let itemNameMatch = item.itemName.range(of: query, options: .caseInsensitive) != nil
