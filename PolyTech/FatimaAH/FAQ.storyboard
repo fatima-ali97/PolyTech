@@ -43,12 +43,6 @@
                                 <rect key="frame" x="0.0" y="0.0" width="437" height="128"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <subviews>
-                                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="arrow.backward" catalog="system" translatesAutoresizingMaskIntoConstraints="NO" id="uBz-q2-s5s">
-                                        <rect key="frame" x="18" y="72.333333333333258" width="40" height="16"/>
-                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                        <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                        <preferredSymbolConfiguration key="preferredSymbolConfiguration" weight="bold"/>
-                                    </imageView>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="FAQ" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ocU-27-Hcp">
                                         <rect key="frame" x="174" y="70" width="45" height="21"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
@@ -80,7 +74,6 @@
                         </constraints>
                     </view>
                     <connections>
-                        <outlet property="BackBtn" destination="uBz-q2-s5s" id="eeQ-jQ-RUX"/>
                         <outlet property="getHelpButton" destination="XBD-u0-zEH" id="CFx-dd-EEQ"/>
                         <outlet property="searchBar" destination="pvR-Qi-Sa8" id="iAg-kl-nJ0"/>
                         <outlet property="tableView" destination="kD8-27-O8W" id="7Au-Op-900"/>
@@ -93,7 +86,6 @@
     </scenes>
     <color key="tintColor" red="0.08770751953" green="0.166015625" blue="0.2661132812" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
     <resources>
-        <image name="arrow.backward" catalog="system" width="128" height="95"/>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>
