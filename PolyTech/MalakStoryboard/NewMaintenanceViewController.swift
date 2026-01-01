@@ -3,7 +3,9 @@ import FirebaseFirestore
 import Cloudinary
 
 class NewMaintenanceViewController: UIViewController {
-
+    var requestToEdit: MaintenanceRequestModel?
+    var item: MaintenanceRequestModel?
+    
     // Cloudinary setup
     let cloudName: String = "dwvlnmbtv"
     let uploadPreset = "Polytech_Cloudinary"
@@ -78,7 +80,7 @@ class NewMaintenanceViewController: UIViewController {
             target: self,
             action: #selector(goBack)
         )
-        backButton.tintColor = .white   // change color if needed
+        backButton.tintColor = .background   // change color if needed
         navigationItem.leftBarButtonItem = backButton
     }
 

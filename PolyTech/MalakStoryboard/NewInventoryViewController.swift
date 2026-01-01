@@ -3,7 +3,7 @@ import FirebaseFirestore
 import FirebaseAuth
 
 class NewInventoryViewController: UIViewController {
-    
+    var itemToEdit: Inventory?
     var isEditMode = false
     var documentId: String?
     var existingData: [String: Any]?
@@ -55,7 +55,7 @@ class NewInventoryViewController: UIViewController {
                   target: self,
                   action: #selector(goBack)
               )
-            backButton.tintColor = .white
+            backButton.tintColor = .background
               navigationItem.leftBarButtonItem = backButton
     }
     
@@ -184,18 +184,6 @@ class NewInventoryViewController: UIViewController {
         }
     }
     
-//    private func setupBackBtnButton() {
-//
-//        backBtn.isUserInteractionEnabled = true
-//
-//        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(backBtnTapped))
-//        backBtn.addGestureRecognizer(tapGesture)
-//    }
-//    
-//    @objc func backBtnTapped() {
-//        print("🔙 Back button tapped!")
-//        navigationController?.popViewController(animated: true)
-//    }
 
     func newRequest(data: [String: Any]) {
         var newData = data
