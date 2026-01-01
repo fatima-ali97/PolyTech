@@ -93,7 +93,7 @@ class NotificationManager {
         show(title: title,
              message: message,
              icon: UIImage(systemName: "checkmark.circle.fill"),
-             backgroundColor: .systemGreen.withAlphaComponent(0.1),
+             backgroundColor: .background.withAlphaComponent(0.9),
              onTap: onTap)
     }
     
@@ -101,7 +101,7 @@ class NotificationManager {
         show(title: title,
              message: message,
              icon: UIImage(systemName: "xmark.circle.fill"),
-             backgroundColor: .systemRed.withAlphaComponent(0.1),
+             backgroundColor: .background.withAlphaComponent(0.9),
              onTap: onTap)
     }
     
@@ -109,7 +109,7 @@ class NotificationManager {
         show(title: title,
              message: message,
              icon: UIImage(systemName: "exclamationmark.triangle.fill"),
-             backgroundColor: .systemOrange.withAlphaComponent(0.1),
+             backgroundColor: .background.withAlphaComponent(0.9),
              onTap: onTap)
     }
     
@@ -117,7 +117,7 @@ class NotificationManager {
         show(title: title,
              message: message,
              icon: UIImage(systemName: "info.circle.fill"),
-             backgroundColor: .systemBlue.withAlphaComponent(0.1),
+             backgroundColor: .background.withAlphaComponent(0.9),
              onTap: onTap)
     }
 }
