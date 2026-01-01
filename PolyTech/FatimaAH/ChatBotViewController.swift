@@ -228,7 +228,7 @@ extension ChatBotViewController: UITableViewDataSource, UITableViewDelegate {
         cell.textLabel?.numberOfLines = 0
         cell.textLabel?.textAlignment = msg.isUser ? .right : .left
         cell.selectionStyle = .none
-        cell.backgroundColor = .clear
+        cell.backgroundColor = .background
 
         return cell
     }
