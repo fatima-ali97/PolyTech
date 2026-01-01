@@ -19,15 +19,24 @@ class TechniciansViewController: UITableViewController {
     }
     
     struct Technician {
+        let id: String
         let name: String
         let availability: Availability
         let tasks: Int
+        let solvedTasks: Int
         let hours: String
     }
     
     private var technicians: [Technician] = []
     
     var requestIdToReassign: String?
+    
+    private var techListener: ListenerRegistration?
+    private var requestsListener: ListenerRegistration?
+
+    private var techBase: [(id: String, name: String, availability: Availability, hours: String)] = []
+    private var activeCounts: [String: Int] = [:]
+    private var solvedCounts: [String: Int] = [:]
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -39,6 +48,7 @@ class TechniciansViewController: UITableViewController {
         tableView.scrollIndicatorInsets = tableView.contentInset
         
         startTechniciansListener()
+        startRequestsCountsListener()
     }
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -94,39 +104,67 @@ class TechniciansViewController: UITableViewController {
     private var listener: ListenerRegistration?
     
     private func startTechniciansListener() {
-        listener = db.collection("technicians").addSnapshotListener { [weak self] snapshot, error in
+        techListener = db.collection("technicians").addSnapshotListener { [weak self] snapshot, error in
             guard let self else { return }
-            
-            if let error = error {
-                print("❌ technicians listener error:", error)
-                return
-            }
-            
-            let docs = snapshot?.documents ?? []
-            print("✅ technicians docs:", docs.count)
-            
-            self.technicians = docs.compactMap { doc in
+            if let error = error { print(error); return }
+
+            self.techBase = (snapshot?.documents ?? []).compactMap { doc in
                 let data = doc.data()
-                print("DOC", doc.documentID, data)
-                
                 guard
                     let name = data["name"] as? String,
                     let availabilityRaw = data["availability"] as? String,
                     let availability = Availability(rawValue: availabilityRaw),
-                    let tasks = data["tasks"] as? Int,
                     let hours = data["hours"] as? String
-                else {
-                    print("⚠️ Skipping doc \(doc.documentID) due to missing/wrong fields")
-                    return nil
-                }
-                
-                return Technician(name: name, availability: availability, tasks: tasks, hours: hours)
+                else { return nil }
+
+                return (id: doc.documentID, name: name, availability: availability, hours: hours)
             }
-            
-            DispatchQueue.main.async {
-                self.tableView.reloadData()
-            }
+
+            self.rebuildTechnicians()
         }
+    }
+    
+    private func startRequestsCountsListener() {
+        requestsListener = db.collection("requests").addSnapshotListener { [weak self] snap, err in
+            guard let self else { return }
+            if let err = err { print(err); return }
+
+            var active: [String: Int] = [:]
+            var solved: [String: Int] = [:]
+
+            for doc in snap?.documents ?? [] {
+                let data = doc.data()
+                guard
+                    let techId = data["assignedTechnicianId"] as? String,
+                    let status = data["status"] as? String
+                else { continue }
+
+                if status == "completed" {
+                    solved[techId, default: 0] += 1
+                } else if status == "pending" || status == "in_progress" {
+                    active[techId, default: 0] += 1
+                }
+            }
+
+            self.activeCounts = active
+            self.solvedCounts = solved
+            self.rebuildTechnicians()
+        }
+    }
+    
+    private func rebuildTechnicians() {
+        self.technicians = techBase.map { t in
+            Technician(
+                id: t.id,
+                name: t.name,
+                availability: t.availability,
+                tasks: activeCounts[t.id, default: 0],
+                solvedTasks: solvedCounts[t.id, default: 0],
+                hours: t.hours
+            )
+        }
+
+        DispatchQueue.main.async { self.tableView.reloadData() }
     }
     
     private func isNowWithinHours(_ hoursString: String, now: Date = Date()) -> Bool {
@@ -203,5 +241,7 @@ class TechniciansViewController: UITableViewController {
     
     deinit {
         listener?.remove()
+        techListener?.remove()
+        requestsListener?.remove()
     }
 }
