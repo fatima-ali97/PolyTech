@@ -196,7 +196,7 @@ extension DelayedRequestsViewController: UITableViewDataSource, UITableViewDeleg
             }
         }
 
-        cell.reassignButton.menu = UIMenu(title: "Re-assign to", children: actions)
+        cell.reassignButton.menu = UIMenu(title: "Reassign to", children: actions)
 
 
             return cell

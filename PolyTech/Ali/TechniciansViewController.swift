@@ -62,13 +62,13 @@ class TechniciansViewController: UITableViewController {
         switch displayAvailability {
         case .available:
             cell.statusLabel.text = "Available"
-            cell.statusPillView.backgroundColor = .systemBlue
-            cell.dotView.backgroundColor = .systemBlue
+            cell.statusPillView.backgroundColor = .accent
+            cell.dotView.backgroundColor = .accent
 
         case .busy:
             cell.statusLabel.text = "Busy"
-            cell.statusPillView.backgroundColor = .systemRed
-            cell.dotView.backgroundColor = .systemRed
+            cell.statusPillView.backgroundColor = .error
+            cell.dotView.backgroundColor = .error
 
         case .unavailable:
             cell.statusLabel.text = "Unavailable"
@@ -188,8 +188,13 @@ class TechniciansViewController: UITableViewController {
         let end = (endSameDay >= start) ? endSameDay : cal.date(byAdding: .day, value: 1, to: endSameDay)!
 
         if endSameDay < start {
-            let startYesterday = cal.date(byAdding: .day, value: -1, to: start)!
-            return (now >= startYesterday && now <= end)
+            let endTomorrow = cal.date(byAdding: .day, value: 1, to: endSameDay)!
+
+            if now >= start {
+                return now <= endTomorrow
+            } else {
+                return now <= endSameDay
+            }
         }
 
         return (now >= start && now <= end)

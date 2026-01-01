@@ -28,7 +28,7 @@ final class DelayedRequestCell: UITableViewCell {
         var config = UIButton.Configuration.filled()
         config.contentInsets = NSDirectionalEdgeInsets(top: 8, leading: 14, bottom: 8, trailing: 14)
         config.cornerStyle = .capsule
-        config.baseBackgroundColor = .systemBlue
+        config.baseBackgroundColor = .accent
 
         reassignButton.configuration = config
 
