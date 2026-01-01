@@ -20,7 +20,6 @@ final class FAQViewController: UIViewController {
     @IBOutlet weak var searchBar: UISearchBar!
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var getHelpButton: UIButton!
-    @IBOutlet weak var BackBtn: UIImageView!
 
     private var sections: [FAQSection] = []          // full data
     private var visibleSections: [FAQSection] = []   // filtered data (search)
@@ -30,10 +29,34 @@ final class FAQViewController: UIViewController {
         setupUI()
         loadFAQData()
         visibleSections = sections
-        setupBackBtn()
+        //        setupBackBtn()
         setupGetHelpBtn()
         tableView.reloadData()
+
+        //for back navigation
+        let backButton = UIBarButtonItem(
+            image: UIImage(systemName: "chevron.left"),
+            style: .plain,
+            target: self,
+            action: #selector(goBack)
+        )
+        backButton.tintColor = .background
+        navigationItem.leftBarButtonItem = backButton
+        
     }
+    
+    
+    
+    @objc private func goBack() {
+              navigationController?.popViewController(animated: true)
+          }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        navigationController?.setNavigationBarHidden(false, animated: animated)
+    }
+
+    
 
     private func setupUI() {
         searchBar.delegate = self
@@ -50,16 +73,16 @@ final class FAQViewController: UIViewController {
         getHelpButton.clipsToBounds = true
     }
 
-    private func setupBackBtn() {
-        BackBtn.isUserInteractionEnabled = true
-        BackBtn.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(backBtnTapped)))
-    }
-
-    @objc private func backBtnTapped() {
-        let sb = UIStoryboard(name: "HomePage", bundle: nil)
-        guard let vc = sb.instantiateViewController(withIdentifier: "HomeViewController") as? HomeViewController else { return }
-        navigationController?.pushViewController(vc, animated: true)
-    }
+//    private func setupBackBtn() {
+//        BackBtn.isUserInteractionEnabled = true
+//        BackBtn.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(backBtnTapped)))
+//    }
+//
+//    @objc private func backBtnTapped() {
+//        let sb = UIStoryboard(name: "HomePage", bundle: nil)
+//        guard let vc = sb.instantiateViewController(withIdentifier: "HomeViewController") as? HomeViewController else { return }
+//        navigationController?.pushViewController(vc, animated: true)
+//    }
 
     private func setupGetHelpBtn() {
         getHelpButton.isUserInteractionEnabled = true
