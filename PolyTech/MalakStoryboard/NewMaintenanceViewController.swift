@@ -80,7 +80,7 @@ class NewMaintenanceViewController: UIViewController {
             target: self,
             action: #selector(goBack)
         )
-        backButton.tintColor = .white   // change color if needed
+        backButton.tintColor = .background   // change color if needed
         navigationItem.leftBarButtonItem = backButton
     }
 

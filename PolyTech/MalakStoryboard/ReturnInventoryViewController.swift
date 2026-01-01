@@ -11,7 +11,6 @@ class ReturnInventoryViewController: UIViewController, UIPickerViewDelegate, UIP
     @IBOutlet weak var condition: UITextField!
     @IBOutlet weak var returnbtn: UIButton!
     @IBOutlet weak var pageTitle: UILabel!
-    @IBOutlet weak var backBtn: UIImageView!
     @IBOutlet weak var categoryDropDown: UIImageView!
     
     let database = Firestore.firestore()
@@ -29,25 +28,27 @@ class ReturnInventoryViewController: UIViewController, UIPickerViewDelegate, UIP
         // Set the keyboard type for the quantity text field to number pad
         quantity.keyboardType = .numberPad
         
-        setupBackBtnButton()
         setupCategoryPicker()
+        // ✅ Programmatic back button
+        let backButton = UIBarButtonItem(
+            image: UIImage(systemName: "chevron.left"),
+            style: .plain,
+            target: self,
+            action: #selector(goBack)
+        )
+        backButton.tintColor = .background   // change color if needed
+        navigationItem.leftBarButtonItem = backButton
     }
+
+
     
-    private func setupBackBtnButton() {
-        backBtn.isUserInteractionEnabled = true
-        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(backBtnTapped))
-        backBtn.addGestureRecognizer(tapGesture)
-    }
     
-    @objc func backBtnTapped() {
-        let storyboard = UIStoryboard(name: "HomePage", bundle: nil)
-        guard let vc = storyboard.instantiateViewController(withIdentifier: "HomeViewController") as? HomeViewController else {
-            print("HomeViewController not found in storyboard")
-            return
-        }
-        
-        navigationController?.pushViewController(vc, animated: true)
+    @objc private func goBack() {
+        navigationController?.popViewController(animated: true)
     }
+
+    
+
     
     private func setupCategoryPicker() {
         let categoryPicker = UIPickerView()
