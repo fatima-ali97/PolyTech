@@ -22,21 +22,21 @@ class ReturnInventoryViewController: UIViewController, UIPickerViewDelegate, UIP
         pageTitle.text = "New Return Inventory"
         returnbtn.setTitle("Save", for: .normal)
 
-        // Set the delegate for the quantity text field
+ 
         quantity.delegate = self
         
-        // Set the keyboard type for the quantity text field to number pad
+
         quantity.keyboardType = .numberPad
         
         setupCategoryPicker()
-        // ✅ Programmatic back button
+
         let backButton = UIBarButtonItem(
             image: UIImage(systemName: "chevron.left"),
             style: .plain,
             target: self,
             action: #selector(goBack)
         )
-        backButton.tintColor = .background   // change color if needed
+        backButton.tintColor = .background
         navigationItem.leftBarButtonItem = backButton
     }
 
@@ -129,9 +129,9 @@ class ReturnInventoryViewController: UIViewController, UIPickerViewDelegate, UIP
         }
     }
     
-    // UITextFieldDelegate method to restrict input to numbers only
+  
     func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
-        // Allow only digits, backspace, and other control characters
+
         let allowedCharacters = CharacterSet(charactersIn: "0123456789")
         let characterSet = CharacterSet(charactersIn: string)
         return allowedCharacters.isSuperset(of: characterSet) || string.isEmpty
