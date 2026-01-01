@@ -95,7 +95,6 @@ class InventoryViewController: UIViewController {
     }
     
     private func setupEmptyState() {
-        guard tableView != nil else { return }
         emptyStateView.configure(
             title: "No Inventory Items",
             message: "Tap '+' to create a new inventory request."
@@ -120,13 +119,13 @@ class InventoryViewController: UIViewController {
             return
         }
         
+        // Ensure collection name matches Firestore exactly.
         listener = db.collection("inventoryRequest")
             .whereField("userId", isEqualTo: uid)
             .addSnapshotListener { [weak self] snapshot, error in
                 guard let self = self else { return }
                 if let error = error {
                     print("❌ Error fetching inventory items: \(error.localizedDescription)")
-                    self.showError("Failed to load inventory items")
                     self.updateEmptyState()
                     return
                 }
@@ -141,7 +140,7 @@ class InventoryViewController: UIViewController {
                     Inventory(dictionary: $0.data(), id: $0.documentID)
                 }
                 
-                // Sort newest first
+                // Sort newest first (if your model exposes timestamp or createdAt).
                 self.inventoryItems.sort { ($0.timestamp ?? Date()) > ($1.timestamp ?? Date()) }
                 
                 DispatchQueue.main.async {
@@ -164,24 +163,57 @@ class InventoryViewController: UIViewController {
         tableView.isHidden = isEmpty
     }
     
-    // MARK: - Details/Edit/Delete
+    // MARK: - Details Popup (no image)
     private func showDetailsPopup(for item: Inventory) {
+        let alertVC = UIViewController()
+        alertVC.view.backgroundColor = .systemBackground
+        alertVC.preferredContentSize = CGSize(width: 320, height: 300)
+        
+        let titleLabel = UILabel()
+        titleLabel.text = "Inventory Details"
+        titleLabel.font = UIFont.systemFont(ofSize: 20, weight: .bold)
+        titleLabel.textAlignment = .center
+        
+        let detailsLabel = UILabel()
+        detailsLabel.numberOfLines = 0
+        detailsLabel.font = UIFont.systemFont(ofSize: 16, weight: .medium)
+        detailsLabel.textColor = .label
+        
         let formatter = DateFormatter()
         formatter.dateStyle = .medium
         formatter.timeStyle = .short
         
-        let details = """
+        let createdText = formatter.string(from: item.createdAt.dateValue())
+        let updatedText = formatter.string(from: item.updatedAt.dateValue())
+        
+        detailsLabel.text = """
         📦 Item Name: \(item.itemName)
         🔢 Quantity: \(item.quantity)
         🏷️ Category: \(item.category.capitalized)
         📍 Location: \(item.location)
         📝 Request Name: \(item.requestName)
-        🕐 Created: \(formatter.string(from: item.createdAt.dateValue()))
-        🔄 Updated: \(formatter.string(from: item.updatedAt.dateValue()))
+        🕐 Created: \(createdText)
+        🔄 Updated: \(updatedText)
         """
         
-        let alert = UIAlertController(title: "Inventory Details", message: details, preferredStyle: .alert)
+        let stack = UIStackView(arrangedSubviews: [titleLabel, detailsLabel])
+        stack.axis = .vertical
+        stack.spacing = 12
+        stack.translatesAutoresizingMaskIntoConstraints = false
+        
+        alertVC.view.addSubview(stack)
+        
+        NSLayoutConstraint.activate([
+            stack.topAnchor.constraint(equalTo: alertVC.view.topAnchor, constant: 20),
+            stack.leadingAnchor.constraint(equalTo: alertVC.view.leadingAnchor, constant: 20),
+            stack.trailingAnchor.constraint(equalTo: alertVC.view.trailingAnchor, constant: -20),
+            stack.bottomAnchor.constraint(equalTo: alertVC.view.bottomAnchor, constant: -20)
+        ])
+        
+        let alert = UIAlertController(title: nil, message: nil, preferredStyle: .alert)
+        alert.setValue(alertVC, forKey: "contentViewController")
         alert.addAction(UIAlertAction(title: "Close", style: .cancel))
+        
         present(alert, animated: true)
     }
     
@@ -192,7 +224,6 @@ class InventoryViewController: UIViewController {
             print("❌ NewInventoryViewController not found or wrong class")
             return
         }
-        // Ensure NewInventoryViewController has: var itemToEdit: Inventory?
         vc.itemToEdit = item
         navigationController?.pushViewController(vc, animated: true)
     }
@@ -214,30 +245,13 @@ class InventoryViewController: UIViewController {
     private func performDelete(item: Inventory) {
         db.collection("inventoryRequest")
             .document(item.id)
-            .delete { [weak self] error in
+            .delete { error in
                 if let error = error {
                     print("❌ Error deleting item: \(error.localizedDescription)")
-                    self?.showError("Failed to delete item")
                 } else {
                     print("✅ Item deleted successfully")
-                    self?.showSuccessToast(message: "Inventory deleted successfully")
                 }
             }
-    }
-    
-    // MARK: - UI Alerts
-    private func showError(_ message: String) {
-        let alert = UIAlertController(title: "Error", message: message, preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: "OK", style: .default))
-        present(alert, animated: true)
-    }
-    
-    private func showSuccessToast(message: String) {
-        let toast = UIAlertController(title: nil, message: message, preferredStyle: .alert)
-        present(toast, animated: true)
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
-            toast.dismiss(animated: true)
-        }
     }
 }
 
@@ -271,18 +285,15 @@ extension InventoryViewController: UITableViewDelegate {
         showDetailsPopup(for: inventoryItems[indexPath.row])
     }
     
-    // Keep swipe actions for flexibility (View, Edit, Delete)
     func tableView(_ tableView: UITableView,
                    trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath)
     -> UISwipeActionsConfiguration? {
-        // Delete
         let deleteAction = UIContextualAction(style: .destructive, title: "Delete") { [weak self] _, _, completion in
             self?.deleteItem(at: indexPath)
             completion(true)
         }
         deleteAction.image = UIImage(systemName: "trash")
         
-        // Edit
         let editAction = UIContextualAction(style: .normal, title: "Edit") { [weak self] _, _, completion in
             guard let self = self else { completion(false); return }
             self.navigateToEdit(item: self.inventoryItems[indexPath.row])
@@ -291,7 +302,6 @@ extension InventoryViewController: UITableViewDelegate {
         editAction.backgroundColor = .systemBlue
         editAction.image = UIImage(systemName: "pencil")
         
-        // View
         let viewAction = UIContextualAction(style: .normal, title: "Details") { [weak self] _, _, completion in
             guard let self = self else { completion(false); return }
             self.showDetailsPopup(for: self.inventoryItems[indexPath.row])
