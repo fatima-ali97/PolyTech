@@ -1,43 +1,37 @@
 import UIKit
 
-// A single FAQ item (one question + one answer). isExpanded controls whether the answer is visible.
+// MARK: - Models
 struct FAQRow: Hashable {
     let id = UUID()
     let question: String
     let answer: String
-    var isExpanded: Bool = false
+    var isExpanded: Bool = false   // true = show answer
 }
 
-// A section that groups multiple FAQ rows under a title. isCollapsed controls whether rows are hidden.
 struct FAQSection {
     let title: String
-    var isCollapsed: Bool = false
+    var isCollapsed: Bool = false  // true = hide all rows in section
     var rows: [FAQRow]
 }
 
-// FAQ screen: searchable, collapsible section, expandable rows, fixed chevrons.
+// MARK: - FAQ Screen
 final class FAQViewController: UIViewController {
 
-    // UI connected from Storyboard
     @IBOutlet weak var searchBar: UISearchBar!
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var getHelpButton: UIButton!
     @IBOutlet weak var BackBtn: UIImageView!
 
-    // sections = original data, visibleSections = filtered data (search results)
-    private var sections: [FAQSection] = []
-    private var visibleSections: [FAQSection] = []
+    private var sections: [FAQSection] = []          // full data
+    private var visibleSections: [FAQSection] = []   // filtered data (search)
 
     override func viewDidLoad() {
         super.viewDidLoad()
-
         setupUI()
         loadFAQData()
         visibleSections = sections
-
         setupBackBtn()
         setupGetHelpBtn()
-
         tableView.reloadData()
     }
 
@@ -50,7 +44,6 @@ final class FAQViewController: UIViewController {
         tableView.backgroundColor = .clear
         tableView.rowHeight = UITableView.automaticDimension
         tableView.estimatedRowHeight = 80
-
         tableView.register(FAQCell.self, forCellReuseIdentifier: FAQCell.reuseID)
 
         getHelpButton.layer.cornerRadius = 14
@@ -59,37 +52,28 @@ final class FAQViewController: UIViewController {
 
     private func setupBackBtn() {
         BackBtn.isUserInteractionEnabled = true
-        let tap = UITapGestureRecognizer(target: self, action: #selector(backBtnTapped))
-        BackBtn.addGestureRecognizer(tap)
+        BackBtn.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(backBtnTapped)))
     }
 
     @objc private func backBtnTapped() {
         let sb = UIStoryboard(name: "HomePage", bundle: nil)
-        guard let vc = sb.instantiateViewController(withIdentifier: "HomeViewController") as? HomeViewController else {
-            print("HomeViewController not found in storyboard")
-            return
-        }
+        guard let vc = sb.instantiateViewController(withIdentifier: "HomeViewController") as? HomeViewController else { return }
         navigationController?.pushViewController(vc, animated: true)
     }
 
     private func setupGetHelpBtn() {
         getHelpButton.isUserInteractionEnabled = true
-        let tap = UITapGestureRecognizer(target: self, action: #selector(helpBtnTapped))
-        getHelpButton.addGestureRecognizer(tap)
+        getHelpButton.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(helpBtnTapped)))
     }
 
     @objc private func helpBtnTapped() {
         let sb = UIStoryboard(name: "GetHelp", bundle: nil)
-        guard let vc = sb.instantiateViewController(withIdentifier: "HelpPageViewController") as? HelpPageViewController else {
-            print("HelpPageViewController not found in storyboard")
-            return
-        }
+        guard let vc = sb.instantiateViewController(withIdentifier: "HelpPageViewController") as? HelpPageViewController else { return }
         navigationController?.pushViewController(vc, animated: true)
     }
 
     private func loadFAQData() {
         let generalRows: [FAQRow] = [
-
             FAQRow(
                 question: "Technician availability",
                 answer:
@@ -104,11 +88,9 @@ Technician: Heatham
 
 Time: 8 AM – 2 PM
 Location: Building 10.111
-Technician: Ghassan 
+Technician: Ghassan
 """
             ),
-
-           
             FAQRow(
                 question: "Wi-Fi (PolytechnicForAll)",
                 answer:
@@ -118,7 +100,6 @@ Username: Your ID
 Password: Your Moodle password
 """
             ),
-
             FAQRow(
                 question: "Banner login",
                 answer:
@@ -129,7 +110,6 @@ Password: Your Moodle password
 If you still can’t login, reset your Banner password or contact IT Help.
 """
             ),
-
             FAQRow(
                 question: "Authenticator App setup",
                 answer:
@@ -141,7 +121,6 @@ If you still can’t login, reset your Banner password or contact IT Help.
 If the code does not work, remove the account and add it again.
 """
             ),
-
             FAQRow(
                 question: "VMware virtual machine Starting Error",
                 answer:
@@ -159,7 +138,6 @@ Steps to fix:
 If the error continues, reinstall VMware or contact support.
 """
             ),
-
             FAQRow(
                 question: "Password reset on computer",
                 answer:
@@ -172,7 +150,6 @@ If the error continues, reinstall VMware or contact support.
 If you forgot your password completely, contact IT Help.
 """
             ),
-
             FAQRow(
                 question: "Moodle login",
                 answer:
@@ -189,19 +166,15 @@ If you forgot your password completely, contact IT Help.
             )
         ]
 
-        sections = [
-            FAQSection(title: "General", isCollapsed: false, rows: generalRows)
-        ]
+        sections = [FAQSection(title: "General", isCollapsed: false, rows: generalRows)]
     }
 
-    // Collapse/expand a full section (e.g., “General”).
     private func toggleSectionCollapse(_ sectionIndex: Int) {
         guard visibleSections.indices.contains(sectionIndex) else { return }
         visibleSections[sectionIndex].isCollapsed.toggle()
         tableView.reloadSections(IndexSet(integer: sectionIndex), with: .automatic)
     }
 
-    // Expand/collapse one row to show/hide the answer.
     private func toggleRowExpand(section: Int, row: Int) {
         guard visibleSections.indices.contains(section),
               visibleSections[section].rows.indices.contains(row) else { return }
@@ -216,7 +189,6 @@ If you forgot your password completely, contact IT Help.
         tableView.reloadRows(at: [IndexPath(row: row, section: section)], with: .automatic)
     }
 
-    // Filter FAQs by searching question or answer text.
     private func applySearch(_ query: String) {
         let q = query.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
 
@@ -239,31 +211,24 @@ If you forgot your password completely, contact IT Help.
     }
 }
 
-// MARK: - TableView DataSource & Delegate
+// MARK: - Table
 extension FAQViewController: UITableViewDataSource, UITableViewDelegate {
 
-    func numberOfSections(in tableView: UITableView) -> Int {
-        visibleSections.count
-    }
+    func numberOfSections(in tableView: UITableView) -> Int { visibleSections.count }
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         visibleSections[section].isCollapsed ? 0 : visibleSections[section].rows.count
     }
 
-    // Creates a tappable header for each section (with a fixed up/down chevron).
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         let header = FAQSectionHeaderView()
         header.configure(title: visibleSections[section].title,
                          isCollapsed: visibleSections[section].isCollapsed)
-        header.onTap = { [weak self] in
-            self?.toggleSectionCollapse(section)
-        }
+        header.onTap = { [weak self] in self?.toggleSectionCollapse(section) }
         return header
     }
 
-    func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        44
-    }
+    func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat { 44 }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: FAQCell.reuseID, for: indexPath) as! FAQCell
@@ -277,39 +242,25 @@ extension FAQViewController: UITableViewDataSource, UITableViewDelegate {
     }
 }
 
-// MARK: - SearchBar Delegate
+// MARK: - Search
 extension FAQViewController: UISearchBarDelegate {
-    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-        applySearch(searchText)
-    }
-
-    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
-        searchBar.resignFirstResponder()
-    }
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) { applySearch(searchText) }
+    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) { searchBar.resignFirstResponder() }
 }
 
-// Section header view with fixed chevrons (no rotation/transform).
+// MARK: - Section Header
 final class FAQSectionHeaderView: UIView {
-
     private let titleLabel = UILabel()
     private let chevron = UIImageView()
     var onTap: (() -> Void)?
 
-    override init(frame: CGRect) {
-        super.init(frame: frame)
-        setup()
-    }
-
-    required init?(coder: NSCoder) {
-        super.init(coder: coder)
-        setup()
-    }
+    override init(frame: CGRect) { super.init(frame: frame); setup() }
+    required init?(coder: NSCoder) { super.init(coder: coder); setup() }
 
     private func setup() {
         backgroundColor = .clear
 
         let container = UIView()
-        container.backgroundColor = .clear
         container.translatesAutoresizingMaskIntoConstraints = false
         addSubview(container)
 
@@ -338,8 +289,7 @@ final class FAQSectionHeaderView: UIView {
             chevron.heightAnchor.constraint(equalToConstant: 16)
         ])
 
-        let tap = UITapGestureRecognizer(target: self, action: #selector(didTap))
-        addGestureRecognizer(tap)
+        addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(didTap)))
     }
 
     func configure(title: String, isCollapsed: Bool) {
@@ -347,12 +297,10 @@ final class FAQSectionHeaderView: UIView {
         chevron.image = isCollapsed ? UIImage(systemName: "chevron.down") : UIImage(systemName: "chevron.up")
     }
 
-    @objc private func didTap() {
-        onTap?()
-    }
+    @objc private func didTap() { onTap?() }
 }
 
-// Expandable FAQ cell styled like a card, with fixed chevrons (no rotation/transform).
+// MARK: - Cell
 final class FAQCell: UITableViewCell {
 
     static let reuseID = "FAQCell"
@@ -366,15 +314,8 @@ final class FAQCell: UITableViewCell {
     private var collapsedBottomConstraint: NSLayoutConstraint!
     private var expandedBottomConstraint: NSLayoutConstraint!
 
-    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
-        super.init(style: style, reuseIdentifier: reuseIdentifier)
-        setup()
-    }
-
-    required init?(coder: NSCoder) {
-        super.init(coder: coder)
-        setup()
-    }
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) { super.init(style: style, reuseIdentifier: reuseIdentifier); setup() }
+    required init?(coder: NSCoder) { super.init(coder: coder); setup() }
 
     private func setup() {
         selectionStyle = .none
