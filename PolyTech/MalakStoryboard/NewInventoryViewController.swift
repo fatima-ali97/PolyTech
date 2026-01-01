@@ -17,7 +17,6 @@ class NewInventoryViewController: UIViewController {
     @IBOutlet weak var savebtn: UIButton!
     @IBOutlet weak var pageTitle: UILabel!
     @IBOutlet weak var categoryDropDown: UIImageView!
-    @IBOutlet weak var backBtn: UIImageView!
     
     let database = Firestore.firestore()
     private var selectedCategory: InventoryCategory?
@@ -39,7 +38,6 @@ class NewInventoryViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-//        setupBackBtnButton()
         setupPickers()
         setupDropdownTap()
         setupQuantityField()
@@ -82,13 +80,33 @@ class NewInventoryViewController: UIViewController {
     }
 
     private func configureEditMode() {
-        if isEditMode {
+        if let item = itemToEdit {
+            isEditMode = true
+            documentId = item.id
             pageTitle.text = "Edit Inventory Request"
             savebtn.setTitle("Update", for: .normal)
-            populateFields()
+            populateFieldsFromItem(item)
         } else {
+            isEditMode = false
             pageTitle.text = "New Inventory Request"
             savebtn.setTitle("Save", for: .normal)
+        }
+    }
+
+    private func populateFieldsFromItem(_ item: Inventory) {
+        requestName.text = item.requestName
+        requestName.isEnabled = false
+        
+        itemName.text = item.itemName
+        itemName.isEnabled = false
+
+        quantity.text = "\(item.quantity)"
+        location.text = item.location
+        reason.text = item.reason
+
+        if let cat = InventoryCategory(rawValue: item.category) {
+            selectedCategory = cat
+            category.text = cat.displayName
         }
     }
 
@@ -274,7 +292,7 @@ extension NewInventoryViewController: UIPickerViewDelegate, UIPickerViewDataSour
     
     func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
         if textField == quantity {
-            // Allow only numeric characters
+
             let allowedCharacters = CharacterSet.decimalDigits
             let characterSet = CharacterSet(charactersIn: string)
             return allowedCharacters.isSuperset(of: characterSet)

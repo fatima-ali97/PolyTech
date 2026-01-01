@@ -18,19 +18,19 @@ class HomeViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-                if userId == nil {
-                    userId = UserDefaults.standard.string(forKey: "userId")
-                }
+        if userId == nil {
+            userId = UserDefaults.standard.string(forKey: "userId")
+        }
         loadData()
         setupNotificationButton()
         setupChatBotBtn()
     }
-
+    
     
     private func setupNotificationButton() {
-
+        
         Notificationbtn.isUserInteractionEnabled = true
-
+        
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(notificationTapped))
         Notificationbtn.addGestureRecognizer(tapGesture)
     }
@@ -40,28 +40,26 @@ class HomeViewController: UIViewController {
         let notificationsVC = NotificationsViewController()
         let navController = UINavigationController(rootViewController: notificationsVC)
         present(navController, animated: true)
-
+        
     }
     
     private func loadData() {
-           guard let userId = userId else {
-               print("⚠️ No user ID available")
-               return
-           }
-           
-           print("✅ Loading student dashboard for user: \(userId)")
-       }
-       
-    @IBAction func faqButtonTapped(_ sender: UIButton) {
-        print("FAQ button tapped!") // Debugging log
-        
-        let storyboard = UIStoryboard(name: "FAQ", bundle: nil)
-        guard let vc = storyboard.instantiateViewController(withIdentifier: "FAQViewController") as? FAQViewController else {
-            print("FAQViewController not found in storyboard")
+        guard let userId = userId else {
+            print("⚠️ No user ID available")
             return
         }
-
-        print("FAQViewController successfully instantiated")
+        
+        print("✅ Loading student dashboard for user: \(userId)")
+    }
+    
+    @IBAction func faqButtonTapped(_ sender: UIButton) {
+        let storyboard = UIStoryboard(name: "FAQ", bundle: nil)
+        guard let vc = storyboard.instantiateViewController(
+            withIdentifier: "FAQViewController"
+        ) as? FAQViewController else {
+            print("❌ FAQViewController not found or wrong class")
+            return
+        }
         
         navigationController?.pushViewController(vc, animated: true)
     }
@@ -70,26 +68,27 @@ class HomeViewController: UIViewController {
     
     
     private func setupChatBotBtn() {
-
+        
         chatBot.isUserInteractionEnabled = true
-
+        
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(chatBotTapped))
         chatBot.addGestureRecognizer(tapGesture)
     }
     
     @objc func chatBotTapped() {
-
         let storyboard = UIStoryboard(name: "ChatBot", bundle: nil)
-        guard let vc = storyboard.instantiateViewController(withIdentifier: "ChatBotViewController") as? ChatBotViewController else {
-            print("ChatBotViewController not found in storyboard")
+        guard let vc = storyboard.instantiateViewController(
+            withIdentifier: "ChatBotViewController"
+        ) as? ChatBotViewController else {
+            print("❌ ChatBotViewController not found or wrong class")
             return
         }
         
         navigationController?.pushViewController(vc, animated: true)
+        
+        
+        
+        
     }
     
-    
-    
-    
-    }
-
+}
