@@ -30,7 +30,6 @@ class NewMaintenanceViewController: UIViewController {
     @IBOutlet weak var categoryDropDown: UIImageView!
     @IBOutlet weak var urgencyDropDown: UIImageView!
     @IBOutlet weak var uploadImage: UIImageView!
-    @IBOutlet weak var backBtn: UIImageView!
 
     // Picker setup
     private let categoryPicker = UIPickerView()
@@ -67,37 +66,31 @@ class NewMaintenanceViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+
         initCloudinary()
         setupPickers()
         setupDropdownTap()
-        setupBackBtnButton()
         setupImageTap()
         configureEditMode()
-        setupNavigationBackButton()
-    }
-    
- 
-    private func setupNavigationBackButton() {
+
+        // ✅ Programmatic back button
         let backButton = UIBarButtonItem(
             image: UIImage(systemName: "chevron.left"),
             style: .plain,
             target: self,
             action: #selector(goBack)
         )
+        backButton.tintColor = .white   // change color if needed
         navigationItem.leftBarButtonItem = backButton
     }
+
+
     
     
     @objc private func goBack() {
-        // Check if presented modally or pushed
-        if presentingViewController != nil {
-            // Was presented modally - dismiss it
-            dismiss(animated: true)
-        } else {
-            // Was pushed - pop it
-            navigationController?.popViewController(animated: true)
-        }
+        navigationController?.popViewController(animated: true)
     }
+
     
     // Initialize Cloudinary
     private func initCloudinary() {
@@ -174,9 +167,9 @@ class NewMaintenanceViewController: UIViewController {
             urgency.text = urg.displayName
         }
 
-        if let imageUrl = data["imageUrl"] as? String {
-            // Optionally, load the image from the URL if necessary
-        }
+//        if let imageUrl = data["imageUrl"] as? String {
+//            // Optionally, load the image from the URL if necessary
+//        }
     }
 
     @IBAction func Savebtn(_ sender: UIButton) {
@@ -210,25 +203,6 @@ class NewMaintenanceViewController: UIViewController {
             data["createdAt"] = Timestamp()
             database.collection("maintenanceRequest")
                 .addDocument(data: data, completion: handleResult)
-        }
-    }
-
-    // ✅ FIXED: Setup storyboard back button
-    private func setupBackBtnButton() {
-        backBtn.isUserInteractionEnabled = true
-        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(backBtnTapped))
-        backBtn.addGestureRecognizer(tapGesture)
-    }
-    
-    // ✅ FIXED: Use dismiss for modal presentation
-    @objc func backBtnTapped() {
-        // Check if presented modally or pushed
-        if presentingViewController != nil {
-            // Was presented modally - dismiss it
-            dismiss(animated: true)
-        } else {
-            // Was pushed - pop it
-            navigationController?.popViewController(animated: true)
         }
     }
 

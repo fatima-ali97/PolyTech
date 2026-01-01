@@ -3,7 +3,6 @@
     <device id="retina6_12" orientation="portrait" appearance="light"/>
     <dependencies>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23721"/>
-        <capability name="Named colors" minToolsVersion="9.0"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -17,22 +16,6 @@
                         <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <navigationBar contentMode="scaleToFill" translucent="NO" translatesAutoresizingMaskIntoConstraints="NO" id="PPT-zo-scZ">
-                                <rect key="frame" x="0.0" y="74" width="393" height="44"/>
-                                <color key="barTintColor" name="Primary"/>
-                                <textAttributes key="titleTextAttributes">
-                                    <color key="textColor" systemColor="tableCellGroupedBackgroundColor"/>
-                                </textAttributes>
-                                <items>
-                                    <navigationItem title="FAQ" id="X6m-vO-Ee1"/>
-                                </items>
-                            </navigationBar>
-                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="arrow.backward" catalog="system" translatesAutoresizingMaskIntoConstraints="NO" id="cmf-tX-8gk">
-                                <rect key="frame" x="10" y="88" width="40" height="16"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                <preferredSymbolConfiguration key="preferredSymbolConfiguration" weight="bold"/>
-                            </imageView>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Find important inforamtion and useful help guide." lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="fJr-28-ybm">
                                 <rect key="frame" x="10" y="140" width="378" height="41"/>
                                 <constraints>
@@ -51,37 +34,53 @@
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                             </tableView>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="XBD-u0-zEH">
-                                <rect key="frame" x="151" y="675.66666666666663" width="91" height="38.333333333333371"/>
+                                <rect key="frame" x="151" y="690.66666666666663" width="91" height="38.333333333333371"/>
                                 <color key="tintColor" red="0.086274509799999996" green="0.1647058824" blue="0.2666666667" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                                 <state key="normal" title="Button"/>
                                 <buttonConfiguration key="configuration" style="filled" title="Get Help" cornerStyle="capsule"/>
-                                <connections>
-                                    <action selector="getHelpTapped:" destination="5P6-f2-nPW" eventType="touchUpInside" id="o5K-aZ-KMX"/>
-                                </connections>
                             </button>
+                            <view tag="-1" contentMode="scaleToFill" id="zZw-W4-qHl">
+                                <rect key="frame" x="0.0" y="0.0" width="437" height="128"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <subviews>
+                                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="arrow.backward" catalog="system" translatesAutoresizingMaskIntoConstraints="NO" id="uBz-q2-s5s">
+                                        <rect key="frame" x="18" y="72.333333333333258" width="40" height="16"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                        <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        <preferredSymbolConfiguration key="preferredSymbolConfiguration" weight="bold"/>
+                                    </imageView>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="FAQ" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ocU-27-Hcp">
+                                        <rect key="frame" x="174" y="70" width="45" height="21"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                        <fontDescription key="fontDescription" name="HelveticaNeue-Bold" family="Helvetica Neue" pointSize="17"/>
+                                        <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                </subviews>
+                                <viewLayoutGuide key="safeArea" id="3Kt-gy-fEi"/>
+                                <color key="backgroundColor" red="0.086274509799999996" green="0.1647058824" blue="0.2666666667" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
+                                <color key="tintColor" red="0.1199271021" green="0.27991654240000002" blue="0.57909201290000001" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
+                            </view>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="nxx-X3-iNT"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
                             <constraint firstItem="kD8-27-O8W" firstAttribute="top" secondItem="pvR-Qi-Sa8" secondAttribute="bottom" constant="7" id="01z-RN-V6F"/>
-                            <constraint firstItem="fJr-28-ybm" firstAttribute="top" secondItem="PPT-zo-scZ" secondAttribute="bottom" constant="22" id="8ji-Kv-RHH"/>
                             <constraint firstItem="pvR-Qi-Sa8" firstAttribute="centerY" secondItem="nxx-X3-iNT" secondAttribute="centerY" constant="-249" id="GnR-s5-XQN"/>
                             <constraint firstItem="fJr-28-ybm" firstAttribute="centerY" secondItem="nxx-X3-iNT" secondAttribute="centerY" constant="-290.5" id="IDj-E2-uTl"/>
                             <constraint firstItem="fJr-28-ybm" firstAttribute="leading" secondItem="nxx-X3-iNT" secondAttribute="leading" constant="10" id="KcP-uc-dvP"/>
                             <constraint firstItem="XBD-u0-zEH" firstAttribute="leading" secondItem="nxx-X3-iNT" secondAttribute="leading" constant="151" id="Kii-Ov-LKq"/>
                             <constraint firstItem="kD8-27-O8W" firstAttribute="leading" secondItem="nxx-X3-iNT" secondAttribute="leading" id="STh-y7-RSE"/>
                             <constraint firstItem="kD8-27-O8W" firstAttribute="centerX" secondItem="thZ-yU-2WX" secondAttribute="centerX" id="WTs-yE-9CK"/>
-                            <constraint firstItem="kD8-27-O8W" firstAttribute="leading" secondItem="PPT-zo-scZ" secondAttribute="leading" id="Xgt-ed-ugg"/>
                             <constraint firstItem="nxx-X3-iNT" firstAttribute="bottom" secondItem="kD8-27-O8W" secondAttribute="bottom" constant="86.333333333333258" id="ag0-Du-TgM"/>
                             <constraint firstItem="kD8-27-O8W" firstAttribute="trailing" secondItem="pvR-Qi-Sa8" secondAttribute="trailing" id="ays-dw-Dhk"/>
-                            <constraint firstItem="kD8-27-O8W" firstAttribute="trailing" secondItem="PPT-zo-scZ" secondAttribute="trailing" id="gKM-Jw-ZBG"/>
-                            <constraint firstItem="nxx-X3-iNT" firstAttribute="bottom" secondItem="XBD-u0-zEH" secondAttribute="bottom" constant="70" id="kij-t4-Lkz"/>
+                            <constraint firstItem="nxx-X3-iNT" firstAttribute="bottom" secondItem="XBD-u0-zEH" secondAttribute="bottom" constant="55" id="kij-t4-Lkz"/>
                             <constraint firstItem="kD8-27-O8W" firstAttribute="leading" secondItem="pvR-Qi-Sa8" secondAttribute="leading" id="oaT-EL-6kq"/>
                             <constraint firstItem="nxx-X3-iNT" firstAttribute="trailing" secondItem="fJr-28-ybm" secondAttribute="trailing" constant="5" id="zUV-li-GHW"/>
                         </constraints>
                     </view>
                     <connections>
-                        <outlet property="BackBtn" destination="cmf-tX-8gk" id="qHn-Jx-zgf"/>
+                        <outlet property="BackBtn" destination="uBz-q2-s5s" id="eeQ-jQ-RUX"/>
                         <outlet property="getHelpButton" destination="XBD-u0-zEH" id="CFx-dd-EEQ"/>
                         <outlet property="searchBar" destination="pvR-Qi-Sa8" id="iAg-kl-nJ0"/>
                         <outlet property="tableView" destination="kD8-27-O8W" id="7Au-Op-900"/>
@@ -95,13 +94,7 @@
     <color key="tintColor" red="0.08770751953" green="0.166015625" blue="0.2661132812" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
     <resources>
         <image name="arrow.backward" catalog="system" width="128" height="95"/>
-        <namedColor name="Primary">
-            <color red="0.086000002920627594" green="0.16500000655651093" blue="0.25900000333786011" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-        </namedColor>
         <systemColor name="systemBackgroundColor">
-            <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-        </systemColor>
-        <systemColor name="tableCellGroupedBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>
     </resources>
