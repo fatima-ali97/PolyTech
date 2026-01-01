@@ -110,12 +110,6 @@
                                 <rect key="frame" x="0.0" y="0.0" width="437" height="128"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <subviews>
-                                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="arrow.backward" catalog="system" translatesAutoresizingMaskIntoConstraints="NO" id="ZkK-QF-9rg">
-                                        <rect key="frame" x="18" y="72.333333333333258" width="40" height="16"/>
-                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                        <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                        <preferredSymbolConfiguration key="preferredSymbolConfiguration" weight="bold"/>
-                                    </imageView>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Return Inventory" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Ur0-CH-gbf">
                                         <rect key="frame" x="130" y="70" width="143" height="21"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
@@ -145,9 +139,8 @@
                     </view>
                     <navigationItem key="navigationItem" id="uif-wB-iH8"/>
                     <connections>
-                        <outlet property="backBtn" destination="ZkK-QF-9rg" id="gaP-12-MeD"/>
                         <outlet property="category" destination="V6y-NC-Lpy" id="4Zr-jg-VkV"/>
-                        <outlet property="categoryDropDown" destination="5iX-yf-drS" id="7PQ-KW-pBv"/>
+                        <outlet property="categoryDropDown" destination="5iX-yf-drS" id="e5k-fa-FzU"/>
                         <outlet property="condition" destination="0bE-oy-zQu" id="peq-n3-P0J"/>
                         <outlet property="itemName" destination="DsH-Iw-Nw4" id="8UO-Y0-muM"/>
                         <outlet property="pageTitle" destination="cRQ-KX-rp5" id="0qG-qf-63G"/>
@@ -162,13 +155,12 @@
         </scene>
     </scenes>
     <resources>
-        <image name="arrow.backward" catalog="system" width="128" height="95"/>
         <image name="chevron.compact.down" catalog="system" width="128" height="42"/>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>
         <systemColor name="systemGray2Color">
-            <color red="0.68235294117647061" green="0.68235294117647061" blue="0.69803921568627447" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.68235294120000001" green="0.68235294120000001" blue="0.69803921570000005" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
     </resources>
 </document>
