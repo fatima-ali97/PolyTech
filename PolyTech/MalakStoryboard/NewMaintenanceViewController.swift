@@ -3,7 +3,9 @@ import FirebaseFirestore
 import Cloudinary
 
 class NewMaintenanceViewController: UIViewController {
-
+    var requestToEdit: MaintenanceRequestModel?
+    var item: MaintenanceRequestModel?
+    
     // Cloudinary setup
     let cloudName: String = "dwvlnmbtv"
     let uploadPreset = "Polytech_Cloudinary"

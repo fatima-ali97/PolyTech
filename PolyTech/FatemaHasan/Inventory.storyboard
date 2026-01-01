@@ -8,7 +8,7 @@
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
-        <!--Inventory View Controller-->
+        <!--Inventory Requests-->
         <scene sceneID="Vvo-PH-ZUa">
             <objects>
                 <viewController storyboardIdentifier="InventoryViewController" useStoryboardIdentifierAsRestorationIdentifier="YES" id="lEj-2l-pR5" customClass="InventoryViewController" customModule="PolyTech" customModuleProvider="target" sceneMemberID="viewController">
@@ -40,13 +40,29 @@
                             <constraint firstItem="DcA-oo-4OE" firstAttribute="trailing" secondItem="CNB-c3-eOE" secondAttribute="trailing" id="ww5-4Y-Gid"/>
                         </constraints>
                     </view>
+                    <navigationItem key="navigationItem" title="Inventory Requests" id="RlO-N6-fiG"/>
                     <connections>
                         <outlet property="tableView" destination="CNB-c3-eOE" id="rX4-X8-BZq"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="olj-4Y-vBE" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="654" y="-225"/>
+            <point key="canvasLocation" x="1579.3893129770993" y="-225.35211267605635"/>
+        </scene>
+        <!--Navigation Controller-->
+        <scene sceneID="nCB-gH-wxp">
+            <objects>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="ka9-jd-nuM" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+                <navigationController automaticallyAdjustsScrollViewInsets="NO" id="e8b-sg-cOh" sceneMemberID="viewController">
+                    <toolbarItems/>
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="rZ5-wB-erR">
+                        <rect key="frame" x="0.0" y="118" width="393" height="44"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <nil name="viewControllers"/>
+                </navigationController>
+            </objects>
+            <point key="canvasLocation" x="652.67175572519079" y="-225.35211267605635"/>
         </scene>
     </scenes>
     <resources>

@@ -3,7 +3,7 @@ import FirebaseFirestore
 import FirebaseAuth
 
 class ReturnInventoryViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDataSource, UITextFieldDelegate {
-
+    var itemToEdit: Inventory?
     @IBOutlet weak var itemName: UITextField!
     @IBOutlet weak var category: UITextField!
     @IBOutlet weak var quantity: UITextField!
