@@ -1,28 +1,23 @@
 import UIKit
 
 // MARK: - Message Model
-// Represents one chat message (either from user or bot)
 struct Message {
-    let text: String      // Message text
-    let isUser: Bool      // true = user message, false = bot message
+    let text: String
+    let isUser: Bool
 }
 
 // MARK: - ChatBot View Controller
 final class ChatBotViewController: UIViewController {
 
-    // MARK: - IBOutlets (UI elements from Storyboard)
-    @IBOutlet weak var tableView: UITableView!          // Displays chat messages
-    @IBOutlet weak var messageTextField: UITextField!   // Input field for user text
-    @IBOutlet weak var sendButton: UIButton!            // Send message button
-    @IBOutlet weak var inputContainerView: UIView!      // Bottom container (text field + send button)
-    @IBOutlet weak var backButton: UIImageView!         // Back button (image)
+    @IBOutlet weak var tableView: UITableView!
+    @IBOutlet weak var messageTextField: UITextField!
+    @IBOutlet weak var sendButton: UIButton!
+    @IBOutlet weak var inputContainerView: UIView!
 
-    // MARK: - Data Source
-    private var messages: [Message] = []                // All chat messages
+    private var messages: [Message] = []
 
-    // MARK: - Main Menu Text (Bot welcome message)
     private var menuText: String {
-        return """
+        """
         Hi 👋 I can help with these topics. Reply with a number:
 
         1) Moodle login / access
@@ -47,80 +42,70 @@ final class ChatBotViewController: UIViewController {
         """
     }
 
-    // MARK: - View Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
 
         title = "Chat Bot"
 
-        // TableView setup
         tableView.dataSource = self
         tableView.delegate = self
         tableView.keyboardDismissMode = .interactive
         tableView.separatorStyle = .none
-        tableView.estimatedRowHeight = UITableView.automaticDimension
         tableView.rowHeight = UITableView.automaticDimension
+        tableView.estimatedRowHeight = UITableView.automaticDimension
         tableView.contentInsetAdjustmentBehavior = .never
 
-        // TextField delegate
         messageTextField.delegate = self
 
-        // Style input container
         inputContainerView.layer.cornerRadius = 16
         inputContainerView.clipsToBounds = true
-
-        // Style send button
         sendButton.layer.cornerRadius = 10
         sendButton.clipsToBounds = true
 
-        // Enable tap on back image
-        setupBackImageTap()
-
-        // Initial bot message (menu)
+        // Initial menu
         messages = [Message(text: menuText, isUser: false)]
         reloadAndScrollToBottom()
+
+        let backButton = UIBarButtonItem(
+            image: UIImage(systemName: "chevron.left"),
+            style: .plain,
+            target: self,
+            action: #selector(goBack)
+        )
+        backButton.tintColor = .onBackground
+        navigationItem.leftBarButtonItem = backButton
     }
 
-    // MARK: - Back Button (Image Tap)
-    private func setupBackImageTap() {
-        backButton.isUserInteractionEnabled = true
-        let tap = UITapGestureRecognizer(target: self, action: #selector(backImageTapped))
-        backButton.addGestureRecognizer(tap)
-    }
-
-    // Action when back image is tapped
-    @objc private func backImageTapped() {
+    @objc private func goBack() {
         navigationController?.popViewController(animated: true)
     }
 
-    // MARK: - Send Button Action
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        navigationController?.setNavigationBarHidden(false, animated: animated)
+    }
+
     @IBAction func sendButtonTapped(_ sender: UIButton) {
         sendMessage()
     }
 
-    // MARK: - Send Message Logic
     private func sendMessage() {
         let rawText = messageTextField.text ?? ""
         let text = rawText.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !text.isEmpty else { return }
 
-        // Add user message
         messages.append(Message(text: text, isUser: true))
         messageTextField.text = ""
         reloadAndScrollToBottom()
 
-        // Get bot reply
         let reply = botReply(for: text)
 
-        // Simulate typing delay
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.35) {
             self.messages.append(Message(text: reply, isUser: false))
             self.reloadAndScrollToBottom()
         }
     }
 
-    // MARK: - Normalize Input
-    // Cleans user input (lowercase, remove symbols)
     private func normalize(_ text: String) -> String {
         let trimmed = text.trimmingCharacters(in: .whitespacesAndNewlines)
         let lower = trimmed.lowercased()
@@ -128,83 +113,64 @@ final class ChatBotViewController: UIViewController {
         return cleaned
     }
 
-    // MARK: - Bot Reply Logic
+    // MARK: - Enhanced Bot Logic
     private func botReply(for input: String) -> String {
         let normalized = normalize(input)
 
-        // ✅ Use normalized for number detection so "7)", "7." etc still works
+        // Greetings
+        let greetings = ["hi", "hello", "hey", "goodmorning", "goodafternoon", "goodevening"]
+        if greetings.contains(normalized) {
+            return "Hello! 👋 How can I help you today? Type 0 to see the menu."
+        }
+
+        // Numbers / menu choices
         if let choice = Int(normalized) {
             switch choice {
-
-            case 0:
-                return menuText
-
-            case 1:
-                return "Moodle login / access 📘\n1) Open Polytechnic website > Moodle\n2) Login with your username + password."
-
-            case 2:
-                return "Banner login 🧾\n1) Open Polytechnic website > Banner\n2) Enter Student ID + password."
-
-            case 3:
-                return "Reset password 🔐\nWhich account?\n1) Moodle\n2) Banner\n3) Email/Office\nReply: 3-1, 3-2, or 3-3"
-
-            case 4:
-                return "Wi-Fi / Internet 📶\n1) Turn Wi-Fi off/on\n2) Forget network & re-join\n3) Restart device."
-
-            case 5:
-                return "Contact IT / Get Help 🧑‍💻\nUse the Get Help page in the app."
-
-            case 6:
-                return "Technician availability 🛠️\nOpen Get Help and submit your issue with details + location."
-
-            case 7:
-                return "Email setup ✉️\nTry logging in via browser first. If it fails, reset or contact IT."
-
-            case 8:
-                return "Microsoft Teams / Office 365 💼\nSign out/in, update the app, or reinstall if stuck."
-
-            case 9:
-                return "Authenticator / 2FA 🔑\nSet phone time to Automatic and re-add the account if approvals fail."
-
-            case 10:
-                return "VPN 🌍\nCheck internet, re-enter credentials, try another network, restart VPN app."
-
-            case 11:
-                return "Printing 🖨️\nBe on campus Wi-Fi, pick correct printer, try a small test page."
-
-            case 12:
-                return "Library / eResources 📚\nTry on campus first, off campus may need VPN (reply 10)."
-
-            case 13:
-                return "Attendance / Registration 📝\nCheck Banner registration and send course code + error if any."
-
-            case 14:
-                return "Laptop / Software 💻\nKeep storage free, update OS, install required apps (Teams/Office)."
-
-            case 15:
-                return "VM / VMware 🧩\nRestart laptop, update VMware, check VM folder path, share exact error."
-
-            default:
-                return "I don’t have that option. Type 0 to see the menu."
+            case 0: return menuText
+            case 1: return "Moodle login 📘\n1) Go to Moodle on the Polytechnic website\n2) Login with username + password"
+            case 2: return "Banner login 🧾\nOpen Banner and enter your Student ID + password"
+            case 3: return "Reset password 🔐\nWhich account? Reply 3-1 (Moodle), 3-2 (Banner), 3-3 (Email/Office)"
+            case 4: return "Wi-Fi / Internet 📶\nTry turning Wi-Fi off/on, forget & rejoin network, or restart your device"
+            case 5: return "Contact IT 🧑‍💻\nUse the 'Get Help' page in the app to submit your request"
+            case 6: return "Technician availability 🛠️\nSubmit your issue + location via 'Get Help'"
+            case 7: return "Email setup ✉️\nTry logging in via browser first. Reset password or contact IT if needed"
+            case 8: return "Microsoft Teams / Office 365 💼\nSign out/in, update, or reinstall the app"
+            case 9: return "Two-Factor Authentication 🔑\nSet phone time to Automatic and re-add the account if approvals fail"
+            case 10: return "VPN 🌍\nCheck internet, re-enter credentials, or restart VPN app"
+            case 11: return "Printing 🖨️\nUse campus Wi-Fi, select correct printer, try a small test page"
+            case 12: return "Library / eResources 📚\nOn-campus works automatically. Off-campus may need VPN (reply 10)"
+            case 13: return "Attendance / Registration 📝\nCheck Banner registration. Send course code + error if any"
+            case 14: return "Laptop / Software 💻\nFree storage, update OS, install required apps"
+            case 15: return "VM / VMware 🧩\nRestart laptop, update VMware, check VM folder path, share exact error"
+            default: return "I don’t have that option. Type 0 to see the menu."
             }
         }
 
-        // Special reset choices like 3-1, 3-2, 3-3 -> normalized becomes "31" "32" "33"
-        if normalized == "31" { return "Moodle reset 🔐\nUse “Forgot password?” on Moodle login page." }
-        if normalized == "32" { return "Banner reset 🔐\nBanner resets are usually handled by IT. Reply 5." }
-        if normalized == "33" { return "Email reset 🔐\nUse Microsoft “Forgot password?” or reply 5 for IT." }
+        // Reset options
+        switch normalized {
+        case "31": return "Moodle reset 🔐\nUse 'Forgot password?' on Moodle login page"
+        case "32": return "Banner reset 🔐\nBanner resets are handled by IT. Reply 5 to contact IT"
+        case "33": return "Email reset 🔐\nUse Microsoft 'Forgot password?' or contact IT (reply 5)"
+        default: break
+        }
 
-        // Keyword-based fallback replies
-        if normalized.contains("menu") { return menuText }
+        // Keywords / casual conversation
+        if normalized.contains("help") { return "Sure! What do you need help with? Type 0 to see the menu." }
+        if normalized.contains("thanks") || normalized.contains("thankyou") { return "You're welcome! 😊 Anything else I can help with?" }
         if normalized.contains("moodle") { return "Reply 1 for Moodle help. Type 0 for menu." }
         if normalized.contains("banner") { return "Reply 2 for Banner help. Type 0 for menu." }
         if normalized.contains("password") { return "Reply 3 to reset password. Type 0 for menu." }
         if normalized.contains("wifi") { return "Reply 4 for Wi-Fi help. Type 0 for menu." }
 
-        return "Reply with a number (0–15) so I can help you faster. Type 0 to see the menu."
+        // Small talk
+        if normalized.contains("howareyou") { return "I'm just a bot 🤖, but I'm here to help you! How can I assist today?" }
+        if normalized.contains("good") { return "Glad to hear that! 😊 What can I help you with today?" }
+        if normalized.contains("problem") || normalized.contains("issue") { return "I'm sorry to hear that 😔 Can you tell me which system it relates to? (Moodle, Banner, Wi-Fi, etc.)" }
+
+        // Fallback
+        return "I'm not sure I understand. 🤔 Reply with a number (0–15) or type a keyword like 'Moodle', 'Wi-Fi', or 'help'."
     }
 
-    // MARK: - Reload & Scroll
     private func reloadAndScrollToBottom() {
         tableView.reloadData()
         guard !messages.isEmpty else { return }

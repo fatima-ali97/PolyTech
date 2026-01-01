@@ -19,7 +19,7 @@ class MaintenanceTableViewCell: UITableViewCell {
     
     private let titleLabel: UILabel = {
         let label = UILabel()
-        label.font = .systemFont(ofSize: 16, weight: .semibold)
+        label.font = .systemFont(ofSize: 18, weight: .semibold) // larger font
         label.textColor = .label
         label.numberOfLines = 2
         return label
@@ -27,21 +27,21 @@ class MaintenanceTableViewCell: UITableViewCell {
     
     private let locationLabel: UILabel = {
         let label = UILabel()
-        label.font = .systemFont(ofSize: 14, weight: .medium)
+        label.font = .systemFont(ofSize: 16, weight: .medium) // larger font
         label.textColor = .secondaryLabel
         return label
     }()
     
     private let categoryLabel: UILabel = {
         let label = UILabel()
-        label.font = .systemFont(ofSize: 15, weight: .regular)
+        label.font = .systemFont(ofSize: 16, weight: .regular) // larger font
         label.textColor = .secondaryLabel
         return label
     }()
     
     private let timeLabel: UILabel = {
         let label = UILabel()
-        label.font = .systemFont(ofSize: 13, weight: .regular)
+        label.font = .systemFont(ofSize: 14, weight: .regular)
         label.textColor = .systemGray2
         return label
     }()
@@ -61,8 +61,8 @@ class MaintenanceTableViewCell: UITableViewCell {
         config.image = UIImage(systemName: "eye.fill")
         config.imagePlacement = .leading
         config.imagePadding = 6
-        config.baseBackgroundColor = UIColor(red: 0.85, green: 0.9, blue: 0.95, alpha: 1.0) // soft blue-gray
-        config.baseForegroundColor = UIColor(red: 0.2, green: 0.4, blue: 0.6, alpha: 1.0)   // deep blue
+        config.baseBackgroundColor = UIColor(red: 0.85, green: 0.9, blue: 0.95, alpha: 1.0)
+        config.baseForegroundColor = UIColor(red: 0.2, green: 0.4, blue: 0.6, alpha: 1.0)
         config.cornerStyle = .medium
         return UIButton(configuration: config)
     }()
@@ -73,7 +73,7 @@ class MaintenanceTableViewCell: UITableViewCell {
         config.image = UIImage(systemName: "pencil")
         config.imagePlacement = .leading
         config.imagePadding = 6
-        config.baseBackgroundColor = UIColor(red: 0.2, green: 0.4, blue: 0.6, alpha: 1.0)   // deep blue
+        config.baseBackgroundColor = UIColor(red: 0.2, green: 0.4, blue: 0.6, alpha: 1.0)
         config.baseForegroundColor = .white
         config.cornerStyle = .medium
         return UIButton(configuration: config)
@@ -93,9 +93,15 @@ class MaintenanceTableViewCell: UITableViewCell {
         
         contentView.addSubview(containerView)
         
-        let stack = UIStackView(arrangedSubviews: [titleLabel, locationLabel, categoryLabel, timeLabel, buttonsStackView])
+        let stack = UIStackView(arrangedSubviews: [
+            titleLabel,
+            locationLabel,
+            categoryLabel,
+            timeLabel,
+            buttonsStackView
+        ])
         stack.axis = .vertical
-        stack.spacing = 6
+        stack.spacing = 8
         stack.translatesAutoresizingMaskIntoConstraints = false
         
         containerView.addSubview(stack)

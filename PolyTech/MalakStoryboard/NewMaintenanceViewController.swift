@@ -6,21 +6,21 @@ class NewMaintenanceViewController: UIViewController {
     var requestToEdit: MaintenanceRequestModel?
     var item: MaintenanceRequestModel?
     
-    // Cloudinary setup
+ 
     let cloudName: String = "dwvlnmbtv"
     let uploadPreset = "Polytech_Cloudinary"
     var cloudinary: CLDCloudinary!
 
-    // Firestore database connection
+ 
     let database = Firestore.firestore()
 
-    // Edit mode management
+
     var isEditMode = false
     var documentId: String?
     var existingData: [String: Any]?
     var uploadedImageUrl: String?
 
-    // UI Elements
+
     @IBOutlet weak var requestName: UITextField!
     @IBOutlet weak var category: UITextField!
     @IBOutlet weak var location: UITextField!
@@ -31,13 +31,13 @@ class NewMaintenanceViewController: UIViewController {
     @IBOutlet weak var urgencyDropDown: UIImageView!
     @IBOutlet weak var uploadImage: UIImageView!
 
-    // Picker setup
+
     private let categoryPicker = UIPickerView()
     private let urgencyPicker = UIPickerView()
     private var selectedCategory: MaintenanceCategory?
     private var selectedUrgency: UrgencyLevel?
 
-    // Maintenance categories
+ 
     enum MaintenanceCategory: String, CaseIterable {
         case osUpdate = "os_update"
         case classroomEquipment = "classroom_equipment"
@@ -58,7 +58,7 @@ class NewMaintenanceViewController: UIViewController {
         }
     }
 
-    // Urgency levels
+
     enum UrgencyLevel: String, CaseIterable {
         case low, medium, high
         var displayName: String { rawValue.capitalized }
@@ -73,7 +73,7 @@ class NewMaintenanceViewController: UIViewController {
         setupImageTap()
         configureEditMode()
 
-        // ✅ Programmatic back button
+ 
         let backButton = UIBarButtonItem(
             image: UIImage(systemName: "chevron.left"),
             style: .plain,
@@ -84,21 +84,15 @@ class NewMaintenanceViewController: UIViewController {
         navigationItem.leftBarButtonItem = backButton
     }
 
-
-    
-    
     @objc private func goBack() {
         navigationController?.popViewController(animated: true)
     }
 
-    
-    // Initialize Cloudinary
     private func initCloudinary() {
         let config = CLDConfiguration(cloudName: cloudName, secure: true)
         cloudinary = CLDCloudinary(configuration: config)
     }
 
-    // Enable tap to upload image
     private func setupImageTap() {
         uploadImage.isUserInteractionEnabled = true
         uploadImage.addGestureRecognizer(
@@ -106,7 +100,6 @@ class NewMaintenanceViewController: UIViewController {
         )
     }
 
-    // Select image from photo library
     @objc private func selectImage() {
         let picker = UIImagePickerController()
         picker.delegate = self
@@ -114,7 +107,7 @@ class NewMaintenanceViewController: UIViewController {
         present(picker, animated: true)
     }
 
-    // Upload image to Cloudinary
+
     private func uploadToCloudinary(imageData: Data) {
         savebtn.isEnabled = false
 
@@ -136,19 +129,58 @@ class NewMaintenanceViewController: UIViewController {
         )
     }
 
-    // Configure edit mode
     private func configureEditMode() {
-        if isEditMode {
+
+        if let request = requestToEdit {
+            isEditMode = true
+            documentId = request.id
             pageTitle.text = "Edit Maintenance Request"
-            savebtn.setTitle("Edit", for: .normal)
-            populateFields()
+            savebtn.setTitle("Update", for: .normal)
+            populateFieldsFromRequest(request)
         } else {
+            isEditMode = false
             pageTitle.text = "New Maintenance Request"
             savebtn.setTitle("Save", for: .normal)
         }
     }
 
-    // Populate fields for editing
+    private func populateFieldsFromRequest(_ request: MaintenanceRequestModel) {
+        requestName.text = request.requestName
+        requestName.isEnabled = false
+        
+        location.text = request.location
+
+        if let cat = MaintenanceCategory(rawValue: request.category) {
+            selectedCategory = cat
+            category.text = cat.displayName
+        }
+        
+ 
+        if let urg = UrgencyLevel(rawValue: request.urgency.rawValue) {
+            selectedUrgency = urg
+            urgency.text = urg.displayName
+        }
+
+        if let imageUrl = request.imageUrl {
+            uploadedImageUrl = imageUrl
+
+            loadImage(from: imageUrl)
+        }
+    }
+
+    private func loadImage(from urlString: String) {
+        guard let url = URL(string: urlString) else { return }
+        
+        URLSession.shared.dataTask(with: url) { [weak self] data, _, error in
+            guard let data = data, error == nil,
+                  let image = UIImage(data: data) else { return }
+            
+            DispatchQueue.main.async {
+                self?.uploadImage.image = image
+            }
+        }.resume()
+    }
+
     private func populateFields() {
         guard let data = existingData else { return }
 
@@ -166,10 +198,6 @@ class NewMaintenanceViewController: UIViewController {
             selectedUrgency = urg
             urgency.text = urg.displayName
         }
-
-//        if let imageUrl = data["imageUrl"] as? String {
-//            // Optionally, load the image from the URL if necessary
-//        }
     }
 
     @IBAction func Savebtn(_ sender: UIButton) {
@@ -201,6 +229,10 @@ class NewMaintenanceViewController: UIViewController {
                 .updateData(data, completion: handleResult)
         } else {
             data["createdAt"] = Timestamp()
+
+            if let userId = UserDefaults.standard.string(forKey: "userId") {
+                data["userId"] = userId
+            }
             database.collection("maintenanceRequest")
                 .addDocument(data: data, completion: handleResult)
         }
@@ -245,14 +277,18 @@ class NewMaintenanceViewController: UIViewController {
             return
         }
 
+        let successMessage = isEditMode
+            ? "Maintenance request updated successfully ✅"
+            : "Maintenance request created successfully ✅"
+        
         let alert = UIAlertController(
             title: "Success",
-            message: "Maintenance request saved successfully",
+            message: successMessage,
             preferredStyle: .alert
         )
 
         alert.addAction(UIAlertAction(title: "OK", style: .default) { _ in
-            // ✅ FIXED: Handle both modal and navigation dismissal
+ 
             if self.presentingViewController != nil {
                 self.dismiss(animated: true)
             } else {
