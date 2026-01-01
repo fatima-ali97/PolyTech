@@ -22,8 +22,8 @@
                                 <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <button opaque="NO" contentMode="scaleToFill" ambiguous="YES" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="EhC-Md-KvG">
-                                <rect key="frame" x="130" y="776" width="133" height="39"/>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="EhC-Md-KvG">
+                                <rect key="frame" x="166" y="772" width="61" height="39"/>
                                 <color key="tintColor" red="0.086274509799999996" green="0.1647058824" blue="0.2666666667" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                                 <state key="normal" title="Button"/>
                                 <buttonConfiguration key="configuration" style="filled" title="Save" cornerStyle="capsule"/>
@@ -137,7 +137,8 @@
                         <viewLayoutGuide key="safeArea" id="Alw-0M-vlZ"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
-                            <constraint firstItem="EhC-Md-KvG" firstAttribute="top" secondItem="Alw-0M-vlZ" secondAttribute="top" constant="664" id="g5Z-B0-YkJ"/>
+                            <constraint firstItem="EhC-Md-KvG" firstAttribute="centerX" secondItem="Alw-0M-vlZ" secondAttribute="centerX" id="E2D-jy-Ka2"/>
+                            <constraint firstItem="EhC-Md-KvG" firstAttribute="top" secondItem="Alw-0M-vlZ" secondAttribute="top" constant="654" id="g5Z-B0-YkJ"/>
                             <constraint firstItem="cRQ-KX-rp5" firstAttribute="top" secondItem="8d1-02-bko" secondAttribute="top" constant="70" id="ka9-Ws-tsY"/>
                             <constraint firstItem="cRQ-KX-rp5" firstAttribute="top" secondItem="8d1-02-bko" secondAttribute="top" constant="70" id="ljp-Sf-L17"/>
                         </constraints>

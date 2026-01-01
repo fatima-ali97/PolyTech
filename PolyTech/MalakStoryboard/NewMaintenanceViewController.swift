@@ -172,9 +172,9 @@ class NewMaintenanceViewController: UIViewController {
             urgency.text = urg.displayName
         }
 
-        if let imageUrl = data["imageUrl"] as? String {
-            // Optionally, load the image from the URL if necessary
-        }
+//        if let imageUrl = data["imageUrl"] as? String {
+//            // Optionally, load the image from the URL if necessary
+//        }
     }
 
     @IBAction func Savebtn(_ sender: UIButton) {
