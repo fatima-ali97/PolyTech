@@ -7,15 +7,18 @@ struct Message {
 }
 
 // MARK: - ChatBot View Controller
-final class ChatBotViewController: UIViewController {
+class ChatBotViewController: UIViewController {
 
+    // MARK: UI Outlets
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var messageTextField: UITextField!
     @IBOutlet weak var sendButton: UIButton!
     @IBOutlet weak var inputContainerView: UIView!
 
+    // MARK: Data
     private var messages: [Message] = []
 
+    // MARK: Menu Text
     private var menuText: String {
         """
         Hi 👋 I can help with these topics. Reply with a number:
@@ -42,30 +45,54 @@ final class ChatBotViewController: UIViewController {
         """
     }
 
+    // MARK: Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
 
         title = "Chat Bot"
 
-        tableView.dataSource = self
-        tableView.delegate = self
-        tableView.keyboardDismissMode = .interactive
-        tableView.separatorStyle = .none
-        tableView.rowHeight = UITableView.automaticDimension
-        tableView.estimatedRowHeight = UITableView.automaticDimension
-        tableView.contentInsetAdjustmentBehavior = .never
+        setupTableView()
+        setupInputUI()
+        setupNavigationBackButton()
 
-        messageTextField.delegate = self
-
-        inputContainerView.layer.cornerRadius = 16
-        inputContainerView.clipsToBounds = true
-        sendButton.layer.cornerRadius = 10
-        sendButton.clipsToBounds = true
-
-        // Initial menu
+        // Initial bot message (menu)
         messages = [Message(text: menuText, isUser: false)]
         reloadAndScrollToBottom()
 
+        // Listen to keyboard "return" on the textfield
+        messageTextField.delegate = self
+    }
+
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        navigationController?.setNavigationBarHidden(false, animated: animated)
+    }
+
+    // MARK: Table Setup
+    private func setupTableView() {
+        tableView.dataSource = self
+        tableView.delegate = self
+
+        tableView.keyboardDismissMode = .interactive
+        tableView.separatorStyle = .none
+
+        tableView.rowHeight = UITableView.automaticDimension
+        tableView.estimatedRowHeight = UITableView.automaticDimension
+
+        tableView.contentInsetAdjustmentBehavior = .never
+    }
+
+    // MARK: Input UI Setup
+    private func setupInputUI() {
+        inputContainerView.layer.cornerRadius = 16
+        inputContainerView.clipsToBounds = true
+
+        sendButton.layer.cornerRadius = 10
+        sendButton.clipsToBounds = true
+    }
+
+    // MARK: Navigation Back Button
+    private func setupNavigationBackButton() {
         let backButton = UIBarButtonItem(
             image: UIImage(systemName: "chevron.left"),
             style: .plain,
@@ -80,32 +107,33 @@ final class ChatBotViewController: UIViewController {
         navigationController?.popViewController(animated: true)
     }
 
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        navigationController?.setNavigationBarHidden(false, animated: animated)
-    }
-
+    // MARK: Actions
     @IBAction func sendButtonTapped(_ sender: UIButton) {
         sendMessage()
     }
 
+    // MARK: Send / Receive
     private func sendMessage() {
         let rawText = messageTextField.text ?? ""
         let text = rawText.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !text.isEmpty else { return }
 
+        // Add user message
         messages.append(Message(text: text, isUser: true))
         messageTextField.text = ""
         reloadAndScrollToBottom()
 
+        // Generate bot reply
         let reply = botReply(for: text)
 
+        // Add bot message after a short delay (feels more natural)
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.35) {
             self.messages.append(Message(text: reply, isUser: false))
             self.reloadAndScrollToBottom()
         }
     }
 
+    // MARK: Input Cleaning
     private func normalize(_ text: String) -> String {
         let trimmed = text.trimmingCharacters(in: .whitespacesAndNewlines)
         let lower = trimmed.lowercased()
@@ -113,7 +141,7 @@ final class ChatBotViewController: UIViewController {
         return cleaned
     }
 
-    // MARK: - Enhanced Bot Logic
+    // MARK: Bot Logic
     private func botReply(for input: String) -> String {
         let normalized = normalize(input)
 
@@ -123,7 +151,7 @@ final class ChatBotViewController: UIViewController {
             return "Hello! 👋 How can I help you today? Type 0 to see the menu."
         }
 
-        // Numbers / menu choices
+        // Menu choices (numbers)
         if let choice = Int(normalized) {
             switch choice {
             case 0: return menuText
@@ -146,7 +174,7 @@ final class ChatBotViewController: UIViewController {
             }
         }
 
-        // Reset options
+        // Reset options (3-1 / 3-2 / 3-3)
         switch normalized {
         case "31": return "Moodle reset 🔐\nUse 'Forgot password?' on Moodle login page"
         case "32": return "Banner reset 🔐\nBanner resets are handled by IT. Reply 5 to contact IT"
@@ -154,7 +182,7 @@ final class ChatBotViewController: UIViewController {
         default: break
         }
 
-        // Keywords / casual conversation
+        // Keywords
         if normalized.contains("help") { return "Sure! What do you need help with? Type 0 to see the menu." }
         if normalized.contains("thanks") || normalized.contains("thankyou") { return "You're welcome! 😊 Anything else I can help with?" }
         if normalized.contains("moodle") { return "Reply 1 for Moodle help. Type 0 for menu." }
@@ -165,12 +193,15 @@ final class ChatBotViewController: UIViewController {
         // Small talk
         if normalized.contains("howareyou") { return "I'm just a bot 🤖, but I'm here to help you! How can I assist today?" }
         if normalized.contains("good") { return "Glad to hear that! 😊 What can I help you with today?" }
-        if normalized.contains("problem") || normalized.contains("issue") { return "I'm sorry to hear that 😔 Can you tell me which system it relates to? (Moodle, Banner, Wi-Fi, etc.)" }
+        if normalized.contains("problem") || normalized.contains("issue") {
+            return "I'm sorry to hear that 😔 Can you tell me which system it relates to? (Moodle, Banner, Wi-Fi, etc.)"
+        }
 
         // Fallback
         return "I'm not sure I understand. 🤔 Reply with a number (0–15) or type a keyword like 'Moodle', 'Wi-Fi', or 'help'."
     }
 
+    // MARK: UI Helpers
     private func reloadAndScrollToBottom() {
         tableView.reloadData()
         guard !messages.isEmpty else { return }
