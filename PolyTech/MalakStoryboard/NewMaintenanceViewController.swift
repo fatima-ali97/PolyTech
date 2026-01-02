@@ -72,12 +72,16 @@ class NewMaintenanceViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        print("🚀 NewMaintenanceViewController loaded")
+        
         initCloudinary()
         setupPickers()
         setupDropdownTap()
         setupImageTap()
-        configureEditMode()
         setupNavigationBackButton()
+        
+        // Configure edit mode AFTER all setup
+        configureEditMode()
         
         // 🔔 Request notification permissions
         PushNotificationManager.shared.requestAuthorization { granted in
@@ -149,12 +153,14 @@ class NewMaintenanceViewController: UIViewController {
     
     private func configureEditMode() {
         if let request = requestToEdit {
+            print("✏️ Edit mode activated for request: \(request.requestName)")
             isEditMode = true
             documentId = request.id
             pageTitle.text = "Edit Maintenance Request"
             savebtn.setTitle("Update", for: .normal)
             populateFieldsFromRequest(request)
         } else {
+            print("➕ New request mode")
             isEditMode = false
             pageTitle.text = "New Maintenance Request"
             savebtn.setTitle("Save", for: .normal)
@@ -162,24 +168,33 @@ class NewMaintenanceViewController: UIViewController {
     }
     
     private func populateFieldsFromRequest(_ request: MaintenanceRequestModel) {
+        print("📝 Populating fields with request data")
+        
         requestName.text = request.requestName
         requestName.isEnabled = false
+        requestName.backgroundColor = UIColor.systemGray6
         
         location.text = request.location
         
+        // Set category
         if let cat = MaintenanceCategory(rawValue: request.category) {
             selectedCategory = cat
             category.text = cat.displayName
+            print("✅ Category set: \(cat.displayName)")
         }
         
+        // Set urgency
         if let urg = UrgencyLevel(rawValue: request.urgency.rawValue) {
             selectedUrgency = urg
             urgency.text = urg.displayName
+            print("✅ Urgency set: \(urg.displayName)")
         }
         
+        // Load image if exists
         if let imageUrl = request.imageUrl {
             uploadedImageUrl = imageUrl
             loadImage(from: imageUrl)
+            print("✅ Loading existing image")
         }
     }
     
@@ -197,15 +212,41 @@ class NewMaintenanceViewController: UIViewController {
     }
     
     private func setupPickers() {
+        // Category Picker
         categoryPicker.delegate = self
         categoryPicker.dataSource = self
         categoryPicker.tag = 1
         category.inputView = categoryPicker
         
+        // Category Toolbar with Done button
+        let categoryToolbar = UIToolbar()
+        categoryToolbar.sizeToFit()
+        let categoryDone = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(dismissCategoryPicker))
+        let categoryFlex = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
+        categoryToolbar.items = [categoryFlex, categoryDone]
+        category.inputAccessoryView = categoryToolbar
+        
+        // Urgency Picker
         urgencyPicker.delegate = self
         urgencyPicker.dataSource = self
         urgencyPicker.tag = 2
         urgency.inputView = urgencyPicker
+        
+        // Urgency Toolbar with Done button
+        let urgencyToolbar = UIToolbar()
+        urgencyToolbar.sizeToFit()
+        let urgencyDone = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(dismissUrgencyPicker))
+        let urgencyFlex = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
+        urgencyToolbar.items = [urgencyFlex, urgencyDone]
+        urgency.inputAccessoryView = urgencyToolbar
+    }
+    
+    @objc private func dismissCategoryPicker() {
+        category.resignFirstResponder()
+    }
+    
+    @objc private func dismissUrgencyPicker() {
+        urgency.resignFirstResponder()
     }
     
     private func setupDropdownTap() {
@@ -255,11 +296,13 @@ class NewMaintenanceViewController: UIViewController {
         }
         
         if isEditMode, let documentId = documentId {
+            print("🔄 Updating existing request with ID: \(documentId)")
             // UPDATE existing request
             database.collection("maintenanceRequest")
                 .document(documentId)
                 .updateData(data, completion: handleUpdateResult)
         } else {
+            print("➕ Creating new request")
             // CREATE new request
             data["createdAt"] = Timestamp()
             
@@ -321,9 +364,12 @@ class NewMaintenanceViewController: UIViewController {
     
     private func handleUpdateResult(_ error: Error?) {
         if let error = error {
+            print("❌ Update error: \(error.localizedDescription)")
             showAlert(error.localizedDescription)
             return
         }
+        
+        print("✅ Maintenance request updated successfully")
         
         let alert = UIAlertController(
             title: "Success",

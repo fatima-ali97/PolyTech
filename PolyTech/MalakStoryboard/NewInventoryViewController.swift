@@ -3,8 +3,7 @@ import FirebaseFirestore
 import FirebaseAuth
 
 class NewInventoryViewController: UIViewController {
-    
-    // MARK: - Properties
+
     var itemToEdit: Inventory?
     var isEditMode = false
     var documentId: String?
@@ -246,8 +245,98 @@ class NewInventoryViewController: UIViewController {
         if isEditMode, let documentId = documentId {
             updateRequest(documentId: documentId, data: data)
         } else {
-            newRequest(data: data)
+            // Check stock before creating new request
+            checkStockAndCreateRequest(data: data)
         }
+    }
+    
+    // MARK: - Stock Management
+    
+    private func checkStockAndCreateRequest(data: [String: Any]) {
+        guard let itemNameText = data["itemName"] as? String,
+              let requestedQuantity = data["quantity"] as? Int else {
+            return
+        }
+        
+        // Show loading indicator
+        let loadingAlert = UIAlertController(title: nil, message: "Checking stock availability...", preferredStyle: .alert)
+        let loadingIndicator = UIActivityIndicatorView(style: .medium)
+        loadingIndicator.translatesAutoresizingMaskIntoConstraints = false
+        loadingIndicator.startAnimating()
+        loadingAlert.view.addSubview(loadingIndicator)
+        NSLayoutConstraint.activate([
+            loadingIndicator.centerXAnchor.constraint(equalTo: loadingAlert.view.centerXAnchor),
+            loadingIndicator.bottomAnchor.constraint(equalTo: loadingAlert.view.bottomAnchor, constant: -20)
+        ])
+        present(loadingAlert, animated: true)
+        
+        // Query inventory stock
+        database.collection("inventoryStock")
+            .whereField("itemName", isEqualTo: itemNameText)
+            .getDocuments { [weak self] snapshot, error in
+                guard let self = self else { return }
+                
+                loadingAlert.dismiss(animated: true) {
+                    if let error = error {
+                        self.showAlert("Error checking stock: \(error.localizedDescription)")
+                        return
+                    }
+                    
+                    guard let documents = snapshot?.documents, !documents.isEmpty else {
+                        self.showStockAlert(
+                            title: "Item Not in Stock",
+                            message: "The item '\(itemNameText)' is not available in the inventory. Please contact the administrator."
+                        )
+                        return
+                    }
+                    
+                    let document = documents[0]
+                    let stockDocumentId = document.documentID
+                    let currentStock = document.data()["quantity"] as? Int ?? 0
+                    
+                    if currentStock < requestedQuantity {
+                        self.showStockAlert(
+                            title: "Insufficient Stock",
+                            message: "Only \(currentStock) unit(s) of '\(itemNameText)' available. You requested \(requestedQuantity) unit(s)."
+                        )
+                    } else {
+                        // Sufficient stock, proceed with request and decrease stock
+                        self.createRequestAndUpdateStock(
+                            data: data,
+                            stockDocumentId: stockDocumentId,
+                            currentStock: currentStock,
+                            requestedQuantity: requestedQuantity
+                        )
+                    }
+                }
+            }
+    }
+    
+    private func createRequestAndUpdateStock(data: [String: Any], stockDocumentId: String, currentStock: Int, requestedQuantity: Int) {
+        let newStock = currentStock - requestedQuantity
+        
+        // Update stock first
+        database.collection("inventoryStock")
+            .document(stockDocumentId)
+            .updateData(["quantity": newStock]) { [weak self] error in
+                guard let self = self else { return }
+                
+                if let error = error {
+                    self.showAlert("Error updating stock: \(error.localizedDescription)")
+                    return
+                }
+                
+                print("✅ Stock updated: \(currentStock) -> \(newStock)")
+                
+                // Now create the request
+                self.newRequest(data: data)
+            }
+    }
+    
+    private func showStockAlert(title: String, message: String) {
+        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "OK", style: .default))
+        present(alert, animated: true)
     }
     
     // MARK: - Validation
