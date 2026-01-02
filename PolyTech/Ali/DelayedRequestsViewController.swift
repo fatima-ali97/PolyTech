@@ -9,6 +9,12 @@ import UIKit
 import FirebaseFirestore
 
 final class DelayedRequestsViewController: UIViewController {
+    
+    enum Availability: String {
+        case available
+        case busy
+        case unavailable
+    }
 
     struct DelayedRequest {
         let id: String
@@ -18,6 +24,7 @@ final class DelayedRequestsViewController: UIViewController {
     struct TechnicianItem {
         let id: String
         let name: String
+        let hours: String
     }
 
     @IBOutlet weak var tableView: UITableView!
@@ -33,9 +40,11 @@ final class DelayedRequestsViewController: UIViewController {
     
     private var delayedOldListener: ListenerRegistration?
     private var rejectedListener: ListenerRegistration?
+    private var activeTasksListener: ListenerRegistration?
 
     private var oldMap: [String: DelayedRequest] = [:]
     private var rejectedMap: [String: DelayedRequest] = [:]
+    private var activeCountByTechId: [String: Int] = [:]
 
 
     override func viewDidLoad() {
@@ -50,12 +59,15 @@ final class DelayedRequestsViewController: UIViewController {
 
         loadDelayedRequests()
         loadTechnicians()
+        
+        startActiveTasksListener()
     }
 
     deinit {
         delayedOldListener?.remove()
         rejectedListener?.remove()
         techListener?.remove()
+        activeTasksListener?.remove()
     }
 
     private func loadDelayedRequests() {
@@ -76,7 +88,7 @@ final class DelayedRequestsViewController: UIViewController {
         }
 
         delayedOldListener?.remove()
-        delayedOldListener = db.collection("requests")
+        delayedOldListener = db.collection("maintenanceRequest")
             .whereField("createdAt", isLessThanOrEqualTo: cutoffTimestamp)
             .addSnapshotListener { [weak self] snapshot, error in
                 guard let self else { return }
@@ -102,24 +114,18 @@ final class DelayedRequestsViewController: UIViewController {
             }
 
         rejectedListener?.remove()
-        rejectedListener = db.collection("requests")
-            .whereField("rejected", isEqualTo: true)
+        rejectedListener = db.collection("maintenanceRequest")
+            .whereField("status", isEqualTo: "rejected")
             .addSnapshotListener { [weak self] snapshot, error in
                 guard let self else { return }
                 if let error = error {
-                    print("❌ rejected requests error:", error)
+                    print("❌ rejected(status) requests error:", error)
                     return
                 }
 
                 let docs = snapshot?.documents ?? []
                 self.rejectedMap = Dictionary(uniqueKeysWithValues: docs.compactMap { doc in
                     let data = doc.data()
-
-                    // exclude completed
-                    if let status = data["status"] as? String, status.lowercased() == "completed" {
-                        return nil
-                    }
-
                     guard let title = data["requestName"] as? String else { return nil }
                     return (doc.documentID, DelayedRequest(id: doc.documentID, title: title))
                 })
@@ -141,8 +147,12 @@ final class DelayedRequestsViewController: UIViewController {
                 let docs = snapshot?.documents ?? []
                 self.technicians = docs.compactMap { doc in
                     let data = doc.data()
-                    guard let name = data["name"] as? String else { return nil }
-                    return TechnicianItem(id: doc.documentID, name: name)
+                    guard
+                        let name = data["name"] as? String,
+                        let hours = data["hours"] as? String
+                    else { return nil }
+
+                    return TechnicianItem(id: doc.documentID, name: name, hours: hours)
                 }
 
                 self.technicians.sort { $0.name.localizedCaseInsensitiveCompare($1.name) == .orderedAscending }
@@ -153,21 +163,119 @@ final class DelayedRequestsViewController: UIViewController {
             }
     }
     
+    private func startActiveTasksListener() {
+        activeTasksListener?.remove()
+
+        activeTasksListener = db.collection("maintenanceRequest")
+            .whereField("status", in: ["pending", "in_progress"])
+            .addSnapshotListener { [weak self] snap, err in
+                guard let self else { return }
+                if let err = err {
+                    print("❌ active tasks listener error:", err)
+                    return
+                }
+
+                var map: [String: Int] = [:]
+                for doc in snap?.documents ?? [] {
+                    let data = doc.data()
+                    if let techId = data["technicianId"] as? String, !techId.isEmpty {
+                        map[techId, default: 0] += 1
+                    }
+                }
+
+                self.activeCountByTechId = map
+
+                DispatchQueue.main.async {
+                    self.tableView.reloadData()
+                }
+            }
+    }
+    
     private func assign(requestId: String, technician: TechnicianItem) {
         let updates: [String: Any] = [
-            "assignedTechnicianId": technician.id,
+            "technicianId": technician.id,
             "assignedTechnicianName": technician.name,
             "status": "in_progress",
             "updatedAt": FieldValue.serverTimestamp()
         ]
 
-        db.collection("requests").document(requestId).updateData(updates) { error in
+        db.collection("maintenanceRequest").document(requestId).updateData(updates) { error in
             if let error = error {
                 print("❌ Failed to reassign:", error)
             } else {
                 print("✅ Reassigned request \(requestId) to \(technician.name)")
             }
         }
+    }
+    
+    private func isNowWithinHours(_ hoursString: String, now: Date = Date()) -> Bool {
+        let s = hoursString.trimmingCharacters(in: .whitespacesAndNewlines)
+        if s.isEmpty { return false }
+
+        let lower = s.lowercased()
+
+        if lower.contains("24/7") || lower.contains("247") || lower.contains("24x7") || lower.contains("24-7") {
+            return true
+        }
+
+        if lower.contains("closed") || lower.contains("off") { return false }
+
+        let normalized = s
+            .replacingOccurrences(of: "–", with: "-")
+            .replacingOccurrences(of: "—", with: "-")
+            .replacingOccurrences(of: "to", with: "-")
+            .replacingOccurrences(of: " ", with: "")
+
+        let parts = normalized.split(separator: "-", omittingEmptySubsequences: true)
+        guard parts.count == 2 else { return false }
+
+        let startStr = String(parts[0])
+        let endStr   = String(parts[1])
+
+        let formats = ["HH:mm", "H:mm", "h:mma", "hh:mma", "h:mm a", "hh:mm a", "ha", "h a"]
+
+        func parseTimeToday(_ timeStr: String) -> Date? {
+            let cal = Calendar.current
+            let day = cal.dateComponents([.year, .month, .day], from: now)
+
+            for f in formats {
+                let df = DateFormatter()
+                df.locale = Locale(identifier: "en_US_POSIX")
+                df.dateFormat = f
+
+                if let t = df.date(from: timeStr) {
+                    let tc = cal.dateComponents([.hour, .minute], from: t)
+                    var comps = DateComponents()
+                    comps.year = day.year
+                    comps.month = day.month
+                    comps.day = day.day
+                    comps.hour = tc.hour
+                    comps.minute = tc.minute
+                    return cal.date(from: comps)
+                }
+            }
+            return nil
+        }
+
+        guard let start = parseTimeToday(startStr),
+              let endSameDay = parseTimeToday(endStr) else {
+            return false
+        }
+
+        let cal = Calendar.current
+        let _ = (endSameDay >= start) ? endSameDay : cal.date(byAdding: .day, value: 1, to: endSameDay)!
+
+        if endSameDay < start {
+            let endTomorrow = cal.date(byAdding: .day, value: 1, to: endSameDay)!
+
+            if now >= start {
+                return now <= endTomorrow
+            } else {
+                return now <= endSameDay
+            }
+        }
+
+        return (now >= start && now <= endSameDay)
     }
 }
 
@@ -186,11 +294,15 @@ extension DelayedRequestsViewController: UITableViewDataSource, UITableViewDeleg
         let request = delayedRequests[indexPath.row]
         cell.titleLabel.text = request.title
 
-        // Make it a menu button
         cell.reassignButton.showsMenuAsPrimaryAction = true
 
-        // Build menu actions from technicians
-        let actions = technicians.map { tech in
+        let availableTechs = technicians.filter { tech in
+            let withinHours = isNowWithinHours(tech.hours)
+            let hasActiveTasks = activeCountByTechId[tech.id, default: 0] > 0
+            return withinHours && !hasActiveTasks
+        }
+
+        let actions = availableTechs.map { tech in
             UIAction(title: tech.name) { [weak self] _ in
                 self?.assign(requestId: request.id, technician: tech)
             }
