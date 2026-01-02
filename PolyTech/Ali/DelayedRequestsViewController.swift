@@ -76,7 +76,7 @@ final class DelayedRequestsViewController: UIViewController {
         }
 
         delayedOldListener?.remove()
-        delayedOldListener = db.collection("requests")
+        delayedOldListener = db.collection("maintenanceRequest")
             .whereField("createdAt", isLessThanOrEqualTo: cutoffTimestamp)
             .addSnapshotListener { [weak self] snapshot, error in
                 guard let self else { return }
@@ -102,24 +102,18 @@ final class DelayedRequestsViewController: UIViewController {
             }
 
         rejectedListener?.remove()
-        rejectedListener = db.collection("requests")
-            .whereField("rejected", isEqualTo: true)
+        rejectedListener = db.collection("maintenanceRequest")
+            .whereField("status", isEqualTo: "rejected")
             .addSnapshotListener { [weak self] snapshot, error in
                 guard let self else { return }
                 if let error = error {
-                    print("❌ rejected requests error:", error)
+                    print("❌ rejected(status) requests error:", error)
                     return
                 }
 
                 let docs = snapshot?.documents ?? []
                 self.rejectedMap = Dictionary(uniqueKeysWithValues: docs.compactMap { doc in
                     let data = doc.data()
-
-                    // exclude completed
-                    if let status = data["status"] as? String, status.lowercased() == "completed" {
-                        return nil
-                    }
-
                     guard let title = data["requestName"] as? String else { return nil }
                     return (doc.documentID, DelayedRequest(id: doc.documentID, title: title))
                 })
@@ -155,13 +149,13 @@ final class DelayedRequestsViewController: UIViewController {
     
     private func assign(requestId: String, technician: TechnicianItem) {
         let updates: [String: Any] = [
-            "assignedTechnicianId": technician.id,
+            "technicianId": technician.id,
             "assignedTechnicianName": technician.name,
             "status": "in_progress",
             "updatedAt": FieldValue.serverTimestamp()
         ]
 
-        db.collection("requests").document(requestId).updateData(updates) { error in
+        db.collection("maintenanceRequest").document(requestId).updateData(updates) { error in
             if let error = error {
                 print("❌ Failed to reassign:", error)
             } else {

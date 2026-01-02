@@ -125,7 +125,7 @@ class TechniciansViewController: UITableViewController {
     }
     
     private func startRequestsCountsListener() {
-        requestsListener = db.collection("requests").addSnapshotListener { [weak self] snap, err in
+        requestsListener = db.collection("maintenanceRequest").addSnapshotListener { [weak self] snap, err in
             guard let self else { return }
             if let err = err { print(err); return }
 
@@ -135,7 +135,7 @@ class TechniciansViewController: UITableViewController {
             for doc in snap?.documents ?? [] {
                 let data = doc.data()
                 guard
-                    let techId = data["assignedTechnicianId"] as? String,
+                    let techId = data["technicianId"] as? String,
                     let status = data["status"] as? String
                 else { continue }
 

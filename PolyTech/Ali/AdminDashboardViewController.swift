@@ -53,6 +53,15 @@ class AdminDashboardViewController: UIViewController {
         startDashboardListener()
         
         loadTechnicianOfTheWeek()
+        
+        db.collection("maintenanceRequest").getDocuments { snap, err in
+            if let err = err {
+                print("❌ Admin smoke test error:", err.localizedDescription)
+                return
+            }
+            let count = snap?.documents.count ?? 0
+            print("✅ Admin smoke test maintenanceRequests count:", count)
+        }
     }
     
     @objc private func didTapBell() {
@@ -63,7 +72,7 @@ class AdminDashboardViewController: UIViewController {
     
     private func loadDashboardCounts() {
         // total requests
-        db.collection("requests").addSnapshotListener { [weak self] snapshot, error in
+        db.collection("maintenanceRequest").addSnapshotListener { [weak self] snapshot, error in
             guard let self else { return }
             if let error = error {
                 print("Total requests error:", error)
@@ -76,7 +85,7 @@ class AdminDashboardViewController: UIViewController {
         }
         
         // pending requests
-        db.collection("requests")
+        db.collection("maintenanceRequest")
             .whereField("status", isEqualTo: "pending")
             .addSnapshotListener { [weak self] snapshot, error in
                 guard let self else { return }
@@ -92,7 +101,7 @@ class AdminDashboardViewController: UIViewController {
             }
         
         // in progress
-        db.collection("requests")
+        db.collection("maintenanceRequest")
             .whereField("status", isEqualTo: "in_progress")
             .addSnapshotListener { [weak self] snapshot, error in
                 guard let self else { return }
@@ -108,7 +117,7 @@ class AdminDashboardViewController: UIViewController {
             }
         
         // completed
-        db.collection("requests")
+        db.collection("maintenanceRequest")
             .whereField("status", isEqualTo: "completed")
             .addSnapshotListener { [weak self] snapshot, error in
                 guard let self else { return }
@@ -129,7 +138,7 @@ class AdminDashboardViewController: UIViewController {
     
     private func startDonutListener() {
         
-        requestsListener = db.collection("requests").addSnapshotListener { [weak self] snap, err in
+        requestsListener = db.collection("maintenanceRequest").addSnapshotListener { [weak self] snap, err in
             guard let self else { return }
             if let err = err {
                 print("Donut total fetch error:", err)
@@ -156,7 +165,7 @@ class AdminDashboardViewController: UIViewController {
     private var dashboardListener: ListenerRegistration?
 
     private func startDashboardListener() {
-        dashboardListener = db.collection("requests").addSnapshotListener { [weak self] snap, err in
+        dashboardListener = db.collection("maintenanceRequest").addSnapshotListener { [weak self] snap, err in
             guard let self else { return }
             if let err = err {
                 print("❌ dashboard listener error:", err)
@@ -169,7 +178,6 @@ class AdminDashboardViewController: UIViewController {
             var inProgress = 0
             var completed = 0
 
-            // For technician-of-week
             var completedByTechId: [String: Int] = [:]
 
             for d in docs {
@@ -183,7 +191,7 @@ class AdminDashboardViewController: UIViewController {
                     inProgress += 1
                 case "completed":
                     completed += 1
-                    if let techId = data["assignedTechnicianId"] as? String {
+                    if let techId = data["technicianId"] as? String {
                         completedByTechId[techId, default: 0] += 1
                     }
                 default:
@@ -194,7 +202,6 @@ class AdminDashboardViewController: UIViewController {
             let total = docs.count
 
             DispatchQueue.main.async {
-                // labels
                 self.totalRequestsLabel.text = "\(total)"
 
                 self.pendingLabel.text = "\(pending)"
@@ -206,7 +213,6 @@ class AdminDashboardViewController: UIViewController {
                 self.completedLabel.text = "\(completed)"
                 self.completedStatusLabel.text = "Completed (\(completed))"
 
-                // donut
                 self.donutChartView.segments = [
                     .init(value: CGFloat(pending), color: .statusPending),
                     .init(value: CGFloat(inProgress), color: .statusInProgress),
@@ -214,7 +220,6 @@ class AdminDashboardViewController: UIViewController {
                 ]
             }
 
-            // Tech of the week (winner from completed requests)
             guard let (bestTechId, bestSolved) = completedByTechId.max(by: { $0.value < $1.value }) else {
                 DispatchQueue.main.async {
                     self.techOfWeekNameLabel.text = "—"
@@ -246,8 +251,7 @@ class AdminDashboardViewController: UIViewController {
     private var techOfWeekListener: ListenerRegistration?
 
     private func loadTechnicianOfTheWeek() {
-        // Listen to completed requests so it updates live
-        techOfWeekListener = db.collection("requests")
+        techOfWeekListener = db.collection("maintenanceRequest")
             .whereField("status", isEqualTo: "completed")
             .addSnapshotListener { [weak self] snap, err in
                 guard let self else { return }
@@ -256,15 +260,13 @@ class AdminDashboardViewController: UIViewController {
                     return
                 }
 
-                // Count completed per technicianId
                 var counts: [String: Int] = [:]
                 for doc in snap?.documents ?? [] {
                     let data = doc.data()
-                    guard let techId = data["assignedTechnicianId"] as? String else { continue }
+                    guard let techId = data["technicianId"] as? String else { continue }
                     counts[techId, default: 0] += 1
                 }
 
-                // If nobody has completed anything yet
                 guard let (bestTechId, bestSolved) = counts.max(by: { $0.value < $1.value }) else {
                     DispatchQueue.main.async {
                         self.techOfWeekNameLabel.text = "—"
@@ -274,7 +276,6 @@ class AdminDashboardViewController: UIViewController {
                     return
                 }
 
-                // Fetch technician name from technicians collection using the ID
                 self.db.collection("technicians").document(bestTechId).getDocument { [weak self] doc, err in
                     guard let self else { return }
                     if let err = err {
@@ -296,6 +297,7 @@ class AdminDashboardViewController: UIViewController {
     deinit {
         techOfWeekListener?.remove()
         dashboardListener?.remove()
+        requestsListener?.remove()
     }
 
 
