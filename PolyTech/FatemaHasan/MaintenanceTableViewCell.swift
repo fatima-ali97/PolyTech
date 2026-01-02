@@ -17,9 +17,9 @@ class MaintenanceTableViewCell: UITableViewCell {
         return view
     }()
     
-    private let titleLabel: UILabel = {
+    private let requestNameLabel: UILabel = {
         let label = UILabel()
-        label.font = .systemFont(ofSize: 18, weight: .semibold) // larger font
+        label.font = .systemFont(ofSize: 16, weight: .semibold)
         label.textColor = .label
         label.numberOfLines = 2
         return label
@@ -27,21 +27,31 @@ class MaintenanceTableViewCell: UITableViewCell {
     
     private let locationLabel: UILabel = {
         let label = UILabel()
-        label.font = .systemFont(ofSize: 16, weight: .medium) // larger font
+        label.font = .systemFont(ofSize: 14, weight: .medium)
         label.textColor = .secondaryLabel
         return label
     }()
     
     private let categoryLabel: UILabel = {
         let label = UILabel()
-        label.font = .systemFont(ofSize: 16, weight: .regular) // larger font
+        label.font = .systemFont(ofSize: 15, weight: .regular)
         label.textColor = .secondaryLabel
+        return label
+    }()
+    
+    private let urgencyLabel: UILabel = {
+        let label = UILabel()
+        label.font = .systemFont(ofSize: 14, weight: .bold)
+        label.textColor = .white
+        label.textAlignment = .center
+        label.layer.cornerRadius = 12
+        label.layer.masksToBounds = true
         return label
     }()
     
     private let timeLabel: UILabel = {
         let label = UILabel()
-        label.font = .systemFont(ofSize: 14, weight: .regular)
+        label.font = .systemFont(ofSize: 13, weight: .regular)
         label.textColor = .systemGray2
         return label
     }()
@@ -61,8 +71,8 @@ class MaintenanceTableViewCell: UITableViewCell {
         config.image = UIImage(systemName: "eye.fill")
         config.imagePlacement = .leading
         config.imagePadding = 6
-        config.baseBackgroundColor = UIColor(red: 0.85, green: 0.9, blue: 0.95, alpha: 1.0)
-        config.baseForegroundColor = UIColor(red: 0.2, green: 0.4, blue: 0.6, alpha: 1.0)
+        config.baseBackgroundColor = UIColor.systemGray5
+        config.baseForegroundColor = UIColor.systemBlue
         config.cornerStyle = .medium
         return UIButton(configuration: config)
     }()
@@ -73,7 +83,7 @@ class MaintenanceTableViewCell: UITableViewCell {
         config.image = UIImage(systemName: "pencil")
         config.imagePlacement = .leading
         config.imagePadding = 6
-        config.baseBackgroundColor = UIColor(red: 0.2, green: 0.4, blue: 0.6, alpha: 1.0)
+        config.baseBackgroundColor = UIColor.systemBlue
         config.baseForegroundColor = .white
         config.cornerStyle = .medium
         return UIButton(configuration: config)
@@ -94,14 +104,15 @@ class MaintenanceTableViewCell: UITableViewCell {
         contentView.addSubview(containerView)
         
         let stack = UIStackView(arrangedSubviews: [
-            titleLabel,
+            requestNameLabel,
             locationLabel,
             categoryLabel,
+            urgencyLabel,
             timeLabel,
             buttonsStackView
         ])
         stack.axis = .vertical
-        stack.spacing = 8
+        stack.spacing = 6
         stack.translatesAutoresizingMaskIntoConstraints = false
         
         containerView.addSubview(stack)
@@ -128,12 +139,19 @@ class MaintenanceTableViewCell: UITableViewCell {
     func configure(with item: MaintenanceRequestModel,
                    viewCallback: (() -> Void)?,
                    editCallback: (() -> Void)?) {
-        titleLabel.text = item.requestName
+        requestNameLabel.text = item.requestName
         locationLabel.text = "📍 \(item.location)"
         categoryLabel.text = "Category: \(item.category.capitalized)"
-        timeLabel.text = item.createdTimeText
+        urgencyLabel.text = item.urgency.rawValue.capitalized
+        timeLabel.text = item.formattedDate
         self.viewCallback = viewCallback
         self.editCallback = editCallback
+        
+        switch item.urgency {
+        case .high:   urgencyLabel.backgroundColor = .systemRed
+        case .medium: urgencyLabel.backgroundColor = .systemOrange
+        case .low:    urgencyLabel.backgroundColor = .systemGreen
+        }
     }
     
     // MARK: - Actions
