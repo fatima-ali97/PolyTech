@@ -6,14 +6,12 @@ class HomeViewController: UIViewController {
     @IBOutlet weak var Notificationbtn: UIImageView!
     @IBOutlet weak var FAQbtn: UIButton!
     @IBOutlet weak var chatBot: UIImageView!
-    @IBOutlet weak var OptionsBtn: UIButton!
     
     var userId: String?
     private let database = Firestore.firestore()
     private var notificationListener: ListenerRegistration?
     private var unreadCount: Int = 0
     
-    // Badge label for unread count
     private let badgeLabel: UILabel = {
         let label = UILabel()
         label.backgroundColor = .systemRed
@@ -25,8 +23,7 @@ class HomeViewController: UIViewController {
         label.isHidden = true
         return label
     }()
-    
-    // Popup view
+
     private let notificationPopup: UIView = {
         let view = UIView()
         view.backgroundColor = .systemBackground
@@ -93,9 +90,7 @@ class HomeViewController: UIViewController {
 //            badgeLabel.heightAnchor.constraint(equalToConstant: 20)
 //        ])
     }
-    
-    // MARK: - Setup Notification Popup
-    
+
     private func setupNotificationPopup() {
         // Add popup to view
         view.addSubview(notificationPopup)
@@ -197,22 +192,20 @@ class HomeViewController: UIViewController {
 //        }
 //    }
     
-    // MARK: - Show Notification Popup
-    
+
     private func showNotificationPopup(count: Int) {
-        // Set popup text
+
         let message = count == 1
             ? "You have 1 unread notification"
             : "You have \(count) unread notifications"
         popupLabel.text = message
         
-        // Animate popup appearance
+
         UIView.animate(withDuration: 0.4, delay: 0.2, usingSpringWithDamping: 0.7, initialSpringVelocity: 0.5, options: .curveEaseOut) {
             self.notificationPopup.alpha = 1
             self.notificationPopup.transform = .identity
         }
         
-        // Auto-dismiss after 3 seconds
         DispatchQueue.main.asyncAfter(deadline: .now() + 3) { [weak self] in
             self?.dismissPopup()
         }
