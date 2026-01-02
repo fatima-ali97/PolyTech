@@ -4,10 +4,12 @@
 <dict>
 	<key>NSFaceIDUsageDescription</key>
 	<string>This app uses Face ID for secure authentication</string>
-    <key>UIBackgroundModes</key>
-    <array>
-        <string>remote-notification</string>
-    </array>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>This app uses Microphone for requests</string>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>remote-notification</string>
+	</array>
 	<key>UIAppFonts</key>
 	<array>
 		<string>DMSans-Black.ttf</string>
@@ -40,9 +42,5 @@
 			</array>
 		</dict>
 	</dict>
-	<key>UIBackgroundModes</key>
-	<array>
-		<string>remote-notification</string>
-	</array>
 </dict>
 </plist>
