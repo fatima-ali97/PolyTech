@@ -4,7 +4,9 @@ import Cloudinary
 import AVFoundation
 
 class NewMaintenanceViewController: UIViewController {
-
+    // MARK: - Properties
+        var requestToEdit: MaintenanceRequestModel?
+        var item: MaintenanceRequestModel?
     // Cloudinary setup
     let cloudName: String = "dwvlnmbtv"
     let uploadPreset = "Polytech_Cloudinary"
@@ -247,16 +249,64 @@ class NewMaintenanceViewController: UIViewController {
 
     // Configure edit mode
     private func configureEditMode() {
-        if isEditMode {
-            pageTitle.text = "Edit Maintenance Request"
-            savebtn.setTitle("Update", for: .normal)
-            populateFields()
-        } else {
-            pageTitle.text = "New Maintenance Request"
-            savebtn.setTitle("Save", for: .normal)
+           if let request = requestToEdit {
+               print("✏️ Edit mode activated for request: \(request.requestName)")
+               isEditMode = true
+               documentId = request.id
+               pageTitle.text = "Edit Maintenance Request"
+               savebtn.setTitle("Update", for: .normal)
+               populateFieldsFromRequest(request)
+           } else {
+               print("➕ New request mode")
+               isEditMode = false
+               pageTitle.text = "New Maintenance Request"
+               savebtn.setTitle("Save", for: .normal)
+           }
+       }
+    private func populateFieldsFromRequest(_ request: MaintenanceRequestModel) {
+           print("📝 Populating fields with request data")
+           
+           requestName.text = request.requestName
+           requestName.isEnabled = false
+           requestName.backgroundColor = UIColor.systemGray6
+           
+           location.text = request.location
+           
+           // Set category
+           if let cat = MaintenanceCategory(rawValue: request.category) {
+               selectedCategory = cat
+               category.text = cat.displayName
+               print("✅ Category set: \(cat.displayName)")
+           }
+           
+           // Set urgency
+           if let urg = UrgencyLevel(rawValue: request.urgency.rawValue) {
+               selectedUrgency = urg
+               urgency.text = urg.displayName
+               print("✅ Urgency set: \(urg.displayName)")
+           }
+           
+           // Load image if exists
+           if let imageUrl = request.imageUrl {
+               uploadedImageUrl = imageUrl
+               loadImage(from: imageUrl)
+               print("✅ Loading existing image")
+           }
+       }
+    
+    
+    private func loadImage(from urlString: String) {
+            guard let url = URL(string: urlString) else { return }
+            
+            URLSession.shared.dataTask(with: url) { [weak self] data, _, error in
+                guard let data = data, error == nil,
+                      let image = UIImage(data: data) else { return }
+                
+                DispatchQueue.main.async {
+                    self?.uploadImage.image = image
+                }
+            }.resume()
         }
-    }
-
     // Populate fields for editing
     private func populateFields() {
         guard let data = existingData else { return }
