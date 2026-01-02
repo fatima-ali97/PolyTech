@@ -104,7 +104,7 @@ extension MaintenanceViewController: UITableViewDataSource, UITableViewDelegate 
         detailsLabel.font = UIFont.systemFont(ofSize: 16, weight: .medium)
         detailsLabel.textColor = .label
         detailsLabel.text = """
-        Request: \(item.requestName)
+        Request Name: \(item.requestName)
         Location: \(item.location)
         Category: \(item.category.capitalized)
         Urgency: \(item.urgency.rawValue.capitalized)
