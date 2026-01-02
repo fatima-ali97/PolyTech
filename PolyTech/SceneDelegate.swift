@@ -19,6 +19,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
         let window = UIWindow(windowScene: windowScene)
         
+        // Set notification delegate
+        
 //        // ⚠️ TEMPORARY: Force logout for testing - REMOVE THIS IN PRODUCTION
 //    #if DEBUG
 //        UserDefaults.standard.set(false, forKey: "isLoggedIn")
@@ -150,4 +152,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     func sceneDidEnterBackground(_ scene: UIScene) {
         print("⬇️ Scene did enter background")
     }
+    
+       
 }

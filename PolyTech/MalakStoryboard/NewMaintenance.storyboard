@@ -3,6 +3,7 @@
     <device id="retina6_12" orientation="portrait" appearance="light"/>
     <dependencies>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23721"/>
+        <capability name="Named colors" minToolsVersion="9.0"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -27,15 +28,6 @@
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                 <textInputTraits key="textInputTraits"/>
                             </textField>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="F8X-sl-1RF">
-                                <rect key="frame" x="166" y="699" width="61" height="39"/>
-                                <color key="tintColor" red="0.086274509799999996" green="0.1647058824" blue="0.2666666667" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
-                                <state key="normal" title="Button"/>
-                                <buttonConfiguration key="configuration" style="filled" title="Save" cornerStyle="capsule"/>
-                                <connections>
-                                    <action selector="Savebtn:" destination="iUh-Uj-aok" eventType="touchUpInside" id="cNB-Pa-o6K"/>
-                                </connections>
-                            </button>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Request Name" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="83e-G5-s68">
                                 <rect key="frame" x="60" y="192" width="87" height="16"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
@@ -136,12 +128,39 @@
                                 <color key="backgroundColor" red="0.086274509799999996" green="0.1647058824" blue="0.2666666667" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                                 <color key="tintColor" red="0.1199271021" green="0.27991654240000002" blue="0.57909201290000001" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                             </view>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="8n4-Du-a9b">
+                                <rect key="frame" x="45" y="540.33333333333337" width="302" height="33.666666666666629"/>
+                                <color key="backgroundColor" name="AccentColor"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" relation="lessThanOrEqual" constant="10" id="Mmf-IF-aQE"/>
+                                </constraints>
+                                <buttonConfiguration key="configuration" style="plain" subtitle="record" titleAlignment="center">
+                                    <attributedString key="attributedTitle"/>
+                                    <color key="baseForegroundColor" name="OnPrimary"/>
+                                </buttonConfiguration>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="F8X-sl-1RF">
+                                <rect key="frame" x="45.666666666666657" y="654" width="302" height="39"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="302" id="TON-Dp-YJP"/>
+                                </constraints>
+                                <color key="tintColor" red="0.086274509799999996" green="0.1647058824" blue="0.2666666667" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
+                                <state key="normal" title="Button"/>
+                                <buttonConfiguration key="configuration" style="filled" title="Save" cornerStyle="capsule"/>
+                                <connections>
+                                    <action selector="Savebtn:" destination="iUh-Uj-aok" eventType="touchUpInside" id="cNB-Pa-o6K"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="6qH-V5-F4c"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
-                            <constraint firstItem="F8X-sl-1RF" firstAttribute="centerX" secondItem="6qH-V5-F4c" secondAttribute="centerX" id="i2N-qU-U3h"/>
-                            <constraint firstItem="F8X-sl-1RF" firstAttribute="top" secondItem="6qH-V5-F4c" secondAttribute="top" constant="581" id="vwF-mA-nwL"/>
+                            <constraint firstItem="F8X-sl-1RF" firstAttribute="top" secondItem="8n4-Du-a9b" secondAttribute="bottom" constant="80" id="O5g-s4-dyB"/>
+                            <constraint firstItem="F8X-sl-1RF" firstAttribute="centerX" secondItem="6qH-V5-F4c" secondAttribute="centerX" id="SMg-Ja-G3K"/>
+                            <constraint firstItem="8n4-Du-a9b" firstAttribute="leading" secondItem="VVv-96-c6C" secondAttribute="leading" id="mmG-X8-xdv"/>
+                            <constraint firstItem="F8X-sl-1RF" firstAttribute="top" secondItem="6qH-V5-F4c" secondAttribute="top" constant="536" id="oDi-us-LoS"/>
+                            <constraint firstItem="8n4-Du-a9b" firstAttribute="trailing" secondItem="VVv-96-c6C" secondAttribute="trailing" id="tyg-n4-0eg"/>
+                            <constraint firstItem="8n4-Du-a9b" firstAttribute="top" secondItem="VVv-96-c6C" secondAttribute="bottom" constant="30" id="w9Q-NF-Rv2"/>
                         </constraints>
                     </view>
                     <connections>
@@ -149,6 +168,7 @@
                         <outlet property="categoryDropDown" destination="eA6-uy-09t" id="URD-ek-wlf"/>
                         <outlet property="location" destination="jEs-HO-JZY" id="BWE-dO-6YN"/>
                         <outlet property="pageTitle" destination="gHP-Lv-BcV" id="1iA-QX-Ky1"/>
+                        <outlet property="recordVoiceButton" destination="8n4-Du-a9b" id="7OQ-x0-RN1"/>
                         <outlet property="requestName" destination="y7O-ik-8p4" id="pfK-Pf-Pm1"/>
                         <outlet property="savebtn" destination="F8X-sl-1RF" id="iVK-Wd-Hmf"/>
                         <outlet property="uploadImage" destination="CDW-0Y-tZ7" id="cLv-1M-RYR"/>
@@ -158,17 +178,23 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="QGQ-AJ-MhK" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1343" y="-1679"/>
+            <point key="canvasLocation" x="1438.9312977099237" y="-1514.0845070422536"/>
         </scene>
     </scenes>
     <resources>
         <image name="chevron.compact.down" catalog="system" width="128" height="42"/>
         <image name="square.and.arrow.up" catalog="system" width="110" height="128"/>
+        <namedColor name="AccentColor">
+            <color red="1" green="0.79199999570846558" blue="0.15700000524520874" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </namedColor>
+        <namedColor name="OnPrimary">
+            <color red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </namedColor>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>
         <systemColor name="systemGray2Color">
-            <color red="0.68235294120000001" green="0.68235294120000001" blue="0.69803921570000005" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.68235294117647061" green="0.68235294117647061" blue="0.69803921568627447" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
     </resources>
 </document>

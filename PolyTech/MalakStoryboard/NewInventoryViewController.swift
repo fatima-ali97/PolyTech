@@ -392,6 +392,9 @@ class NewInventoryViewController: UIViewController {
     func newRequest(data: [String: Any]) {
         var newData = data
         newData["createdAt"] = Timestamp()
+        newData["status"] = "pending"  // 🔔 Add initial status
+        
+        // Add the current user's ID
 
         if let userId = Auth.auth().currentUser?.uid {
             newData["userId"] = userId
