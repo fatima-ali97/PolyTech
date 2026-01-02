@@ -42,32 +42,31 @@ class NewMaintenanceViewController: UIViewController {
     private var selectedCategory: MaintenanceCategory?
     private var selectedUrgency: UrgencyLevel?
 
-    // Maintenance categories
+    // MARK: - Enums
     enum MaintenanceCategory: String, CaseIterable {
-        case osUpdate = "os_update"
-        case classroomEquipment = "classroom_equipment"
-        case softwareIssue = "software_issue"
-        case airConditioner = "air_conditioner"
-        case pcHardware = "pc_hardware"
-        case serverDowntime = "server_downtime"
-
-        var displayName: String {
-            switch self {
-            case .osUpdate: return "OS Update"
-            case .classroomEquipment: return "Classroom Equipment"
-            case .softwareIssue: return "Software Issue"
-            case .airConditioner: return "Air Conditioner"
-            case .pcHardware: return "PC Hardware"
-            case .serverDowntime: return "Server Downtime"
+            case osUpdate = "os_update"
+            case classroomEquipment = "classroom_equipment"
+            case softwareIssue = "software_issue"
+            case airConditioner = "air_conditioner"
+            case pcHardware = "pc_hardware"
+            case serverDowntime = "server_downtime"
+            
+            var displayName: String {
+                switch self {
+                case .osUpdate: return "OS Update"
+                case .classroomEquipment: return "Classroom Equipment"
+                case .softwareIssue: return "Software Issue"
+                case .airConditioner: return "Air Conditioner"
+                case .pcHardware: return "PC Hardware"
+                case .serverDowntime: return "Server Downtime"
+                }
             }
         }
-    }
-
-    // Urgency levels
-    enum UrgencyLevel: String, CaseIterable {
-        case low, medium, high
-        var displayName: String { rawValue.capitalized }
-    }
+        
+        enum UrgencyLevel: String, CaseIterable {
+            case low, medium, high
+            var displayName: String { rawValue.capitalized }
+        }
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -104,8 +103,8 @@ class NewMaintenanceViewController: UIViewController {
         config.image = UIImage(systemName: recordedVoiceURL == nil ? "mic.fill" : "checkmark.circle.fill")
         config.imagePlacement = .leading
         config.imagePadding = 8
-        config.baseBackgroundColor = recordedVoiceURL == nil ? .systemBlue : .systemGreen
-        config.baseForegroundColor = .white
+        config.baseBackgroundColor = recordedVoiceURL == nil ? .accent : .tertiary
+        config.baseForegroundColor = .onPrimary
         config.cornerStyle = .medium
         config.contentInsets = NSDirectionalEdgeInsets(top: 14, leading: 20, bottom: 14, trailing: 20)
         
@@ -135,11 +134,11 @@ class NewMaintenanceViewController: UIViewController {
         if recordedVoiceURL != nil {
             config?.title = "Voice Note Recorded ✓"
             config?.image = UIImage(systemName: "checkmark.circle.fill")
-            config?.baseBackgroundColor = .systemGreen
+            config?.baseBackgroundColor = .tertiary
         } else {
             config?.title = "Record Voice Note (Optional)"
             config?.image = UIImage(systemName: "mic.fill")
-            config?.baseBackgroundColor = .systemBlue
+            config?.baseBackgroundColor = .accent
         }
         recordVoiceButton.configuration = config
     }
@@ -249,20 +248,20 @@ class NewMaintenanceViewController: UIViewController {
 
     // Configure edit mode
     private func configureEditMode() {
-           if let request = requestToEdit {
-               print("✏️ Edit mode activated for request: \(request.requestName)")
-               isEditMode = true
-               documentId = request.id
-               pageTitle.text = "Edit Maintenance Request"
-               savebtn.setTitle("Update", for: .normal)
-               populateFieldsFromRequest(request)
-           } else {
-               print("➕ New request mode")
-               isEditMode = false
-               pageTitle.text = "New Maintenance Request"
-               savebtn.setTitle("Save", for: .normal)
-           }
-       }
+        if let request = requestToEdit {
+            print("✏️ Edit mode activated for request: \(request.requestName)")
+            isEditMode = true
+            documentId = request.id
+            pageTitle.text = "Edit Maintenance Request"
+            savebtn.setTitle("Update", for: .normal)
+            populateFieldsFromRequest(request)
+        } else {
+            print("➕ New request mode")
+            isEditMode = false
+            pageTitle.text = "New Maintenance Request"
+            savebtn.setTitle("Save", for: .normal)
+        }
+    }
     private func populateFieldsFromRequest(_ request: MaintenanceRequestModel) {
            print("📝 Populating fields with request data")
            
@@ -479,37 +478,64 @@ class NewMaintenanceViewController: UIViewController {
     }
 
     private func setupPickers() {
-        categoryPicker.delegate = self
-        categoryPicker.dataSource = self
-        categoryPicker.tag = 1
-        category.inputView = categoryPicker
-
-        urgencyPicker.delegate = self
-        urgencyPicker.dataSource = self
-        urgencyPicker.tag = 2
-        urgency.inputView = urgencyPicker
-    }
-
-    private func setupDropdownTap() {
-        categoryDropDown.isUserInteractionEnabled = true
-        urgencyDropDown.isUserInteractionEnabled = true
-
-        categoryDropDown.addGestureRecognizer(
-            UITapGestureRecognizer(target: self, action: #selector(openCategoryPicker))
-        )
-
-        urgencyDropDown.addGestureRecognizer(
-            UITapGestureRecognizer(target: self, action: #selector(openUrgencyPicker))
-        )
-    }
-
-    @objc private func openCategoryPicker() {
-        category.becomeFirstResponder()
-    }
-
-    @objc private func openUrgencyPicker() {
-        urgency.becomeFirstResponder()
-    }
+            // Category Picker
+            categoryPicker.delegate = self
+            categoryPicker.dataSource = self
+            categoryPicker.tag = 1
+            category.inputView = categoryPicker
+            
+            // Category Toolbar with Done button
+            let categoryToolbar = UIToolbar()
+            categoryToolbar.sizeToFit()
+            let categoryDone = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(dismissCategoryPicker))
+            let categoryFlex = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
+            categoryToolbar.items = [categoryFlex, categoryDone]
+            category.inputAccessoryView = categoryToolbar
+            
+            // Urgency Picker
+            urgencyPicker.delegate = self
+            urgencyPicker.dataSource = self
+            urgencyPicker.tag = 2
+            urgency.inputView = urgencyPicker
+            
+            // Urgency Toolbar with Done button
+            let urgencyToolbar = UIToolbar()
+            urgencyToolbar.sizeToFit()
+            let urgencyDone = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(dismissUrgencyPicker))
+            let urgencyFlex = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
+            urgencyToolbar.items = [urgencyFlex, urgencyDone]
+            urgency.inputAccessoryView = urgencyToolbar
+        }
+        
+        @objc private func dismissCategoryPicker() {
+            category.resignFirstResponder()
+        }
+        
+        @objc private func dismissUrgencyPicker() {
+            urgency.resignFirstResponder()
+        }
+        
+        private func setupDropdownTap() {
+            categoryDropDown.isUserInteractionEnabled = true
+            urgencyDropDown.isUserInteractionEnabled = true
+            
+            categoryDropDown.addGestureRecognizer(
+                UITapGestureRecognizer(target: self, action: #selector(openCategoryPicker))
+            )
+            
+            urgencyDropDown.addGestureRecognizer(
+                UITapGestureRecognizer(target: self, action: #selector(openUrgencyPicker))
+            )
+        }
+        
+        @objc private func openCategoryPicker() {
+            category.becomeFirstResponder()
+        }
+        
+        @objc private func openUrgencyPicker() {
+            urgency.becomeFirstResponder()
+        }
+        
 
     private func handleResult(_ error: Error?) {
         if let error = error {
