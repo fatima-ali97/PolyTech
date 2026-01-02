@@ -4,6 +4,10 @@
 <dict>
 	<key>NSFaceIDUsageDescription</key>
 	<string>This app uses Face ID for secure authentication</string>
+    <key>UIBackgroundModes</key>
+    <array>
+        <string>remote-notification</string>
+    </array>
 	<key>UIAppFonts</key>
 	<array>
 		<string>DMSans-Black.ttf</string>
