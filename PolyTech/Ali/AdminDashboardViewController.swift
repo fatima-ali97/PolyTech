@@ -66,7 +66,7 @@ class AdminDashboardViewController: UIViewController {
     
     @objc private func didTapBell() {
         let vc = NotificationsViewController()
-            vc.hidesBottomBarWhenPushed = false   // optional, nicer if you use a tab bar
+            vc.hidesBottomBarWhenPushed = false
             navigationController?.pushViewController(vc, animated: true)
     }
     
