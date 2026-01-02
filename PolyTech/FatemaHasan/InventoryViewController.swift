@@ -9,6 +9,7 @@ class InventoryViewController: UIViewController {
     
     // MARK: - Data
     private var inventoryItems: [Inventory] = []
+    private var filteredItems: [Inventory] = []   // used for search results
     private let db = Firestore.firestore()
     private var listener: ListenerRegistration?
     private let currentUserId = UserDefaults.standard.string(forKey: "userId")
@@ -16,6 +17,7 @@ class InventoryViewController: UIViewController {
     // MARK: - UI Helpers
     private let refreshControl = UIRefreshControl()
     private let emptyStateView = EmptyStateView()
+    private let searchController = UISearchController(searchResultsController: nil)
     
     // MARK: - Lifecycle
     override func viewDidLoad() {
@@ -24,6 +26,7 @@ class InventoryViewController: UIViewController {
         setupNavigationButtons()
         setupTableView()
         setupEmptyState()
+        setupSearch()
         attachInventoryListener()
     }
     
@@ -111,11 +114,20 @@ class InventoryViewController: UIViewController {
         ])
     }
     
+    private func setupSearch() {
+        searchController.searchResultsUpdater = self
+        searchController.obscuresBackgroundDuringPresentation = false
+        searchController.searchBar.placeholder = "Search requests by name, category, location"
+        navigationItem.searchController = searchController
+        definesPresentationContext = true
+    }
+    
     // MARK: - Real-time listener
     private func attachInventoryListener() {
         guard listener == nil else { return } // avoid multiple listeners
         guard let uid = currentUserId, !uid.isEmpty else {
             print("❌ currentUserId is nil or empty")
+            filteredItems = []
             updateEmptyState()
             return
         }
@@ -127,26 +139,22 @@ class InventoryViewController: UIViewController {
                 if let error = error {
                     print("❌ Error fetching inventory items: \(error.localizedDescription)")
                     self.inventoryItems.removeAll()
-                    self.updateEmptyState()
+                    self.applySearchFilter()
                     return
                 }
                 guard let documents = snapshot?.documents else {
                     self.inventoryItems.removeAll()
-                    self.updateEmptyState()
+                    self.applySearchFilter()
                     return
                 }
                 
                 self.inventoryItems = documents.compactMap {
                     Inventory(dictionary: $0.data(), id: $0.documentID)
                 }
-                
                 // Sort newest first by createdAt
                 self.inventoryItems.sort { $0.createdAt.dateValue() > $1.createdAt.dateValue() }
                 
-                DispatchQueue.main.async {
-                    self.tableView?.reloadData()
-                    self.updateEmptyState()
-                }
+                self.applySearchFilter()
             }
     }
     
@@ -164,9 +172,27 @@ class InventoryViewController: UIViewController {
     
     private func updateEmptyState() {
         guard let tableView = tableView else { return }
-        let isEmpty = inventoryItems.isEmpty
+        let isEmpty = filteredItems.isEmpty
         emptyStateView.isHidden = !isEmpty
         tableView.isHidden = isEmpty
+    }
+    
+    private func applySearchFilter() {
+        if let query = searchController.searchBar.text, !query.isEmpty {
+            let q = query.lowercased()
+            filteredItems = inventoryItems.filter {
+                $0.itemName.lowercased().contains(q) ||
+                $0.category.lowercased().contains(q) ||
+                $0.location.lowercased().contains(q) ||
+                $0.requestName.lowercased().contains(q)
+            }
+        } else {
+            filteredItems = inventoryItems
+        }
+        DispatchQueue.main.async {
+            self.tableView?.reloadData()
+            self.updateEmptyState()
+        }
     }
     
     // MARK: - Details Popup
@@ -235,7 +261,9 @@ class InventoryViewController: UIViewController {
     }
     
     private func deleteItem(at indexPath: IndexPath) {
-        let item = inventoryItems[indexPath.row]
+        // Use filteredItems to match the row the user sees
+        let item = filteredItems[indexPath.row]
+        
         let alert = UIAlertController(
             title: "Delete Inventory",
             message: "Are you sure you want to delete this inventory item?",
@@ -264,7 +292,7 @@ class InventoryViewController: UIViewController {
 // MARK: - UITableViewDataSource
 extension InventoryViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        inventoryItems.count
+        filteredItems.count
     }
     
     func tableView(_ tableView: UITableView,
@@ -276,7 +304,7 @@ extension InventoryViewController: UITableViewDataSource {
             return UITableViewCell()
         }
         
-        let item = inventoryItems[indexPath.row]
+        let item = filteredItems[indexPath.row]
         cell.configure(with: item,
                        viewCallback: { [weak self] in self?.showDetailsPopup(for: item) },
                        editCallback: { [weak self] in self?.navigateToEdit(item: item) })
@@ -288,12 +316,14 @@ extension InventoryViewController: UITableViewDataSource {
 extension InventoryViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
-        showDetailsPopup(for: inventoryItems[indexPath.row])
+        showDetailsPopup(for: filteredItems[indexPath.row])
     }
     
     func tableView(_ tableView: UITableView,
                    trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath)
     -> UISwipeActionsConfiguration? {
+        let item = filteredItems[indexPath.row]
+        
         let deleteAction = UIContextualAction(style: .destructive, title: "Delete") { [weak self] _, _, completion in
             self?.deleteItem(at: indexPath)
             completion(true)
@@ -301,21 +331,26 @@ extension InventoryViewController: UITableViewDelegate {
         deleteAction.image = UIImage(systemName: "trash")
         
         let editAction = UIContextualAction(style: .normal, title: "Edit") { [weak self] _, _, completion in
-            guard let self = self else { completion(false); return }
-            self.navigateToEdit(item: self.inventoryItems[indexPath.row])
+            self?.navigateToEdit(item: item)
             completion(true)
         }
         editAction.backgroundColor = .systemBlue
         editAction.image = UIImage(systemName: "pencil")
         
         let viewAction = UIContextualAction(style: .normal, title: "Details") { [weak self] _, _, completion in
-            guard let self = self else { completion(false); return }
-            self.showDetailsPopup(for: self.inventoryItems[indexPath.row])
+            self?.showDetailsPopup(for: item)
             completion(true)
         }
         viewAction.backgroundColor = .systemGreen
         viewAction.image = UIImage(systemName: "info.circle")
         
         return UISwipeActionsConfiguration(actions: [deleteAction, editAction, viewAction])
+    }
+}
+
+// MARK: - UISearchResultsUpdating
+extension InventoryViewController: UISearchResultsUpdating {
+    func updateSearchResults(for searchController: UISearchController) {
+        applySearchFilter()
     }
 }
