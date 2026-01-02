@@ -24,12 +24,13 @@ class InventoryViewController: UIViewController {
         setupNavigationButtons()
         setupTableView()
         setupEmptyState()
-        loadInventoryItems()
+        attachInventoryListener()
     }
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         listener?.remove()
+        listener = nil
     }
     
     // MARK: - Setup
@@ -110,27 +111,26 @@ class InventoryViewController: UIViewController {
         ])
     }
     
-    // MARK: - Data
-    private func loadInventoryItems() {
-        print("📥 Loading inventory items for userId: \(currentUserId ?? "nil")")
+    // MARK: - Real-time listener
+    private func attachInventoryListener() {
+        guard listener == nil else { return } // avoid multiple listeners
         guard let uid = currentUserId, !uid.isEmpty else {
             print("❌ currentUserId is nil or empty")
             updateEmptyState()
             return
         }
         
-        // Ensure collection name matches Firestore exactly.
         listener = db.collection("inventoryRequest")
             .whereField("userId", isEqualTo: uid)
             .addSnapshotListener { [weak self] snapshot, error in
                 guard let self = self else { return }
                 if let error = error {
                     print("❌ Error fetching inventory items: \(error.localizedDescription)")
+                    self.inventoryItems.removeAll()
                     self.updateEmptyState()
                     return
                 }
                 guard let documents = snapshot?.documents else {
-                    print("📭 No inventory items found")
                     self.inventoryItems.removeAll()
                     self.updateEmptyState()
                     return
@@ -140,8 +140,8 @@ class InventoryViewController: UIViewController {
                     Inventory(dictionary: $0.data(), id: $0.documentID)
                 }
                 
-                // Sort newest first (if your model exposes timestamp or createdAt).
-                self.inventoryItems.sort { ($0.timestamp ?? Date()) > ($1.timestamp ?? Date()) }
+                // Sort newest first by createdAt
+                self.inventoryItems.sort { $0.createdAt.dateValue() > $1.createdAt.dateValue() }
                 
                 DispatchQueue.main.async {
                     self.tableView?.reloadData()
@@ -150,8 +150,14 @@ class InventoryViewController: UIViewController {
             }
     }
     
+    // MARK: - Pull to refresh (optional)
     @objc private func refreshInventoryItems() {
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+        // Reattach listener to force a re-sync (optional)
+        listener?.remove()
+        listener = nil
+        attachInventoryListener()
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
             self.refreshControl.endRefreshing()
         }
     }
@@ -163,7 +169,7 @@ class InventoryViewController: UIViewController {
         tableView.isHidden = isEmpty
     }
     
-    // MARK: - Details Popup (no image)
+    // MARK: - Details Popup
     private func showDetailsPopup(for item: Inventory) {
         let alertVC = UIViewController()
         alertVC.view.backgroundColor = .systemBackground
