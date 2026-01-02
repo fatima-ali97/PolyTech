@@ -31,7 +31,7 @@ class VoiceRecordingViewController: UIViewController {
     
     private let headerView: UIView = {
         let view = UIView()
-        view.backgroundColor = .systemBackground
+        view.backgroundColor = .background
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
     }()
@@ -49,7 +49,7 @@ class VoiceRecordingViewController: UIViewController {
         let button = UIButton(type: .system)
         var config = UIButton.Configuration.plain()
         config.image = UIImage(systemName: "xmark.circle.fill")
-        config.baseForegroundColor = .systemGray
+        config.baseForegroundColor = .label
         button.configuration = config
         button.translatesAutoresizingMaskIntoConstraints = false
         return button
@@ -57,7 +57,7 @@ class VoiceRecordingViewController: UIViewController {
     
     private let microphoneIconView: UIView = {
         let view = UIView()
-        view.backgroundColor = .systemRed.withAlphaComponent(0.1)
+        view.backgroundColor = .error.withAlphaComponent(0.1)
         view.layer.cornerRadius = 80
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
@@ -66,7 +66,7 @@ class VoiceRecordingViewController: UIViewController {
     private let microphoneIcon: UIImageView = {
         let iv = UIImageView()
         iv.image = UIImage(systemName: "mic.fill")
-        iv.tintColor = .systemRed
+        iv.tintColor = .onError
         iv.contentMode = .scaleAspectFit
         iv.translatesAutoresizingMaskIntoConstraints = false
         return iv
@@ -76,8 +76,8 @@ class VoiceRecordingViewController: UIViewController {
         let button = UIButton(type: .system)
         var config = UIButton.Configuration.filled()
         config.image = UIImage(systemName: "mic.fill")
-        config.baseBackgroundColor = .systemRed
-        config.baseForegroundColor = .white
+        config.baseBackgroundColor = .error
+        config.baseForegroundColor = .onError
         config.cornerStyle = .capsule
         config.contentInsets = NSDirectionalEdgeInsets(top: 20, leading: 20, bottom: 20, trailing: 20)
         button.configuration = config
@@ -163,9 +163,9 @@ class VoiceRecordingViewController: UIViewController {
     
     private let instructionLabel: UILabel = {
         let label = UILabel()
-        label.text = "💡 Tip: Voice notes help technicians understand the issue better"
+        label.text = "Voice notes help technicians understand the issue better. "
         label.font = .systemFont(ofSize: 14, weight: .regular)
-        label.textColor = .tertiaryLabel
+        label.textColor = .label
         label.textAlignment = .center
         label.numberOfLines = 0
         label.translatesAutoresizingMaskIntoConstraints = false
@@ -514,7 +514,7 @@ class VoiceRecordingViewController: UIViewController {
                 self.deleteButton.isHidden = true
                 self.saveButton.isHidden = true
                 self.microphoneIcon.tintColor = .systemRed
-                self.microphoneIconView.backgroundColor = .systemRed.withAlphaComponent(0.1)
+                self.microphoneIconView.backgroundColor = .error.withAlphaComponent(0.1)
                 
                 // Stop any animations
                 self.recordButton.layer.removeAllAnimations()
@@ -529,7 +529,7 @@ class VoiceRecordingViewController: UIViewController {
                 self.deleteButton.isHidden = true
                 self.saveButton.isHidden = true
                 self.microphoneIcon.tintColor = .systemRed
-                self.microphoneIconView.backgroundColor = .systemRed.withAlphaComponent(0.2)
+                self.microphoneIconView.backgroundColor = .error.withAlphaComponent(0.2)
                 
                 // Pulse animation
                 UIView.animate(withDuration: 1.0, delay: 0, options: [.repeat, .autoreverse]) {
@@ -553,14 +553,14 @@ class VoiceRecordingViewController: UIViewController {
                 self.deleteButton.isHidden = false
                 self.saveButton.isHidden = false
                 self.microphoneIcon.tintColor = .systemGreen
-                self.microphoneIconView.backgroundColor = .systemGreen.withAlphaComponent(0.1)
+                self.microphoneIconView.backgroundColor = .tertiary.withAlphaComponent(0.1)
                 
             case .playing:
                 self.playButton.configuration?.image = UIImage(systemName: "pause.fill")
                 self.playButton.configuration?.title = "Pause"
                 self.statusLabel.text = "Playing recording..."
                 self.microphoneIcon.tintColor = .systemBlue
-                self.microphoneIconView.backgroundColor = .systemBlue.withAlphaComponent(0.1)
+                self.microphoneIconView.backgroundColor = .accent.withAlphaComponent(0.1)
                 
             case .paused:
                 self.playButton.configuration?.image = UIImage(systemName: "play.fill")
