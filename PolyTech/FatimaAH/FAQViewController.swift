@@ -18,7 +18,7 @@ struct FAQSection {
 }
 
 // MARK: - FAQ Screen
-final class FAQViewController: UIViewController {
+ class FAQViewController: UIViewController {
 
     // MARK: UI Outlets
     @IBOutlet weak var searchBar: UISearchBar!
