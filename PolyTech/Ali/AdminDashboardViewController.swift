@@ -65,9 +65,9 @@ class AdminDashboardViewController: UIViewController {
     }
     
     @objc private func didTapBell() {
-        let alert = UIAlertController(title: "Notifications", message: "Tapped bell.", preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: "OK", style: .default))
-        present(alert, animated: true)
+        let vc = NotificationsViewController()
+            vc.hidesBottomBarWhenPushed = false   // optional, nicer if you use a tab bar
+            navigationController?.pushViewController(vc, animated: true)
     }
     
     private func loadDashboardCounts() {
