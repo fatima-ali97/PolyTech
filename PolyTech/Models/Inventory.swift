@@ -20,10 +20,7 @@ struct Inventory: Codable {
         guard
             let category = dictionary["category"] as? String,
             let itemName = dictionary["itemName"] as? String,
-            let location = dictionary["location"] as? String,
             let quantity = dictionary["quantity"] as? Int,
-            let reason = dictionary["reason"] as? String,
-            let requestName = dictionary["requestName"] as? String,
             let userId = dictionary["userId"] as? String,
             let createdAt = dictionary["createdAt"] as? Timestamp,
             let updatedAt = dictionary["updatedAt"] as? Timestamp
@@ -36,13 +33,23 @@ struct Inventory: Codable {
         self.id = id
         self.category = category
         self.itemName = itemName
-        self.location = location
         self.quantity = quantity
-        self.reason = reason
-        self.requestName = requestName
         self.userId = userId
         self.createdAt = createdAt
         self.updatedAt = updatedAt
+        
+        // Location can be saved as String or Int in Firestore
+        if let locationStr = dictionary["location"] as? String {
+            self.location = locationStr
+        } else if let locationInt = dictionary["location"] as? Int {
+            self.location = String(locationInt)
+        } else {
+            self.location = "Unknown"
+        }
+        
+        // Optional fields with safe defaults
+        self.reason = dictionary["reason"] as? String ?? ""
+        self.requestName = dictionary["requestName"] as? String ?? itemName
     }
     
     // MARK: - Convert to Firestore Dictionary
@@ -50,7 +57,7 @@ struct Inventory: Codable {
         return [
             "category": category,
             "itemName": itemName,
-            "location": location,
+            "location": location,           // store consistently as String
             "quantity": quantity,
             "reason": reason,
             "requestName": requestName,
