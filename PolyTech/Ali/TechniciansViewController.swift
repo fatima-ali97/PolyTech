@@ -67,7 +67,9 @@ class TechniciansViewController: UITableViewController {
         cell.hoursValueLabel.text = tech.hours
         
         let withinHours = isNowWithinHours(tech.hours)
-        let displayAvailability: Availability = withinHours ? tech.availability : .unavailable
+        let baseAvailability: Availability = (tech.tasks > 0) ? .busy : .available
+        let displayAvailability: Availability = withinHours ? baseAvailability : .unavailable
+
 
         switch displayAvailability {
         case .available:
