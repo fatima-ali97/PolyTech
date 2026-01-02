@@ -262,6 +262,7 @@ class NewMaintenanceViewController: UIViewController {
         } else {
             // CREATE new request
             data["createdAt"] = Timestamp()
+            data["status"] = "pending"  // 🔔 Add initial status
             
             if let userId = UserDefaults.standard.string(forKey: "userId") {
                 data["userId"] = userId
