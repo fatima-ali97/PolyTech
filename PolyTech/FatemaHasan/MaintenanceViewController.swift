@@ -9,6 +9,7 @@ class MaintenanceViewController: UIViewController {
     
     // MARK: - Data
     private var maintenanceItems: [MaintenanceRequestModel] = []
+    private var filteredItems: [MaintenanceRequestModel] = []   // used for search results
     private let db = Firestore.firestore()
     private var listener: ListenerRegistration?
     private let currentUserId = UserDefaults.standard.string(forKey: "userId")
@@ -16,6 +17,7 @@ class MaintenanceViewController: UIViewController {
     // MARK: - UI Helpers
     private let refreshControl = UIRefreshControl()
     private let emptyStateView = EmptyStateView()
+    private let searchController = UISearchController(searchResultsController: nil)
     
     // MARK: - Lifecycle
     override func viewDidLoad() {
@@ -24,6 +26,7 @@ class MaintenanceViewController: UIViewController {
         setupNavigationButtons()
         setupTableView()
         setupEmptyState()
+        setupSearch()
         attachMaintenanceListener()
     }
     
@@ -41,7 +44,7 @@ class MaintenanceViewController: UIViewController {
     // MARK: - Setup
     private func setupUI() {
         title = "Maintenance"
-        navigationController?.navigationBar.prefersLargeTitles = true
+        navigationController?.navigationBar.prefersLargeTitles = true // match Inventory large title
         view.backgroundColor = .systemBackground
     }
     
@@ -52,6 +55,14 @@ class MaintenanceViewController: UIViewController {
             action: #selector(addTapped)
         )
         navigationItem.rightBarButtonItem = addBarButton
+    }
+    
+    private func setupSearch() {
+        searchController.searchResultsUpdater = self
+        searchController.obscuresBackgroundDuringPresentation = false
+        searchController.searchBar.placeholder = "Search maintenance requests"
+        navigationItem.searchController = searchController
+        definesPresentationContext = true
     }
     
     @objc private func addTapped() {
@@ -102,6 +113,7 @@ class MaintenanceViewController: UIViewController {
         guard listener == nil else { return }
         guard let uid = currentUserId, !uid.isEmpty else {
             print("❌ currentUserId is nil or empty")
+            filteredItems = []
             updateEmptyState()
             return
         }
@@ -113,12 +125,12 @@ class MaintenanceViewController: UIViewController {
                 if let error = error {
                     print("❌ Error fetching maintenance items: \(error.localizedDescription)")
                     self.maintenanceItems.removeAll()
-                    self.updateEmptyState()
+                    self.applySearchFilter()
                     return
                 }
                 guard let documents = snapshot?.documents else {
                     self.maintenanceItems.removeAll()
-                    self.updateEmptyState()
+                    self.applySearchFilter()
                     return
                 }
                 
@@ -127,11 +139,7 @@ class MaintenanceViewController: UIViewController {
                 }
                 
                 self.maintenanceItems.sort { $0.createdAt.dateValue() > $1.createdAt.dateValue() }
-                
-                DispatchQueue.main.async {
-                    self.tableView?.reloadData()
-                    self.updateEmptyState()
-                }
+                self.applySearchFilter()
             }
     }
     
@@ -147,9 +155,27 @@ class MaintenanceViewController: UIViewController {
     
     private func updateEmptyState() {
         guard let tableView = tableView else { return }
-        let isEmpty = maintenanceItems.isEmpty
+        let isEmpty = filteredItems.isEmpty
         emptyStateView.isHidden = !isEmpty
         tableView.isHidden = isEmpty
+    }
+    
+    private func applySearchFilter() {
+        if let query = searchController.searchBar.text, !query.isEmpty {
+            let q = query.lowercased()
+            filteredItems = maintenanceItems.filter {
+                $0.requestName.lowercased().contains(q) ||
+                $0.category.lowercased().contains(q) ||
+                $0.location.lowercased().contains(q) ||
+                $0.urgency.rawValue.lowercased().contains(q)
+            }
+        } else {
+            filteredItems = maintenanceItems
+        }
+        DispatchQueue.main.async {
+            self.tableView?.reloadData()
+            self.updateEmptyState()
+        }
     }
     
     // MARK: - Details Popup
@@ -221,7 +247,7 @@ class MaintenanceViewController: UIViewController {
     }
     
     private func deleteItem(at indexPath: IndexPath) {
-        let item = maintenanceItems[indexPath.row]
+        let item = filteredItems[indexPath.row] // match visible list
         let alert = UIAlertController(
             title: "Delete Maintenance",
             message: "Are you sure you want to delete this maintenance request?",
@@ -250,7 +276,7 @@ class MaintenanceViewController: UIViewController {
 // MARK: - UITableViewDataSource
 extension MaintenanceViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        maintenanceItems.count
+        filteredItems.count
     }
     
     func tableView(_ tableView: UITableView,
@@ -262,7 +288,7 @@ extension MaintenanceViewController: UITableViewDataSource {
             return UITableViewCell()
         }
         
-        let item = maintenanceItems[indexPath.row]
+        let item = filteredItems[indexPath.row]
         cell.configure(
             with: item,
             viewCallback: { [weak self] in self?.showDetailsPopup(for: item) },
@@ -276,12 +302,14 @@ extension MaintenanceViewController: UITableViewDataSource {
 extension MaintenanceViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
-        showDetailsPopup(for: maintenanceItems[indexPath.row])
+        showDetailsPopup(for: filteredItems[indexPath.row])
     }
     
     func tableView(_ tableView: UITableView,
                    trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath)
     -> UISwipeActionsConfiguration? {
+        let item = filteredItems[indexPath.row]
+        
         let deleteAction = UIContextualAction(style: .destructive, title: "Delete") { [weak self] _, _, completion in
             self?.deleteItem(at: indexPath)
             completion(true)
@@ -289,21 +317,26 @@ extension MaintenanceViewController: UITableViewDelegate {
         deleteAction.image = UIImage(systemName: "trash")
         
         let editAction = UIContextualAction(style: .normal, title: "Edit") { [weak self] _, _, completion in
-            guard let self = self else { completion(false); return }
-            self.navigateToEdit(item: self.maintenanceItems[indexPath.row])
+            self?.navigateToEdit(item: item)
             completion(true)
         }
         editAction.backgroundColor = .systemBlue
         editAction.image = UIImage(systemName: "pencil")
         
         let viewAction = UIContextualAction(style: .normal, title: "Details") { [weak self] _, _, completion in
-            guard let self = self else { completion(false); return }
-            self.showDetailsPopup(for: self.maintenanceItems[indexPath.row])
+            self?.showDetailsPopup(for: item)
             completion(true)
         }
         viewAction.backgroundColor = .systemGreen
         viewAction.image = UIImage(systemName: "info.circle")
         
         return UISwipeActionsConfiguration(actions: [deleteAction, editAction, viewAction])
+    }
+}
+
+// MARK: - UISearchResultsUpdating
+extension MaintenanceViewController: UISearchResultsUpdating {
+    func updateSearchResults(for searchController: UISearchController) {
+        applySearchFilter()
     }
 }
