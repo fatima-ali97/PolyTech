@@ -20,14 +20,10 @@ class DelayedRequestNotificationService {
     func startMonitoringDelayedRequests() {
         print("⏰ Starting delayed request monitoring")
         
-        let cutoffDate = Calendar.current.date(byAdding: .day, value: -delayedAfterDays, to: Date())!
-        let cutoffTimestamp = Timestamp(date: cutoffDate)
-        
-        // Monitor requests older than 3 days with pending status
-        // Query specifically for pending status
+        // TEMPORARY: Monitor ALL pending requests, filter in memory
+        // This avoids needing a composite index while it's being built
         delayedRequestsListener = db.collection("maintenanceRequest")
             .whereField("status", isEqualTo: "pending")
-            .whereField("createdAt", isLessThanOrEqualTo: cutoffTimestamp)
             .addSnapshotListener { [weak self] snapshot, error in
                 guard let self = self else { return }
                 
@@ -41,9 +37,21 @@ class DelayedRequestNotificationService {
                     return
                 }
                 
-                print("📊 Found \(documents.count) delayed pending requests")
+                print("📊 Found \(documents.count) pending requests, filtering for delayed ones...")
                 
-                for document in documents {
+                let cutoffDate = Calendar.current.date(byAdding: .day, value: -self.delayedAfterDays, to: Date())!
+                
+                // Filter in memory for requests older than cutoff
+                let delayedDocs = documents.filter { doc in
+                    guard let createdAt = doc.data()["createdAt"] as? Timestamp else {
+                        return false
+                    }
+                    return createdAt.dateValue() <= cutoffDate
+                }
+                
+                print("📊 Found \(delayedDocs.count) delayed pending requests")
+                
+                for document in delayedDocs {
                     self.handleNewDelayedRequest(document: document)
                 }
             }
@@ -63,8 +71,12 @@ class DelayedRequestNotificationService {
         let data = document.data() ?? [:]
         let requestId = document.documentID
         
+        print("\n🔍 Processing delayed request: \(requestId)")
+        print("   Request data: \(data)")
+        
         // Skip if already notified about this request
         guard !trackedDelayedRequests.contains(requestId) else {
+            print("⏭️ Already notified about request: \(requestId)")
             return
         }
         
@@ -78,11 +90,17 @@ class DelayedRequestNotificationService {
         guard let requestName = data["requestName"] as? String,
               let createdAt = data["createdAt"] as? Timestamp else {
             print("⚠️ Missing required fields for request: \(requestId)")
+            print("   requestName: \(data["requestName"] ?? "nil")")
+            print("   createdAt: \(data["createdAt"] ?? "nil")")
             return
         }
         
         let location = data["location"] as? String ?? "Unknown location"
         let userId = data["userId"] as? String ?? ""
+        
+        print("   Request name: \(requestName)")
+        print("   Location: \(location)")
+        print("   UserId: \(userId)")
         
         // Calculate how many days delayed
         let daysDelayed = calculateDaysDelayed(from: createdAt.dateValue())
@@ -100,6 +118,7 @@ class DelayedRequestNotificationService {
         
         // Create notification for the student who submitted the request
         if !userId.isEmpty {
+            print("📝 Creating student notification for userId: \(userId)")
             createDelayedRequestNotification(
                 requestId: requestId,
                 requestName: requestName,
@@ -107,9 +126,12 @@ class DelayedRequestNotificationService {
                 daysDelayed: daysDelayed,
                 userId: userId
             )
+        } else {
+            print("⚠️ No userId found in request - cannot create student notification")
         }
         
         // Create notification for admin
+        print("📝 Creating admin notifications...")
         createAdminDelayedNotification(
             requestId: requestId,
             requestName: requestName,
@@ -150,11 +172,15 @@ class DelayedRequestNotificationService {
             "room": location
         ]
         
+        print("📝 Creating notification for user: \(userId)")
+        print("📝 Notification data: \(notificationData)")
+        
         db.collection("Notifications").addDocument(data: notificationData) { error in
             if let error = error {
                 print("❌ Error creating student delayed notification: \(error.localizedDescription)")
             } else {
                 print("✅ Student delayed notification created for request: \(requestName)")
+                print("✅ Notification should appear for userId: \(userId)")
             }
         }
         
@@ -191,6 +217,7 @@ class DelayedRequestNotificationService {
                 
                 for adminDoc in adminUsers {
                     let adminId = adminDoc.documentID
+                    print("📝 Creating notification for admin: \(adminId)")
                     
                     let title = "Delayed Request Alert ⚠️"
                     let message = "Request '\(requestName)' has been pending for \(daysDelayed) days at \(location). Action required."
@@ -207,11 +234,14 @@ class DelayedRequestNotificationService {
                         "room": location
                     ]
                     
+                    print("📝 Admin notification data: \(notificationData)")
+                    
                     self.db.collection("Notifications").addDocument(data: notificationData) { error in
                         if let error = error {
                             print("❌ Error creating admin notification: \(error.localizedDescription)")
                         } else {
                             print("✅ Admin notification created for delayed request: \(requestName)")
+                            print("✅ Notification should appear for adminId: \(adminId)")
                         }
                     }
                 }
@@ -220,6 +250,8 @@ class DelayedRequestNotificationService {
                 if let currentUserId = UserDefaults.standard.string(forKey: "userId"),
                    let currentUserRole = UserDefaults.standard.string(forKey: "userRole"),
                    currentUserRole == "admin" {
+                    
+                    print("📱 Current user is admin (\(currentUserId)), scheduling local notification")
                     
                     let title = "Delayed Request Alert ⚠️"
                     let message = "Request '\(requestName)' has been pending for \(daysDelayed) days. Action required."
@@ -230,6 +262,8 @@ class DelayedRequestNotificationService {
                         requestId: requestId,
                         userType: "admin"
                     )
+                } else {
+                    print("⚠️ Current user is not admin or userId not found")
                 }
             }
     }
@@ -274,14 +308,12 @@ class DelayedRequestNotificationService {
     
     /// Manually check for delayed requests (call this when DelayedRequestsViewController loads)
     func checkForDelayedRequests(completion: @escaping (Int) -> Void) {
-        let cutoffDate = Calendar.current.date(byAdding: .day, value: -delayedAfterDays, to: Date())!
-        let cutoffTimestamp = Timestamp(date: cutoffDate)
+        print("🔍 Checking for delayed requests...")
         
-        print("🔍 Checking for delayed requests older than \(cutoffDate)")
-        
+        // TEMPORARY: Fetch all pending requests, filter in memory
+        // This avoids needing a composite index while it's being built
         db.collection("maintenanceRequest")
             .whereField("status", isEqualTo: "pending")
-            .whereField("createdAt", isLessThanOrEqualTo: cutoffTimestamp)
             .getDocuments { [weak self] snapshot, error in
                 guard let self = self else { return }
                 
@@ -292,9 +324,12 @@ class DelayedRequestNotificationService {
                 }
                 
                 let documents = snapshot?.documents ?? []
-                print("📊 Query returned \(documents.count) documents")
+                print("📊 Query returned \(documents.count) pending requests")
                 
-                // Filter to ensure they're truly delayed (3+ days)
+                let cutoffDate = Calendar.current.date(byAdding: .day, value: -self.delayedAfterDays, to: Date())!
+                print("🔍 Filtering for requests older than \(cutoffDate)")
+                
+                // Filter in memory for requests older than 3 days
                 let delayedRequests = documents.filter { doc in
                     let data = doc.data()
                     guard let createdAt = data["createdAt"] as? Timestamp else {

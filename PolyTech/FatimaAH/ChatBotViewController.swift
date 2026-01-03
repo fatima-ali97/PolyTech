@@ -9,16 +9,16 @@ struct Message {
 // MARK: - ChatBot View Controller
 class ChatBotViewController: UIViewController {
 
-    // MARK: UI Outlets
+    // MARK: - UI Outlets
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var messageTextField: UITextField!
     @IBOutlet weak var sendButton: UIButton!
     @IBOutlet weak var inputContainerView: UIView!
 
-    // MARK: Data
+    // MARK: - Properties
     private var messages: [Message] = []
 
-    // MARK: Menu Text
+    // MARK: - Menu Configuration
     private var menuText: String {
         """
         Hi 👋 I can help with these topics. Reply with a number:
@@ -28,13 +28,11 @@ class ChatBotViewController: UIViewController {
         3) Reset password
         4) Wi-Fi / Internet on campus
         5) Contact IT / Get Help
-
         6) Technician availability
         7) Email (Polytechnic email setup)
         8) Microsoft Teams / Office 365
         9) Two-Factor Authentication (Authenticator)
         10) VPN (off-campus access)
-
         11) Printing / printers on campus
         12) Library access / eResources
         13) Attendance / course registration help
@@ -45,7 +43,7 @@ class ChatBotViewController: UIViewController {
         """
     }
 
-    // MARK: Lifecycle
+    // MARK: - Lifecycle Methods
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -55,11 +53,9 @@ class ChatBotViewController: UIViewController {
         setupInputUI()
         setupNavigationBackButton()
 
-        // Initial bot message (menu)
         messages = [Message(text: menuText, isUser: false)]
         reloadAndScrollToBottom()
 
-        // Listen to keyboard "return" on the textfield
         messageTextField.delegate = self
     }
 
@@ -68,7 +64,7 @@ class ChatBotViewController: UIViewController {
         navigationController?.setNavigationBarHidden(false, animated: animated)
     }
 
-    // MARK: Table Setup
+    // MARK: - TableView Setup
     private func setupTableView() {
         tableView.dataSource = self
         tableView.delegate = self
@@ -82,7 +78,7 @@ class ChatBotViewController: UIViewController {
         tableView.contentInsetAdjustmentBehavior = .never
     }
 
-    // MARK: Input UI Setup
+    // MARK: - Input UI Setup
     private func setupInputUI() {
         inputContainerView.layer.cornerRadius = 16
         inputContainerView.clipsToBounds = true
@@ -91,7 +87,7 @@ class ChatBotViewController: UIViewController {
         sendButton.clipsToBounds = true
     }
 
-    // MARK: Navigation Back Button
+    // MARK: - Navigation Setup
     private func setupNavigationBackButton() {
         let backButton = UIBarButtonItem(
             image: UIImage(systemName: "chevron.left"),
@@ -107,33 +103,30 @@ class ChatBotViewController: UIViewController {
         navigationController?.popViewController(animated: true)
     }
 
-    // MARK: Actions
+    // MARK: - Actions
     @IBAction func sendButtonTapped(_ sender: UIButton) {
         sendMessage()
     }
 
-    // MARK: Send / Receive
+    // MARK: - Message Handling
     private func sendMessage() {
         let rawText = messageTextField.text ?? ""
         let text = rawText.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !text.isEmpty else { return }
 
-        // Add user message
         messages.append(Message(text: text, isUser: true))
         messageTextField.text = ""
         reloadAndScrollToBottom()
 
-        // Generate bot reply
         let reply = botReply(for: text)
 
-        // Add bot message after a short delay (feels more natural)
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.35) {
             self.messages.append(Message(text: reply, isUser: false))
             self.reloadAndScrollToBottom()
         }
     }
 
-    // MARK: Input Cleaning
+    // MARK: - Text Processing
     private func normalize(_ text: String) -> String {
         let trimmed = text.trimmingCharacters(in: .whitespacesAndNewlines)
         let lower = trimmed.lowercased()
@@ -141,17 +134,15 @@ class ChatBotViewController: UIViewController {
         return cleaned
     }
 
-    // MARK: Bot Logic
+    // MARK: - Bot Response Logic
     private func botReply(for input: String) -> String {
         let normalized = normalize(input)
 
-        // Greetings
         let greetings = ["hi", "hello", "hey", "goodmorning", "goodafternoon", "goodevening"]
         if greetings.contains(normalized) {
             return "Hello! 👋 How can I help you today? Type 0 to see the menu."
         }
 
-        // Menu choices (numbers)
         if let choice = Int(normalized) {
             switch choice {
             case 0: return menuText
@@ -170,11 +161,10 @@ class ChatBotViewController: UIViewController {
             case 13: return "Attendance / Registration 📝\nCheck Banner registration. Send course code + error if any"
             case 14: return "Laptop / Software 💻\nFree storage, update OS, install required apps"
             case 15: return "VM / VMware 🧩\nRestart laptop, update VMware, check VM folder path, share exact error"
-            default: return "I don’t have that option. Type 0 to see the menu."
+            default: return "I don't have that option. Type 0 to see the menu."
             }
         }
 
-        // Reset options (3-1 / 3-2 / 3-3)
         switch normalized {
         case "31": return "Moodle reset 🔐\nUse 'Forgot password?' on Moodle login page"
         case "32": return "Banner reset 🔐\nBanner resets are handled by IT. Reply 5 to contact IT"
@@ -182,7 +172,6 @@ class ChatBotViewController: UIViewController {
         default: break
         }
 
-        // Keywords
         if normalized.contains("help") { return "Sure! What do you need help with? Type 0 to see the menu." }
         if normalized.contains("thanks") || normalized.contains("thankyou") { return "You're welcome! 😊 Anything else I can help with?" }
         if normalized.contains("moodle") { return "Reply 1 for Moodle help. Type 0 for menu." }
@@ -190,18 +179,16 @@ class ChatBotViewController: UIViewController {
         if normalized.contains("password") { return "Reply 3 to reset password. Type 0 for menu." }
         if normalized.contains("wifi") { return "Reply 4 for Wi-Fi help. Type 0 for menu." }
 
-        // Small talk
         if normalized.contains("howareyou") { return "I'm just a bot 🤖, but I'm here to help you! How can I assist today?" }
         if normalized.contains("good") { return "Glad to hear that! 😊 What can I help you with today?" }
         if normalized.contains("problem") || normalized.contains("issue") {
             return "I'm sorry to hear that 😔 Can you tell me which system it relates to? (Moodle, Banner, Wi-Fi, etc.)"
         }
 
-        // Fallback
         return "I'm not sure I understand. 🤔 Reply with a number (0–15) or type a keyword like 'Moodle', 'Wi-Fi', or 'help'."
     }
 
-    // MARK: UI Helpers
+    // MARK: - UI Helpers
     private func reloadAndScrollToBottom() {
         tableView.reloadData()
         guard !messages.isEmpty else { return }
@@ -233,6 +220,7 @@ extension ChatBotViewController: UITableViewDataSource, UITableViewDelegate {
 
 // MARK: - TextField Delegate
 extension ChatBotViewController: UITextFieldDelegate {
+    
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         sendMessage()
         return true
