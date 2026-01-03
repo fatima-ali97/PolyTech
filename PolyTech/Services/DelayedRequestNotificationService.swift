@@ -150,11 +150,15 @@ class DelayedRequestNotificationService {
             "room": location
         ]
         
+        print("📝 Creating notification for user: \(userId)")
+        print("📝 Notification data: \(notificationData)")
+        
         db.collection("Notifications").addDocument(data: notificationData) { error in
             if let error = error {
                 print("❌ Error creating student delayed notification: \(error.localizedDescription)")
             } else {
                 print("✅ Student delayed notification created for request: \(requestName)")
+                print("✅ Notification should appear for userId: \(userId)")
             }
         }
         
@@ -191,6 +195,7 @@ class DelayedRequestNotificationService {
                 
                 for adminDoc in adminUsers {
                     let adminId = adminDoc.documentID
+                    print("📝 Creating notification for admin: \(adminId)")
                     
                     let title = "Delayed Request Alert ⚠️"
                     let message = "Request '\(requestName)' has been pending for \(daysDelayed) days at \(location). Action required."
@@ -207,11 +212,14 @@ class DelayedRequestNotificationService {
                         "room": location
                     ]
                     
+                    print("📝 Admin notification data: \(notificationData)")
+                    
                     self.db.collection("Notifications").addDocument(data: notificationData) { error in
                         if let error = error {
                             print("❌ Error creating admin notification: \(error.localizedDescription)")
                         } else {
                             print("✅ Admin notification created for delayed request: \(requestName)")
+                            print("✅ Notification should appear for adminId: \(adminId)")
                         }
                     }
                 }
@@ -220,6 +228,8 @@ class DelayedRequestNotificationService {
                 if let currentUserId = UserDefaults.standard.string(forKey: "userId"),
                    let currentUserRole = UserDefaults.standard.string(forKey: "userRole"),
                    currentUserRole == "admin" {
+                    
+                    print("📱 Current user is admin (\(currentUserId)), scheduling local notification")
                     
                     let title = "Delayed Request Alert ⚠️"
                     let message = "Request '\(requestName)' has been pending for \(daysDelayed) days. Action required."
@@ -230,6 +240,8 @@ class DelayedRequestNotificationService {
                         requestId: requestId,
                         userType: "admin"
                     )
+                } else {
+                    print("⚠️ Current user is not admin or userId not found")
                 }
             }
     }
