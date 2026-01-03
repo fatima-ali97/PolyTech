@@ -120,7 +120,7 @@ class TasksViewController: UIViewController, UITableViewDataSource, UITableViewD
 
         let task = tasks[indexPath.row]
         cell.taskIdLabel.text = "ID: \(task.id)"
-        cell.clientLabel.text = "Client: \(task.client)"
+        cell.clientLabel.text = "UserID: \(task.client)"
         cell.dueDateLabel.text = "Due: \(task.createdAt)"
         cell.statusBtn.setTitle(task.status, for: .normal)
 

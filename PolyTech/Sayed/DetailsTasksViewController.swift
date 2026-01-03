@@ -35,7 +35,7 @@ class DetailsTasksViewController: UIViewController {
     }
 
     func updateUI(with task: TaskRequest) {
-        clientLabel.text = "User: \(task.client)"
+        clientLabel.text = "UserID: \(task.client)"
         taskIDLabel.text = "Task ID: \(task.id)"
         descriptionLabel.text = task.description
         acceptedDateLabel.text = "Accepted on: \(task.acceptedDate)"
