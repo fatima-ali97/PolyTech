@@ -119,7 +119,17 @@ class NewInventoryViewController: UIViewController {
     private func setupQuantityField() {
         quantity.delegate = self
         quantity.keyboardType = .numberPad
-              // ✅ REMOVED: No toolbar/done button for quantity field
+        
+//        let toolbar = UIToolbar()
+//        toolbar.sizeToFit()
+//        toolbar.barStyle = .default
+//        toolbar.isTranslucent = true
+//        
+//        let flexSpace = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
+//        let doneButton = UIBarButtonItem(title: "Done", style: .done, target: self, action: #selector(dismissKeyboard))
+//        
+//        toolbar.items = [flexSpace, doneButton]
+//        quantity.inputAccessoryView = toolbar
     }
     
     @objc private func dismissKeyboard() {
@@ -424,17 +434,16 @@ class NewInventoryViewController: UIViewController {
         newData["createdAt"] = Timestamp()
         newData["status"] = "pending"
         
-        if let userId = Auth.auth().currentUser?.uid {
-            newData["userId"] = userId
+        guard let userId = Auth.auth().currentUser?.uid else {
+            showAlert("Error: User not authenticated")
+            return
         }
+        newData["userId"] = userId
         
         let collectionRef = database.collection("inventoryRequest")
-        
-        // ✅ Create document reference first
         let docRef = collectionRef.document()
         let requestId = docRef.documentID
         
-        // ✅ Write data
         docRef.setData(newData) { [weak self] error in
             guard let self = self else { return }
             
@@ -447,63 +456,47 @@ class NewInventoryViewController: UIViewController {
             
             print("✅ Inventory request saved to Firestore")
             
+            // 🔔 Create notifications for BOTH requester and ALL admins
+            let itemNameText = self.itemName.text ?? "Inventory Item"
+            let locationText = self.location.text ?? ""
+            
+            EnhancedNotificationService.shared.createInventoryRequestNotifications(
+                requestId: requestId,
+                requestName: itemNameText,
+                itemName: itemNameText,
+                location: locationText,
+                requesterId: userId,
+                status: "submitted"
+            )
+            
             // 🤖 Auto-assign technician
             AutoAssignmentService.shared.autoAssignTechnician(
                 requestId: requestId,
                 requestType: "inventory",
                 category: self.selectedCategory?.rawValue ?? "general",
-                location: self.location.text ?? "",
+                location: locationText,
                 urgency: "normal"
             ) { success, errorMessage in
                 if !success {
-                    print("⚠️ Stock decrease failed, but request was saved")
-                }
-
-                // 🤖 Step 3: Auto-assign technician
-                AutoAssignmentService.shared.autoAssignTechnician(
-                    requestId: requestId,
-                    requestType: "inventory",
-                    category: self.selectedCategory?.rawValue ?? "general",
-                    location: self.location.text ?? "",
-                    urgency: "normal"
-                ) { success, errorMessage in
-                    if !success {
-                        print("⚠️ Auto-assign failed: \(errorMessage ?? "unknown error")")
-                    }
+                    print("⚠️ Auto-assign failed: \(errorMessage ?? "unknown error")")
                 }
             }
             
-            // 🔔 Push notification
-            let itemNameText = self.itemName.text ?? "Inventory Item"
-            let locationText = self.location.text ?? ""
+            // Show success with in-app notification
+            NotificationManager.shared.showSuccess(
+                title: "Request Submitted ✓",
+                message: "Your inventory request has been submitted successfully."
+            )
             
-            PushNotificationManager.shared.createNotificationForRequest(
-                requestType: "Inventory",
-                requestName: itemNameText,
-                status: "submitted",
-                location: locationText
-            ) { success in
-                if success {
-                    print("✅ Push notification scheduled successfully")
-                    
-                    NotificationManager.shared.showSuccess(
-                        title: "Request Submitted ✓",
-                        message: "Your inventory request has been submitted successfully."
-                    )
-                } else {
-                    print("⚠️ Failed to schedule push notification")
-                }
-                
-                let alert = UIAlertController(
-                    title: "Success",
-                    message: "Inventory request created successfully ✅\n\nYou will receive a notification shortly.",
-                    preferredStyle: .alert
-                )
-                alert.addAction(UIAlertAction(title: "OK", style: .default) { _ in
-                    self.navigationController?.popViewController(animated: true)
-                })
-                self.present(alert, animated: true)
-            }
+            let alert = UIAlertController(
+                title: "Success",
+                message: "Inventory request created successfully ✅\n\nBoth you and the admin team have been notified.",
+                preferredStyle: .alert
+            )
+            alert.addAction(UIAlertAction(title: "OK", style: .default) { _ in
+                self.navigationController?.popViewController(animated: true)
+            })
+            self.present(alert, animated: true)
         }
     }
     
