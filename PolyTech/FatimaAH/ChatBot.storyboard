@@ -17,11 +17,6 @@
                         <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="arrow.backward" catalog="system" translatesAutoresizingMaskIntoConstraints="NO" id="xll-7S-yPf">
-                                <rect key="frame" x="16" y="137" width="20.666666666666671" height="16.666666666666657"/>
-                                <color key="tintColor" systemColor="viewFlipsideBackgroundColor"/>
-                                <preferredSymbolConfiguration key="preferredSymbolConfiguration" weight="bold"/>
-                            </imageView>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="16A-vn-hmW">
                                 <rect key="frame" x="0.0" y="163" width="393" height="542.66666666666663"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
@@ -55,7 +50,7 @@
                                 <constraints>
                                     <constraint firstAttribute="width" constant="67" id="ECR-hk-k0k"/>
                                 </constraints>
-                                <color key="tintColor" red="0.068406730890000003" green="0.1321217418" blue="0.21183627839999999" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
+                                <color key="tintColor" name="AppPrimary"/>
                                 <state key="normal" title="Button"/>
                                 <buttonConfiguration key="configuration" style="filled" title="Send" cornerStyle="capsule"/>
                                 <connections>
@@ -75,17 +70,14 @@
                             <constraint firstItem="Neu-8z-Cd8" firstAttribute="leading" secondItem="bI2-AV-tPg" secondAttribute="leading" constant="16" id="8Ad-np-HS9"/>
                             <constraint firstItem="16A-vn-hmW" firstAttribute="leading" secondItem="UYr-vR-axS" secondAttribute="leading" id="K7P-OY-xah"/>
                             <constraint firstItem="16A-vn-hmW" firstAttribute="top" secondItem="bI2-AV-tPg" secondAttribute="top" constant="45" id="QbS-fQ-jNy"/>
-                            <constraint firstItem="xll-7S-yPf" firstAttribute="top" secondItem="bI2-AV-tPg" secondAttribute="top" constant="16.666666666666657" id="Rho-KC-o0I"/>
                             <constraint firstItem="bI2-AV-tPg" firstAttribute="bottom" secondItem="ztm-zW-fKz" secondAttribute="bottom" constant="70" id="Rso-Mt-tPz"/>
                             <constraint firstItem="ztm-zW-fKz" firstAttribute="leading" secondItem="bI2-AV-tPg" secondAttribute="leading" constant="303" id="kgM-2B-0yF"/>
                             <constraint firstAttribute="trailing" secondItem="16A-vn-hmW" secondAttribute="trailing" id="lnm-fr-woZ"/>
-                            <constraint firstItem="xll-7S-yPf" firstAttribute="leading" secondItem="Neu-8z-Cd8" secondAttribute="leading" id="t30-bA-p1A"/>
                             <constraint firstItem="ztm-zW-fKz" firstAttribute="leading" secondItem="Neu-8z-Cd8" secondAttribute="trailing" constant="41.333333333333371" id="uIo-2H-5wD"/>
                             <constraint firstItem="bI2-AV-tPg" firstAttribute="bottom" secondItem="Neu-8z-Cd8" secondAttribute="bottom" constant="70" id="vXw-5Q-Byq"/>
                         </constraints>
                     </view>
                     <connections>
-                        <outlet property="backButton" destination="xll-7S-yPf" id="Sx5-Gk-xIx"/>
                         <outlet property="inputContainerView" destination="Neu-8z-Cd8" id="lLZ-lo-qEZ"/>
                         <outlet property="messageTextField" destination="Neu-8z-Cd8" id="Q9l-Vb-zNM"/>
                         <outlet property="sendButton" destination="ztm-zW-fKz" id="DXQ-6E-cKJ"/>
@@ -98,15 +90,14 @@
         </scene>
     </scenes>
     <resources>
-        <image name="arrow.backward" catalog="system" width="128" height="95"/>
         <namedColor name="AccentColor">
-            <color red="0.16470588235294117" green="0.27450980392156865" blue="0.3843137254901961" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="1" green="0.79199999570846558" blue="0.15700000524520874" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </namedColor>
+        <namedColor name="AppPrimary">
+            <color red="0.086000002920627594" green="0.16500000655651093" blue="0.25900000333786011" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-        </systemColor>
-        <systemColor name="viewFlipsideBackgroundColor">
-            <color red="0.12156862745098039" green="0.12941176470588237" blue="0.14117647058823529" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
     </resources>
 </document>

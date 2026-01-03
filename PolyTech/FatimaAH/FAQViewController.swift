@@ -1,236 +1,167 @@
 import UIKit
+import FirebaseFirestore
 
-// MARK: - Model: Single FAQ Row (question + answer)
+// MARK: - Models
 struct FAQRow: Hashable {
-    let id = UUID()                 // Unique ID for diffable/hashable usage
-    let question: String            // The question text
-    let answer: String              // The answer text
-    var isExpanded: Bool = false    // Controls if the answer is shown/hidden
+    // id: unique identifier for each FAQRow.
+    // Used by Swift when comparing/Hashing items (useful for updates, diffable data sources, etc.)
+    let id = UUID()
+    let question: String
+    let answer: String
+    var isExpanded: Bool = false
 }
 
-// MARK: - Model: FAQ Section (title + rows)
 struct FAQSection {
-    let title: String               // Section title shown in header (ex: "General")
-    var isCollapsed: Bool = false   // Controls if section rows are hidden/shown
-    var rows: [FAQRow]              // All FAQ rows under this section
+    let title: String
+    var isCollapsed: Bool = false
+    var rows: [FAQRow]
 }
 
-// MARK: - ViewController: FAQ Screen
-class FAQViewController: UIViewController {
+// MARK: - FAQ Screen
+ class FAQViewController: UIViewController {
 
-    // MARK: - UI Outlets (connected from Storyboard)
+    // MARK: UI Outlets
     @IBOutlet weak var searchBar: UISearchBar!
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var getHelpButton: UIButton!
-    @IBOutlet weak var BackBtn: UIImageView!
 
-    // MARK: - Data
-    private var sections: [FAQSection] = []         // Original full data
-    private var visibleSections: [FAQSection] = []  // Filtered/search data shown in table
+    // MARK: Data
+    private var sections: [FAQSection] = []
+    private var visibleSections: [FAQSection] = []
 
-    // MARK: - Helper: are we searching?
-    private var isSearching: Bool {
-        let text = (searchBar.text ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
-        return !text.isEmpty
-    }
-
-    // MARK: - Lifecycle
+    // MARK: Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
+        setupUI()
+        loadFAQData()
+        setupGetHelpBtn()
 
-        setupUI()                  // Setup delegates, table settings, button style
-        FAQData()                  // Load FAQ data into "sections"
-        visibleSections = sections // Show full data first
-        setupBackBtn()             // Enable tap on image back button
-        tableView.reloadData()     // Reload table with data
-        SetUpGetHelpBtn()          // Enable tap for Get Help button (gesture)
+        let backButton = UIBarButtonItem(
+            image: UIImage(systemName: "chevron.left"),
+            style: .plain,
+            target: self,
+            action: #selector(goBack)
+        )
+        backButton.tintColor = .background
+        navigationItem.leftBarButtonItem = backButton
     }
 
-    // MARK: - Back Button (UIImageView tap)
-    private func setupBackBtn() {
-        BackBtn.isUserInteractionEnabled = true                 // Image needs this to receive taps
-        let tapGesture = UITapGestureRecognizer(target: self,
-                                                action: #selector(backBtnTapped))
-        BackBtn.addGestureRecognizer(tapGesture)                // Attach gesture to image
+    @objc private func goBack() {
+        navigationController?.popViewController(animated: true)
     }
 
-    // When user taps the back image, go to Home page
-    @objc func backBtnTapped() {
-        let storyboard = UIStoryboard(name: "HomePage", bundle: nil)
-
-        // Instantiate HomeViewController from storyboard using its identifier
-        guard let vc = storyboard.instantiateViewController(withIdentifier: "HomeViewController") as? HomeViewController else {
-            print("HomeViewController not found in storyboard")
-            return
-        }
-
-        // Push HomeViewController
-        navigationController?.pushViewController(vc, animated: true)
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        navigationController?.setNavigationBarHidden(false, animated: animated)
     }
 
-    // MARK: - Get Help Button (Gesture Tap)
-    private func SetUpGetHelpBtn() {
-        // NOTE: UIButton already supports touchUpInside via IBAction,
-        // but you used a gesture — this makes it work when you tap the button view.
-        getHelpButton.isUserInteractionEnabled = true
-
-        let tapGesture = UITapGestureRecognizer(target: self,
-                                                action: #selector(helpBtnTapped))
-        getHelpButton.addGestureRecognizer(tapGesture)
-    }
-
-    // When user taps Get Help, open GetHelp storyboard
-    @objc func helpBtnTapped() {
-        let storyboard = UIStoryboard(name: "GetHelp", bundle: nil)
-
-        // Instantiate HelpPageViewController using storyboard identifier
-        guard let vc = storyboard.instantiateViewController(withIdentifier: "HelpPageViewController") as? HelpPageViewController else {
-            print("HelpPageViewController not found in storyboard")
-            return
-        }
-
-        // Push Help page
-        navigationController?.pushViewController(vc, animated: true)
-    }
-
-    // MARK: - UI Setup
+    // MARK: UI Setup
     private func setupUI() {
-        // Search
         searchBar.delegate = self
 
-        // Table settings
         tableView.dataSource = self
         tableView.delegate = self
         tableView.separatorStyle = .none
         tableView.backgroundColor = .clear
         tableView.rowHeight = UITableView.automaticDimension
         tableView.estimatedRowHeight = 80
-
-        // Register your custom cell class
         tableView.register(FAQCell.self, forCellReuseIdentifier: FAQCell.reuseID)
 
-        // Style the Get Help button
         getHelpButton.layer.cornerRadius = 14
         getHelpButton.clipsToBounds = true
     }
 
-    // MARK: - Load FAQ Data
-    private func FAQData() {
-        let generalRows: [FAQRow] = [
-            FAQRow(
-                question: "Banner login",
-                answer:
-"""
-1. Visit Bahrain Polytechnic website.
-2. Go to the Banner / Student tab.
-3. Enter Student ID and password.
-If you still can’t login, reset your Banner password or contact IT Help.
-"""
-            ),
-            FAQRow(
-                question: "Authenticator App setup",
-                answer:
-"""
-1. Download Microsoft Authenticator (iOS/Android).
-2. Login with your polytechnic email.
-3. Scan the QR code provided by the system.
-4. Approve the sign-in when requested.
-If the code/approval does not work, remove the account from the app and add it again.
-"""
-            ),
-            FAQRow(
-                question: "VMware virtual machine Starting Error",
-                answer:
-"""
-Steps to fix:
-1) Open VMware Workstation Player.
-2) Right-click on the virtual machine > Settings.
-3) Go to Options.
-4) Check the working directory path (where your VM is stored).
-5) Open the VM folder using File Explorer.
-6) Find the file with extension .vmx.
-7) Edit it with Notepad (or any text editor).
-8) Disable/Change the related setting if needed (based on your error message).
-9) Save the file.
-10) Restart the Virtual Machine.
-If the error continues, reinstall VMware or contact support.
-"""
-            ),
-            FAQRow(
-                question: "Password reset on computer",
-                answer:
-"""
-1) Click Ctrl+Alt+Delete.
-2) Choose Change a password.
-3) Enter your current password.
-4) Enter a new password that matches the policy:
-- At least 8 characters
-- Includes uppercase + lowercase + number
-5) Confirm and save.
-If you forgot your password completely, contact IT Help.
-"""
-            ),
-            FAQRow(
-                question: "Moodle login",
-                answer:
-"""
-1) Visit Moodle website.
-2) Click Login.
-3) Use your Polytechnic email/username and password.
-4) If you can’t login:
-- Reset password
-- Clear browser cache
-- Try another browser
-- Contact IT Help
-"""
-            )
-        ]
-
-        // Only one section in your current data
-        sections = [
-            FAQSection(title: "General", isCollapsed: false, rows: generalRows)
-        ]
+    // MARK: Get Help Navigation
+    private func setupGetHelpBtn() {
+        getHelpButton.isUserInteractionEnabled = true
+        getHelpButton.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(helpBtnTapped)))
     }
 
-    // MARK: - Collapse / Expand Section
+    @objc private func helpBtnTapped() {
+        let sb = UIStoryboard(name: "GetHelp", bundle: nil)
+        guard let vc = sb.instantiateViewController(withIdentifier: "HelpPageViewController") as? HelpPageViewController else { return }
+        navigationController?.pushViewController(vc, animated: true)
+    }
+
+    // MARK: Data (Firestore Fetch)
+    private func loadFAQData() {
+        let db = Firestore.firestore()
+
+        // Document IDs you want to fetch (in order)
+        let documentIDs = ["1", "2", "3", "4", "5", "6", "7"]
+
+        var faqRows: [FAQRow] = []
+        let group = DispatchGroup()
+
+        for docID in documentIDs {
+            group.enter()
+
+            db.collection("FAQ").document(docID).getDocument { snapshot, error in
+                defer { group.leave() }
+
+                if let error = error {
+                    print("Error fetching FAQ doc \(docID): \(error.localizedDescription)")
+                    return
+                }
+
+                guard let data = snapshot?.data() else {
+                    print("FAQ doc \(docID) has no data")
+                    return
+                }
+
+                let question = (data["Title"] as? String)?.trimmingCharacters(in: .whitespacesAndNewlines)
+                let answer   = (data["Description"] as? String)?.trimmingCharacters(in: .whitespacesAndNewlines)
+
+                faqRows.append(
+                    FAQRow(
+                        question: question?.isEmpty == false ? question! : "(No Title)",
+                        answer: answer?.isEmpty == false ? answer! : "(No Description)"
+                    )
+                )
+            }
+        }
+
+        // Update UI once ALL documents are fetched
+        group.notify(queue: .main) {
+            self.sections = [
+                FAQSection(title: "General", isCollapsed: false, rows: faqRows)
+            ]
+            self.visibleSections = self.sections
+            self.tableView.reloadData()
+        }
+    }
+
+    // MARK: Expand / Collapse
     private func toggleSectionCollapse(_ sectionIndex: Int) {
         guard visibleSections.indices.contains(sectionIndex) else { return }
         visibleSections[sectionIndex].isCollapsed.toggle()
-
-        // Reload only that section with animation
         tableView.reloadSections(IndexSet(integer: sectionIndex), with: .automatic)
     }
 
-    // MARK: - Expand / Collapse Row (show answer)
     private func toggleRowExpand(section: Int, row: Int) {
         guard visibleSections.indices.contains(section),
               visibleSections[section].rows.indices.contains(row) else { return }
 
-        // Toggle expanded state
         visibleSections[section].rows[row].isExpanded.toggle()
 
-        // Update cell height smoothly
         UIView.performWithoutAnimation {
             tableView.beginUpdates()
             tableView.endUpdates()
         }
 
-        // Reload the selected row to update UI
         tableView.reloadRows(at: [IndexPath(row: row, section: section)], with: .automatic)
     }
 
-    // MARK: - Search Filter
+    // MARK: Search
     private func applySearch(_ query: String) {
         let q = query.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
 
-        // If search is empty -> show all
         guard !q.isEmpty else {
             visibleSections = sections
             tableView.reloadData()
             return
         }
 
-        // Filter rows inside each section
         visibleSections = sections.map { section in
             var s = section
             s.rows = section.rows.filter {
@@ -244,84 +175,56 @@ If you forgot your password completely, contact IT Help.
     }
 }
 
-// MARK: - UITableView DataSource + Delegate
+// MARK: - Table (DataSource & Delegate)
 extension FAQViewController: UITableViewDataSource, UITableViewDelegate {
 
-    func numberOfSections(in tableView: UITableView) -> Int {
-        visibleSections.count
-    }
+    func numberOfSections(in tableView: UITableView) -> Int { visibleSections.count }
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        // If section collapsed, show 0 rows
         visibleSections[section].isCollapsed ? 0 : visibleSections[section].rows.count
     }
 
-    // Header view (custom)
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         let header = FAQSectionHeaderView()
         header.configure(title: visibleSections[section].title,
                          isCollapsed: visibleSections[section].isCollapsed)
-
-        // On tap collapse/expand
-        header.onTap = { [weak self] in
-            self?.toggleSectionCollapse(section)
-        }
+        header.onTap = { [weak self] in self?.toggleSectionCollapse(section) }
         return header
     }
 
-    func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        44
-    }
+    func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat { 44 }
 
-    // Cell content
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: FAQCell.reuseID, for: indexPath) as! FAQCell
         let item = visibleSections[indexPath.section].rows[indexPath.row]
-
         cell.configure(question: item.question, answer: item.answer, expanded: item.isExpanded)
         return cell
     }
 
-    // When user taps a row, expand/collapse the answer
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         toggleRowExpand(section: indexPath.section, row: indexPath.row)
     }
 }
 
-// MARK: - UISearchBar Delegate
+// MARK: - SearchBar Delegate
 extension FAQViewController: UISearchBarDelegate {
-
-    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-        applySearch(searchText)
-    }
-
-    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
-        searchBar.resignFirstResponder()
-    }
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) { applySearch(searchText) }
+    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) { searchBar.resignFirstResponder() }
 }
 
-// MARK: - Custom Section Header View
+// MARK: - Section Header View
 final class FAQSectionHeaderView: UIView {
-
     private let titleLabel = UILabel()
-    private let chevron = UIImageView(image: UIImage(systemName: "chevron.down"))
+    private let chevron = UIImageView()
     var onTap: (() -> Void)?
 
-    override init(frame: CGRect) {
-        super.init(frame: frame)
-        setup()
-    }
-
-    required init?(coder: NSCoder) {
-        super.init(coder: coder)
-        setup()
-    }
+    override init(frame: CGRect) { super.init(frame: frame); setup() }
+    required init?(coder: NSCoder) { super.init(coder: coder); setup() }
 
     private func setup() {
         backgroundColor = .clear
 
         let container = UIView()
-        container.backgroundColor = .clear
         container.translatesAutoresizingMaskIntoConstraints = false
         addSubview(container)
 
@@ -350,26 +253,18 @@ final class FAQSectionHeaderView: UIView {
             chevron.heightAnchor.constraint(equalToConstant: 16)
         ])
 
-        // Tap gesture for header
-        let tap = UITapGestureRecognizer(target: self, action: #selector(didTap))
-        addGestureRecognizer(tap)
+        addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(didTap)))
     }
 
     func configure(title: String, isCollapsed: Bool) {
         titleLabel.text = title
-
-        // Rotate chevron based on collapsed state
-        UIView.animate(withDuration: 0.2) {
-            self.chevron.transform = isCollapsed ? .identity : CGAffineTransform(rotationAngle: .pi)
-        }
+        chevron.image = isCollapsed ? UIImage(systemName: "chevron.down") : UIImage(systemName: "chevron.up")
     }
 
-    @objc private func didTap() {
-        onTap?()
-    }
+    @objc private func didTap() { onTap?() }
 }
 
-// MARK: - Custom FAQ Cell (Expandable Card)
+// MARK: - FAQ Cell
 final class FAQCell: UITableViewCell {
 
     static let reuseID = "FAQCell"
@@ -377,9 +272,8 @@ final class FAQCell: UITableViewCell {
     private let cardView = UIView()
     private let questionLabel = UILabel()
     private let answerLabel = UILabel()
-    private let chevron = UIImageView(image: UIImage(systemName: "chevron.down"))
+    private let chevron = UIImageView()
 
-    // Constraints used to switch between collapsed and expanded layouts
     private var answerTopConstraint: NSLayoutConstraint!
     private var collapsedBottomConstraint: NSLayoutConstraint!
     private var expandedBottomConstraint: NSLayoutConstraint!
@@ -388,7 +282,6 @@ final class FAQCell: UITableViewCell {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         setup()
     }
-
     required init?(coder: NSCoder) {
         super.init(coder: coder)
         setup()
@@ -399,26 +292,22 @@ final class FAQCell: UITableViewCell {
         backgroundColor = .clear
         contentView.backgroundColor = .clear
 
-        // Card styling
-        cardView.backgroundColor = .white
+        cardView.backgroundColor = .background
         cardView.layer.cornerRadius = 12
         cardView.layer.borderWidth = 1
         cardView.layer.borderColor = UIColor.systemGray5.cgColor
         cardView.translatesAutoresizingMaskIntoConstraints = false
 
-        // Question label
         questionLabel.numberOfLines = 0
         questionLabel.font = .systemFont(ofSize: 14, weight: .medium)
-        questionLabel.textColor = .label
+        questionLabel.textColor = .onBackground
         questionLabel.translatesAutoresizingMaskIntoConstraints = false
 
-        // Answer label
         answerLabel.numberOfLines = 0
         answerLabel.font = .systemFont(ofSize: 13, weight: .regular)
-        answerLabel.textColor = .secondaryLabel
+        answerLabel.textColor = .onBackground
         answerLabel.translatesAutoresizingMaskIntoConstraints = false
 
-        // Chevron
         chevron.tintColor = .secondaryLabel
         chevron.translatesAutoresizingMaskIntoConstraints = false
 
@@ -427,7 +316,6 @@ final class FAQCell: UITableViewCell {
         cardView.addSubview(chevron)
         cardView.addSubview(answerLabel)
 
-        // Main constraints
         NSLayoutConstraint.activate([
             cardView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
             cardView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
@@ -444,44 +332,37 @@ final class FAQCell: UITableViewCell {
             chevron.heightAnchor.constraint(equalToConstant: 16),
 
             answerLabel.leadingAnchor.constraint(equalTo: cardView.leadingAnchor, constant: 14),
-            answerLabel.trailingAnchor.constraint(equalTo: cardView.trailingAnchor, constant: -14),
+            answerLabel.trailingAnchor.constraint(equalTo: cardView.trailingAnchor, constant: -14)
         ])
 
-        // Answer top spacing (changes when expanded)
         answerTopConstraint = answerLabel.topAnchor.constraint(equalTo: questionLabel.bottomAnchor, constant: 0)
         answerTopConstraint.isActive = true
 
-        // Collapsed: question goes to bottom of card
         collapsedBottomConstraint = questionLabel.bottomAnchor.constraint(equalTo: cardView.bottomAnchor, constant: -12)
         collapsedBottomConstraint.isActive = true
 
-        // Expanded: answer goes to bottom of card
         expandedBottomConstraint = answerLabel.bottomAnchor.constraint(equalTo: cardView.bottomAnchor, constant: -12)
         expandedBottomConstraint.isActive = false
 
-        // Start collapsed
         answerLabel.isHidden = true
     }
 
-    // Configure cell based on expanded state
     func configure(question: String, answer: String, expanded: Bool) {
         questionLabel.text = question
         answerLabel.text = answer
 
         if expanded {
-            // Expanded state: show answer
             answerLabel.isHidden = false
             answerTopConstraint.constant = 10
             collapsedBottomConstraint.isActive = false
             expandedBottomConstraint.isActive = true
-            chevron.transform = CGAffineTransform(rotationAngle: .pi)
+            chevron.image = UIImage(systemName: "chevron.up")
         } else {
-            // Collapsed state: hide answer
             answerLabel.isHidden = true
             answerTopConstraint.constant = 0
             expandedBottomConstraint.isActive = false
             collapsedBottomConstraint.isActive = true
-            chevron.transform = .identity
+            chevron.image = UIImage(systemName: "chevron.down")
         }
     }
 }

@@ -30,7 +30,7 @@ class NotificationsViewController: UIViewController {
         config.image = UIImage(systemName: "trash.fill")
         config.imagePlacement = .leading
         config.imagePadding = 8
-        config.baseBackgroundColor = .accent
+        config.baseBackgroundColor = .appPrimary
         config.baseForegroundColor = .white
         config.cornerStyle = .medium
         config.contentInsets = NSDirectionalEdgeInsets(top: 16, leading: 20, bottom: 16, trailing: 20)
@@ -58,7 +58,6 @@ class NotificationsViewController: UIViewController {
         button.configuration = config
         button.translatesAutoresizingMaskIntoConstraints = false
         
-        // Add shadow for floating effect
         button.layer.shadowColor = UIColor.black.cgColor
         button.layer.shadowOffset = CGSize(width: 0, height: 4)
         button.layer.shadowRadius = 8
@@ -73,50 +72,10 @@ class NotificationsViewController: UIViewController {
         super.viewDidLoad()
         
         setupUI()
-        setupNavigationBar()  // Add this
         setupTableView()
         setupEmptyState()
         setupConstraints()
         loadNotifications()
-    }
-    
-    private func setupNavigationBar() {
-        // Option A: Standard back button (auto-generated when pushed)
-        // No code needed - automatically appears when pushed from another VC
-        
-        // Option B: Custom back button (if presented modally)
-//        if presentingViewController != nil {
-//            // We're presented modally, so add a close button
-//            let closeButton = UIBarButtonItem(
-//                image: UIImage(systemName: "xmark"),
-//                style: .plain,
-//                target: self,
-//                action: #selector(dismissViewController)
-//            )
-//            navigationItem.leftBarButtonItem = closeButton
-//        }
-//        
-//        // Option C: Force custom back button (if you want custom styling)
-//        let backButton = UIBarButtonItem(
-//            image: UIImage(systemName: "chevron.left"),
-//            style: .plain,
-//            target: self,
-//            action: #selector(goBack)
-//        )
-//        backButton.tintColor = .primary
-//        navigationItem.leftBarButtonItem = backButton
-    }
-
-    @objc private func dismissViewController() {
-        dismiss(animated: true)
-    }
-
-    @objc private func goBack() {
-        if presentingViewController != nil {
-            dismiss(animated: true)
-        } else {
-            navigationController?.popViewController(animated: true)
-        }
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -131,17 +90,14 @@ class NotificationsViewController: UIViewController {
         navigationController?.navigationBar.prefersLargeTitles = true
         view.backgroundColor = .background
         
-        // Add subviews
         view.addSubview(tableView)
         view.addSubview(clearAllButton)
         view.addSubview(markAllReadButton)
         view.addSubview(emptyStateView)
         
-        // Add targets
         clearAllButton.addTarget(self, action: #selector(clearAllNotifications), for: .touchUpInside)
         markAllReadButton.addTarget(self, action: #selector(markAllAsRead), for: .touchUpInside)
         
-        // Setup refresh control
         refreshControl.addTarget(self, action: #selector(refreshNotifications), for: .valueChanged)
         tableView.refreshControl = refreshControl
     }
@@ -164,25 +120,21 @@ class NotificationsViewController: UIViewController {
         emptyStateView.translatesAutoresizingMaskIntoConstraints = false
         
         NSLayoutConstraint.activate([
-            // Clear all button (bottom) - Set this FIRST
             clearAllButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
             clearAllButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
-            clearAllButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -20),
+            clearAllButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -50),
             clearAllButton.heightAnchor.constraint(equalToConstant: 54),
             
-            // Mark all read button (floating)
             markAllReadButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
-            markAllReadButton.bottomAnchor.constraint(equalTo: clearAllButton.topAnchor, constant: -8),
+            markAllReadButton.bottomAnchor.constraint(equalTo: clearAllButton.topAnchor, constant: -16),
             markAllReadButton.widthAnchor.constraint(equalToConstant: 56),
             markAllReadButton.heightAnchor.constraint(equalToConstant: 56),
             
-            // Table view
             tableView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
             tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            tableView.bottomAnchor.constraint(equalTo: markAllReadButton.topAnchor, constant: -2),
+            tableView.bottomAnchor.constraint(equalTo: markAllReadButton.topAnchor, constant: -6),
             
-            // Empty state
             emptyStateView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             emptyStateView.centerYAnchor.constraint(equalTo: view.centerYAnchor),
             emptyStateView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 40),
@@ -193,8 +145,12 @@ class NotificationsViewController: UIViewController {
     // MARK: - Data Loading
     
     private func loadNotifications() {
-        guard let userId = currentUserId else { return }
-        print("load notifications for userId: \(userId)")
+        guard let userId = currentUserId else {
+            print("❌ No userId found")
+            return
+        }
+        
+        print("📱 Loading notifications for userId: \(userId)")
         
         listener = db.collection("Notifications")
             .whereField("userId", isEqualTo: userId)
@@ -203,27 +159,39 @@ class NotificationsViewController: UIViewController {
                 guard let self = self else { return }
                 
                 if let error = error {
-                    print("**Error fetching notifications: \(error.localizedDescription)")
+                    print("❌ Error fetching notifications: \(error.localizedDescription)")
                     self.showError("Failed to load notifications")
                     return
                 }
                 
                 guard let documents = querySnapshot?.documents else {
-                    print("No notifications for this user!!")
+                    print("⚠️ No notifications found")
                     self.updateEmptyState()
                     return
                 }
                 
+                print("📊 Found \(documents.count) notification documents")
+                
+                // ✅ FIXED: Properly parse notifications with correct document IDs
                 self.notifications = documents.compactMap { document in
-                    let notification = NotificationModel(dictionary: document.data(), id: document.documentID)
-                    if notification == nil {
-                        print("Failed to parse document: \(document.documentID)")
-                        print("   Data: \(document.data())")
+                    let data = document.data()
+                    let documentId = document.documentID
+                    
+                    // Debug: Print document ID and data
+                    print("📄 Document ID: \(documentId)")
+                    print("   Data: \(data)")
+                    
+                    // Create notification with CORRECT document ID
+                    guard let notification = NotificationModel(dictionary: data, id: documentId) else {
+                        print("⚠️ Failed to parse document: \(documentId)")
+                        return nil
                     }
+                    
+                    print("✅ Parsed notification: \(notification.id) - \(notification.title)")
                     return notification
                 }
                 
-                print("Successfully parsed \(self.notifications.count) notifications")
+                print("✅ Successfully parsed \(self.notifications.count) notifications")
                 
                 DispatchQueue.main.async {
                     self.tableView.reloadData()
@@ -261,13 +229,16 @@ class NotificationsViewController: UIViewController {
     
     @objc private func markAllAsRead() {
         let unreadNotifications = notifications.filter { !$0.isRead }
-        guard !unreadNotifications.isEmpty else { return }
+        guard !unreadNotifications.isEmpty else {
+            print("⚠️ No unread notifications to mark")
+            return
+        }
         
-        // Haptic feedback
+        print("📝 Marking \(unreadNotifications.count) notifications as read")
+        
         let generator = UIImpactFeedbackGenerator(style: .medium)
         generator.impactOccurred()
         
-        // Animate button
         UIView.animate(withDuration: 0.1, animations: {
             self.markAllReadButton.transform = CGAffineTransform(scaleX: 0.85, y: 0.85)
         }) { _ in
@@ -280,21 +251,26 @@ class NotificationsViewController: UIViewController {
         
         for notification in unreadNotifications {
             let docRef = db.collection("Notifications").document(notification.id)
+            print("   Marking as read: \(notification.id)")
             batch.updateData(["isRead": true], forDocument: docRef)
         }
         
         batch.commit { [weak self] error in
             if let error = error {
-                print("Error marking all as read: \(error.localizedDescription)")
+                print("❌ Error marking all as read: \(error.localizedDescription)")
                 self?.showError("Failed to mark notifications as read")
             } else {
+                print("✅ All notifications marked as read")
                 self?.showSuccessToast(message: "All notifications marked as read")
             }
         }
     }
     
     @objc private func clearAllNotifications() {
-        guard !notifications.isEmpty else { return }
+        guard !notifications.isEmpty else {
+            print("⚠️ No notifications to clear")
+            return
+        }
         
         let alert = UIAlertController(
             title: "Clear All Notifications",
@@ -311,6 +287,8 @@ class NotificationsViewController: UIViewController {
     }
     
     private func performClearAll() {
+        print("🗑️ Clearing \(notifications.count) notifications")
+        
         let generator = UINotificationFeedbackGenerator()
         generator.notificationOccurred(.warning)
         
@@ -318,27 +296,36 @@ class NotificationsViewController: UIViewController {
         
         for notification in notifications {
             let docRef = db.collection("Notifications").document(notification.id)
+            print("   Deleting: \(notification.id)")
             batch.deleteDocument(docRef)
         }
         
         batch.commit { [weak self] error in
             if let error = error {
-                print("Error clearing all notifications: \(error.localizedDescription)")
+                print("❌ Error clearing all notifications: \(error.localizedDescription)")
                 self?.showError("Failed to clear notifications")
             } else {
+                print("✅ All notifications cleared")
                 self?.showSuccessToast(message: "All notifications cleared")
             }
         }
     }
     
     private func markAsRead(notification: NotificationModel) {
-        guard !notification.isRead else { return }
+        guard !notification.isRead else {
+            print("⚠️ Notification already read: \(notification.id)")
+            return
+        }
+        
+        print("📝 Marking notification as read: \(notification.id)")
         
         db.collection("Notifications")
             .document(notification.id)
             .updateData(["isRead": true]) { error in
                 if let error = error {
-                    print("Error marking notification as read: \(error.localizedDescription)")
+                    print("❌ Error marking notification as read: \(error.localizedDescription)")
+                } else {
+                    print("✅ Notification marked as read: \(notification.id)")
                 }
             }
     }
@@ -346,13 +333,16 @@ class NotificationsViewController: UIViewController {
     private func deleteNotification(at indexPath: IndexPath) {
         let notification = notifications[indexPath.row]
         
+        print("🗑️ Deleting notification: \(notification.id)")
+        
         db.collection("Notifications")
             .document(notification.id)
             .delete { [weak self] error in
                 if let error = error {
-                    print("Error deleting notification: \(error.localizedDescription)")
+                    print("❌ Error deleting notification: \(error.localizedDescription)")
                     self?.showError("Failed to delete notification")
                 } else {
+                    print("✅ Notification deleted: \(notification.id)")
                     self?.showSuccessToast(message: "Notification deleted")
                 }
             }
@@ -394,7 +384,7 @@ extension NotificationsViewController: UITableViewDataSource {
         
         let notification = notifications[indexPath.row]
         cell.configure(with: notification) { [weak self] actionUrl in
-            print("Action tapped for URL: \(actionUrl)")
+            print("🔗 Action tapped for URL: \(actionUrl)")
             self?.handleNotificationAction(actionUrl: actionUrl, notification: notification)
         }
         
@@ -422,7 +412,7 @@ extension NotificationsViewController: UITableViewDelegate {
     }
     
     private func handleNotificationAction(actionUrl: String, notification: NotificationModel) {
-        print("Navigate to: \(actionUrl)")
+        print("🔗 Navigate to: \(actionUrl)")
         // TODO: Implement navigation based on actionUrl
     }
     
@@ -465,7 +455,7 @@ class EmptyStateView: UIView {
     private let titleLabel: UILabel = {
         let label = UILabel()
         label.font = .systemFont(ofSize: 20, weight: .semibold)
-        label.textColor = .primary
+        label.textColor = .appPrimary
         label.textAlignment = .center
         label.numberOfLines = 0
         return label
@@ -474,7 +464,7 @@ class EmptyStateView: UIView {
     private let messageLabel: UILabel = {
         let label = UILabel()
         label.font = .systemFont(ofSize: 16, weight: .regular)
-        label.textColor = .primary
+        label.textColor = .appPrimary
         label.textAlignment = .center
         label.numberOfLines = 0
         return label

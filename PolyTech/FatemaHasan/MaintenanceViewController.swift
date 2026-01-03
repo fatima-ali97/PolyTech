@@ -3,85 +3,76 @@ import FirebaseFirestore
 import FirebaseAuth
 
 class MaintenanceViewController: UIViewController {
-
-    // MARK: - IBOutlets
+    
+    // MARK: - Outlets
     @IBOutlet weak var tableView: UITableView!
-    @IBOutlet weak var Addbtn: UIButton!
     
-    // MARK: - Programmatic UI
-    private let addButton: UIButton = {
-        let button = UIButton(type: .system)
-        button.setTitle("Add", for: .normal)
-        button.setTitleColor(.systemBlue, for: .normal)
-        button.titleLabel?.font = .systemFont(ofSize: 17, weight: .regular)
-        button.translatesAutoresizingMaskIntoConstraints = false
-        return button
-    }()
-    
-    // MARK: - Properties
-    private var maintenanceItems: [NotificationModel] = []
+    // MARK: - Data
+    private var maintenanceItems: [MaintenanceRequestModel] = []
+    private var filteredItems: [MaintenanceRequestModel] = []   // used for search results
     private let db = Firestore.firestore()
     private var listener: ListenerRegistration?
+    private let currentUserId = UserDefaults.standard.string(forKey: "userId")
     
-    private var currentUserId: String {
-        Auth.auth().currentUser?.uid ?? ""
-    }
-
+    // MARK: - UI Helpers
     private let refreshControl = UIRefreshControl()
     private let emptyStateView = EmptyStateView()
+    private let searchController = UISearchController(searchResultsController: nil)
     
     // MARK: - Lifecycle
-    
     override func viewDidLoad() {
         super.viewDidLoad()
-        
         setupUI()
+        setupNavigationButtons()
         setupTableView()
         setupEmptyState()
-        loadMaintenanceItems()
-        setupProgrammaticAddButton()  // ✅ NEW: Setup programmatic button
+        setupSearch()
+        attachMaintenanceListener()
     }
     
-    // ✅ NEW: Setup programmatic add button in navigation bar
-    private func setupProgrammaticAddButton() {
-        // Add button to navigation bar
-        let addBarButton = UIBarButtonItem(
-            title: "Add",
-            style: .plain,
-            target: self,
-            action: #selector(addTapped)
-        )
-        navigationItem.rightBarButtonItem = addBarButton
-    }
-    @objc func addTapped() {
-        let storyboard = UIStoryboard(name: "NewMaintenance", bundle: nil)
-        guard let vc = storyboard.instantiateViewController(
-            withIdentifier: "NewMaintenanceViewController"
-        ) as? NewMaintenanceViewController else {
-            print("❌ NewMaintenanceViewController not found or wrong class")
-            return
-        }
-        
-        // Use modalPresentationStyle for full screen or push for navigation
-        // Option 1: Present modally (full screen)
-        vc.modalPresentationStyle = .fullScreen
-        present(vc, animated: true)
-        
-        // Option 2: Push with navigation controller (if you have one)
-        // navigationController?.pushViewController(vc, animated: true)
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        if listener == nil { attachMaintenanceListener() }
     }
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         listener?.remove()
+        listener = nil
     }
     
     // MARK: - Setup
-    
     private func setupUI() {
         title = "Maintenance"
-        navigationController?.navigationBar.prefersLargeTitles = true
-        view.backgroundColor = .background
+        navigationController?.navigationBar.prefersLargeTitles = true // match Inventory large title
+        view.backgroundColor = .systemBackground
+    }
+    
+    private func setupNavigationButtons() {
+        let addBarButton = UIBarButtonItem(
+            barButtonSystemItem: .add,
+            target: self,
+            action: #selector(addTapped)
+        )
+        navigationItem.rightBarButtonItem = addBarButton
+    }
+    
+    private func setupSearch() {
+        searchController.searchResultsUpdater = self
+        searchController.obscuresBackgroundDuringPresentation = false
+        searchController.searchBar.placeholder = "Search maintenance requests"
+        navigationItem.searchController = searchController
+        definesPresentationContext = true
+    }
+    
+    @objc private func addTapped() {
+        let storyboard = UIStoryboard(name: "NewMaintenance", bundle: nil)
+        guard let vc = storyboard.instantiateViewController(withIdentifier: "NewMaintenanceViewController")
+                as? NewMaintenanceViewController else {
+            print("❌ NewMaintenanceViewController not found or wrong class")
+            return
+        }
+        navigationController?.pushViewController(vc, animated: true)
     }
     
     private func setupTableView() {
@@ -89,14 +80,12 @@ class MaintenanceViewController: UIViewController {
             print("ERROR: tableView outlet is not connected!")
             return
         }
-        
         tableView.delegate = self
         tableView.dataSource = self
         tableView.separatorStyle = .none
         tableView.backgroundColor = .clear
         tableView.rowHeight = UITableView.automaticDimension
-        tableView.estimatedRowHeight = 100
-        
+        tableView.estimatedRowHeight = 120
         tableView.register(MaintenanceTableViewCell.self, forCellReuseIdentifier: "MaintenanceCell")
         
         refreshControl.addTarget(self, action: #selector(refreshMaintenanceItems), for: .valueChanged)
@@ -104,18 +93,12 @@ class MaintenanceViewController: UIViewController {
     }
     
     private func setupEmptyState() {
-        guard tableView != nil else {
-            print("ERROR: Cannot setup empty state - tableView outlet is not connected!")
-            return
-        }
-        
         emptyStateView.configure(
-            title: "No Maintenance Items For Now.",
-            message: "Once a request status gets updated, we will notify you immediately."
+            title: "No Maintenance Requests",
+            message: "Tap '+' to create a new maintenance request."
         )
         emptyStateView.isHidden = true
         view.addSubview(emptyStateView)
-        
         emptyStateView.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
             emptyStateView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
@@ -125,115 +108,179 @@ class MaintenanceViewController: UIViewController {
         ])
     }
     
-    // MARK: - Data Loading
-    
-    private func loadMaintenanceItems() {
-        print("📥 load maintenance items for userId: \(currentUserId)")
+    // MARK: - Real-time listener
+    private func attachMaintenanceListener() {
+        guard listener == nil else { return }
+        guard let uid = currentUserId, !uid.isEmpty else {
+            print("❌ currentUserId is nil or empty")
+            filteredItems = []
+            updateEmptyState()
+            return
+        }
         
-        listener = db.collection("Notifications")
-            .whereField("userId", isEqualTo: currentUserId)
-            .addSnapshotListener { [weak self] querySnapshot, error in
+        listener = db.collection("maintenanceRequest")
+            .whereField("userId", isEqualTo: uid)
+            .addSnapshotListener { [weak self] snapshot, error in
                 guard let self = self else { return }
-                
                 if let error = error {
-                    print("**Error fetching maintenance items: \(error.localizedDescription)")
-                    self.showError("Failed to load maintenance items")
+                    print("❌ Error fetching maintenance items: \(error.localizedDescription)")
+                    self.maintenanceItems.removeAll()
+                    self.applySearchFilter()
+                    return
+                }
+                guard let documents = snapshot?.documents else {
+                    self.maintenanceItems.removeAll()
+                    self.applySearchFilter()
                     return
                 }
                 
-                guard let documents = querySnapshot?.documents else {
-                    print("📭 No maintenance items for this user!!")
-                    self.updateEmptyState()
-                    return
+                self.maintenanceItems = documents.compactMap {
+                    MaintenanceRequestModel(dictionary: $0.data(), id: $0.documentID)
                 }
                 
-                self.maintenanceItems = documents.compactMap { document in
-                    let item = NotificationModel(dictionary: document.data(), id: document.documentID)
-                    if item == nil {
-                        print("Failed to parse document: \(document.documentID)")
-                        print("   Data: \(document.data())")
-                    }
-                    return item
-                }
-                
-                print("✅ Successfully parsed \(self.maintenanceItems.count) maintenance items")
-                
-                DispatchQueue.main.async {
-                    guard let tableView = self.tableView else { return }
-                    tableView.reloadData()
-                    self.updateEmptyState()
-                }
+                self.maintenanceItems.sort { $0.createdAt.dateValue() > $1.createdAt.dateValue() }
+                self.applySearchFilter()
             }
     }
     
+    // MARK: - Pull to refresh
     @objc private func refreshMaintenanceItems() {
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+        listener?.remove()
+        listener = nil
+        attachMaintenanceListener()
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
             self.refreshControl.endRefreshing()
         }
     }
     
     private func updateEmptyState() {
         guard let tableView = tableView else { return }
-        emptyStateView.isHidden = !maintenanceItems.isEmpty
-        tableView.isHidden = maintenanceItems.isEmpty
+        let isEmpty = filteredItems.isEmpty
+        emptyStateView.isHidden = !isEmpty
+        tableView.isHidden = isEmpty
     }
     
-    // MARK: - Actions
+    private func applySearchFilter() {
+        if let query = searchController.searchBar.text, !query.isEmpty {
+            let q = query.lowercased()
+            filteredItems = maintenanceItems.filter {
+                $0.requestName.lowercased().contains(q) ||
+                $0.category.lowercased().contains(q) ||
+                $0.location.lowercased().contains(q) ||
+                $0.urgency.rawValue.lowercased().contains(q)
+            }
+        } else {
+            filteredItems = maintenanceItems
+        }
+        DispatchQueue.main.async {
+            self.tableView?.reloadData()
+            self.updateEmptyState()
+        }
+    }
     
-    private func markAsRead(item: NotificationModel) {
-        guard !item.isRead else { return }
+    // MARK: - Details Popup
+    private func showDetailsPopup(for item: MaintenanceRequestModel) {
+        let alertVC = UIViewController()
+        alertVC.view.backgroundColor = .systemBackground
+        alertVC.preferredContentSize = CGSize(width: 320, height: 420)
         
-        db.collection("Notifications")
-            .document(item.id)
-            .updateData(["isRead": true]) { error in
-                if let error = error {
-                    print("Error marking item as read: \(error.localizedDescription)")
+        let titleLabel = UILabel()
+        titleLabel.text = "Maintenance Details"
+        titleLabel.font = UIFont.systemFont(ofSize: 20, weight: .bold)
+        titleLabel.textAlignment = .center
+        
+        let detailsLabel = UILabel()
+        detailsLabel.numberOfLines = 0
+        detailsLabel.font = UIFont.systemFont(ofSize: 16, weight: .medium)
+        detailsLabel.textColor = .label
+        detailsLabel.text = """
+        🛠️ Request: \(item.requestName)
+        📍 Location: \(item.location)
+        🏷️ Category: \(item.category.capitalized)
+        ⚡ Urgency: \(item.urgency.rawValue.capitalized)
+        🕐 Created: \(item.formattedDate)
+        """
+        
+        let imageView = UIImageView()
+        imageView.contentMode = .scaleAspectFit
+        imageView.layer.cornerRadius = 12
+        imageView.clipsToBounds = true
+        imageView.backgroundColor = .secondarySystemBackground
+        
+        if let imageUrl = item.imageUrl, let url = URL(string: imageUrl) {
+            DispatchQueue.global().async {
+                if let data = try? Data(contentsOf: url), let image = UIImage(data: data) {
+                    DispatchQueue.main.async { imageView.image = image }
                 }
             }
-    }
-    
-    private func deleteItem(at indexPath: IndexPath) {
-        let item = maintenanceItems[indexPath.row]
+        }
         
-        db.collection("Notifications")
-            .document(item.id)
-            .delete { [weak self] error in
-                if let error = error {
-                    print("Error deleting item: \(error.localizedDescription)")
-                    self?.showError("Failed to delete item")
-                } else {
-                    self?.showSuccessToast(message: "Item deleted")
-                }
-            }
-    }
-    
-    // MARK: - UI Helpers
-    
-    private func showError(_ message: String) {
-        let alert = UIAlertController(title: "Error", message: message, preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: "OK", style: .default))
+        let stack = UIStackView(arrangedSubviews: [titleLabel, detailsLabel, imageView])
+        stack.axis = .vertical
+        stack.spacing = 12
+        stack.translatesAutoresizingMaskIntoConstraints = false
+        
+        alertVC.view.addSubview(stack)
+        NSLayoutConstraint.activate([
+            stack.topAnchor.constraint(equalTo: alertVC.view.topAnchor, constant: 20),
+            stack.leadingAnchor.constraint(equalTo: alertVC.view.leadingAnchor, constant: 20),
+            stack.trailingAnchor.constraint(equalTo: alertVC.view.trailingAnchor, constant: -20),
+            stack.bottomAnchor.constraint(equalTo: alertVC.view.bottomAnchor, constant: -20),
+            imageView.heightAnchor.constraint(equalToConstant: 180)
+        ])
+        
+        let alert = UIAlertController(title: nil, message: nil, preferredStyle: .alert)
+        alert.setValue(alertVC, forKey: "contentViewController")
+        alert.addAction(UIAlertAction(title: "Close", style: .cancel))
         present(alert, animated: true)
     }
     
-    private func showSuccessToast(message: String) {
-        let toast = UIAlertController(title: nil, message: message, preferredStyle: .alert)
-        present(toast, animated: true)
-        
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
-            toast.dismiss(animated: true)
+    private func navigateToEdit(item: MaintenanceRequestModel) {
+        let storyboard = UIStoryboard(name: "NewMaintenance", bundle: nil)
+        guard let vc = storyboard.instantiateViewController(withIdentifier: "NewMaintenanceViewController")
+                as? NewMaintenanceViewController else {
+            print("❌ NewMaintenanceViewController not found or wrong class")
+            return
         }
+        vc.requestToEdit = item
+        navigationController?.pushViewController(vc, animated: true)
+    }
+    
+    private func deleteItem(at indexPath: IndexPath) {
+        let item = filteredItems[indexPath.row] // match visible list
+        let alert = UIAlertController(
+            title: "Delete Maintenance",
+            message: "Are you sure you want to delete this maintenance request?",
+            preferredStyle: .alert
+        )
+        alert.addAction(UIAlertAction(title: "Cancel", style: .cancel))
+        alert.addAction(UIAlertAction(title: "Delete", style: .destructive) { [weak self] _ in
+            self?.performDelete(item: item)
+        })
+        present(alert, animated: true)
+    }
+    
+    private func performDelete(item: MaintenanceRequestModel) {
+        db.collection("maintenanceRequest")
+            .document(item.id)
+            .delete { error in
+                if let error = error {
+                    print("❌ Error deleting item: \(error.localizedDescription)")
+                } else {
+                    print("✅ Item deleted successfully")
+                }
+            }
     }
 }
 
 // MARK: - UITableViewDataSource
-
 extension MaintenanceViewController: UITableViewDataSource {
-    
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return maintenanceItems.count
+        filteredItems.count
     }
     
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+    func tableView(_ tableView: UITableView,
+                   cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(
             withIdentifier: "MaintenanceCell",
             for: indexPath
@@ -241,58 +288,55 @@ extension MaintenanceViewController: UITableViewDataSource {
             return UITableViewCell()
         }
         
-        let item = maintenanceItems[indexPath.row]
-        cell.configure(with: item) { [weak self] actionUrl in
-            print("Action tapped for URL: \(actionUrl)")
-            self?.handleItemAction(actionUrl: actionUrl, item: item)
-        }
-        
+        let item = filteredItems[indexPath.row]
+        cell.configure(
+            with: item,
+            viewCallback: { [weak self] in self?.showDetailsPopup(for: item) },
+            editCallback: { [weak self] in self?.navigateToEdit(item: item) }
+        )
         return cell
     }
 }
 
 // MARK: - UITableViewDelegate
-
 extension MaintenanceViewController: UITableViewDelegate {
-    
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let item = maintenanceItems[indexPath.row]
-        
-        markAsRead(item: item)
-        
-        if let actionUrl = item.actionUrl {
-            handleItemAction(actionUrl: actionUrl, item: item)
-        }
-        
-        let generator = UIImpactFeedbackGenerator(style: .light)
-        generator.impactOccurred()
-        
         tableView.deselectRow(at: indexPath, animated: true)
+        showDetailsPopup(for: filteredItems[indexPath.row])
     }
     
-    private func handleItemAction(actionUrl: String, item: NotificationModel) {
-        print("Navigate to: \(actionUrl)")
-    }
-    
-    func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
+    func tableView(_ tableView: UITableView,
+                   trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath)
+    -> UISwipeActionsConfiguration? {
+        let item = filteredItems[indexPath.row]
+        
         let deleteAction = UIContextualAction(style: .destructive, title: "Delete") { [weak self] _, _, completion in
             self?.deleteItem(at: indexPath)
             completion(true)
         }
-        deleteAction.image = UIImage(systemName: "minus")
+        deleteAction.image = UIImage(systemName: "trash")
         
-        let item = maintenanceItems[indexPath.row]
-        if !item.isRead {
-            let markReadAction = UIContextualAction(style: .normal, title: "Mark Read") { [weak self] _, _, completion in
-                self?.markAsRead(item: item)
-                completion(true)
-            }
-            markReadAction.backgroundColor = .secondary
-            markReadAction.image = UIImage(systemName: "checkmark")
-            
-            return UISwipeActionsConfiguration(actions: [deleteAction, markReadAction])
+        let editAction = UIContextualAction(style: .normal, title: "Edit") { [weak self] _, _, completion in
+            self?.navigateToEdit(item: item)
+            completion(true)
         }
+        editAction.backgroundColor = .systemBlue
+        editAction.image = UIImage(systemName: "pencil")
         
-        return UISwipeActionsConfiguration(actions: [deleteAction])
+        let viewAction = UIContextualAction(style: .normal, title: "Details") { [weak self] _, _, completion in
+            self?.showDetailsPopup(for: item)
+            completion(true)
+        }
+        viewAction.backgroundColor = .systemGreen
+        viewAction.image = UIImage(systemName: "info.circle")
+        
+        return UISwipeActionsConfiguration(actions: [deleteAction, editAction, viewAction])
+    }
+}
+
+// MARK: - UISearchResultsUpdating
+extension MaintenanceViewController: UISearchResultsUpdating {
+    func updateSearchResults(for searchController: UISearchController) {
+        applySearchFilter()
     }
 }

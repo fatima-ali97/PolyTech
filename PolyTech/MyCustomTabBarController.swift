@@ -157,7 +157,7 @@ class AdminTabBarController: BaseCustomTabBarController {
         )
         
         let requestsVC = createNavControllerFromStoryboard(
-            storyboardName: "dummy", // TODO: change this
+            storyboardName: "DelayedRequests", // TODO: change this
             title: "Requests",
             image: UIImage(systemName: "doc.text.fill")
         )
@@ -221,10 +221,10 @@ class TabBarView: UIView {
     
     private var buttons: [TabBarButton] = []
     private let movingLayer = CALayer()
-    private let spacing: CGFloat = 8
-    private let padding: CGFloat = 16
-    private let selectedButtonWidth: CGFloat = 100
-    private let buttonHeight: CGFloat = 48
+    private let spacing: CGFloat = 10
+    private let padding: CGFloat = 24
+    private let selectedButtonWidth: CGFloat = 120
+    private let buttonHeight: CGFloat = 52
     
     private let primaryColor = UIColor(hex: "#2A4662")
     
@@ -332,19 +332,19 @@ class TabBarButton: UIButton {
         iconImageView.translatesAutoresizingMaskIntoConstraints = false
         addSubview(iconImageView)
         
-        customTitleLabel.font = .systemFont(ofSize: 12, weight: .semibold)
+        customTitleLabel.font = .systemFont(ofSize: 10, weight: .semibold)
         customTitleLabel.translatesAutoresizingMaskIntoConstraints = false
         addSubview(customTitleLabel)
         
         NSLayoutConstraint.activate([
             iconImageView.centerYAnchor.constraint(equalTo: centerYAnchor),
-            iconImageView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 12),
+            iconImageView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 8),
             iconImageView.widthAnchor.constraint(equalToConstant: 24),
             iconImageView.heightAnchor.constraint(equalToConstant: 24),
             
             customTitleLabel.centerYAnchor.constraint(equalTo: centerYAnchor),
             customTitleLabel.leadingAnchor.constraint(equalTo: iconImageView.trailingAnchor, constant: 8),
-            customTitleLabel.trailingAnchor.constraint(lessThanOrEqualTo: trailingAnchor, constant: -12)
+            customTitleLabel.trailingAnchor.constraint(lessThanOrEqualTo: trailingAnchor, constant: -10)
         ])
     }
     

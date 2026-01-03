@@ -50,22 +50,29 @@ class AdminDashboardViewController: UIViewController {
             $0.applyCardStyle()
         }
         
-        loadDashboardCounts()
-        
-        startDonutListener()
+        startDashboardListener()
         
         loadTechnicianOfTheWeek()
+        
+        db.collection("maintenanceRequest").getDocuments { snap, err in
+            if let err = err {
+                print("❌ Admin smoke test error:", err.localizedDescription)
+                return
+            }
+            let count = snap?.documents.count ?? 0
+            print("✅ Admin smoke test maintenanceRequests count:", count)
+        }
     }
     
     @objc private func didTapBell() {
-        let alert = UIAlertController(title: "Notifications", message: "Tapped bell.", preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: "OK", style: .default))
-        present(alert, animated: true)
+        let vc = NotificationsViewController()
+            vc.hidesBottomBarWhenPushed = false
+            navigationController?.pushViewController(vc, animated: true)
     }
     
     private func loadDashboardCounts() {
         // total requests
-        db.collection("requests").addSnapshotListener { [weak self] snapshot, error in
+        db.collection("maintenanceRequest").addSnapshotListener { [weak self] snapshot, error in
             guard let self else { return }
             if let error = error {
                 print("Total requests error:", error)
@@ -78,7 +85,7 @@ class AdminDashboardViewController: UIViewController {
         }
         
         // pending requests
-        db.collection("requests")
+        db.collection("maintenanceRequest")
             .whereField("status", isEqualTo: "pending")
             .addSnapshotListener { [weak self] snapshot, error in
                 guard let self else { return }
@@ -94,7 +101,7 @@ class AdminDashboardViewController: UIViewController {
             }
         
         // in progress
-        db.collection("requests")
+        db.collection("maintenanceRequest")
             .whereField("status", isEqualTo: "in_progress")
             .addSnapshotListener { [weak self] snapshot, error in
                 guard let self else { return }
@@ -110,7 +117,7 @@ class AdminDashboardViewController: UIViewController {
             }
         
         // completed
-        db.collection("requests")
+        db.collection("maintenanceRequest")
             .whereField("status", isEqualTo: "completed")
             .addSnapshotListener { [weak self] snapshot, error in
                 guard let self else { return }
@@ -131,7 +138,7 @@ class AdminDashboardViewController: UIViewController {
     
     private func startDonutListener() {
         
-        requestsListener = db.collection("requests").addSnapshotListener { [weak self] snap, err in
+        requestsListener = db.collection("maintenanceRequest").addSnapshotListener { [weak self] snap, err in
             guard let self else { return }
             if let err = err {
                 print("Donut total fetch error:", err)
@@ -147,49 +154,152 @@ class AdminDashboardViewController: UIViewController {
             
             DispatchQueue.main.async {
                 self.donutChartView.segments = [
-                    .init(value: CGFloat(pending), color: .systemOrange),
-                    .init(value: CGFloat(inProgress), color: .systemBlue),
-                    .init(value: CGFloat(completed), color: .systemGreen)
+                    .init(value: CGFloat(pending), color: .statusPending),
+                    .init(value: CGFloat(inProgress), color: .statusInProgress),
+                    .init(value: CGFloat(completed), color: .statusCompleted)
                 ]
             }
         }
     }
     
-    private func loadTechnicianOfTheWeek() {
-        db.collection("technicians").getDocuments { [weak self] snapshot, error in
+    private var dashboardListener: ListenerRegistration?
+
+    private func startDashboardListener() {
+        dashboardListener = db.collection("maintenanceRequest").addSnapshotListener { [weak self] snap, err in
             guard let self else { return }
-            
-            if let error = error {
-                print("❌ Technician of week error:", error)
+            if let err = err {
+                print("❌ dashboard listener error:", err)
                 return
             }
-            
-            let docs = snapshot?.documents ?? []
-            
-            // build list
-            let techs: [(name: String, solvedTasks: Int)] = docs.compactMap { doc in let data = doc.data()
-                
-                guard let name = data["name"] as? String else { return nil }
-                
-                
-                // this is so that solvedTasks can come as Int or as NSNumber
-                let solved = (data["solvedTasks"] as? NSNumber)?.intValue
-                            ?? (data["solvedTasks"] as? Int)
-                            ?? 0
-                
-                return (name: name, solvedTasks: solved)
+
+            let docs = snap?.documents ?? []
+
+            var pending = 0
+            var inProgress = 0
+            var completed = 0
+
+            var completedByTechId: [String: Int] = [:]
+
+            for d in docs {
+                let data = d.data()
+                let status = data["status"] as? String ?? ""
+
+                switch status {
+                case "pending":
+                    pending += 1
+                case "in_progress":
+                    inProgress += 1
+                case "completed":
+                    completed += 1
+                    if let techId = data["technicianId"] as? String {
+                        completedByTechId[techId, default: 0] += 1
+                    }
+                default:
+                    break
+                }
             }
-            
-            // picking the best technician (aka technician of the week)
-            guard let best = techs.max(by: { $0.solvedTasks < $1.solvedTasks }) else { return }
-            
+
+            let total = docs.count
+
             DispatchQueue.main.async {
-                self.techOfWeekNameLabel.text = "🎉 \(best.name) 🎉"
-                self.techOfWeekSubtitleLabel.text = "\(best.solvedTasks) tasks solved"
-                self.techOfWeekRankLabel.text = "#1"
+                self.totalRequestsLabel.text = "\(total)"
+
+                self.pendingLabel.text = "\(pending)"
+                self.pendingStatusLabel.text = "Pending (\(pending))"
+
+                self.inProgressLabel.text = "\(inProgress)"
+                self.inProgressStatusLabel.text = "In Progress (\(inProgress))"
+
+                self.completedLabel.text = "\(completed)"
+                self.completedStatusLabel.text = "Completed (\(completed))"
+
+                self.donutChartView.segments = [
+                    .init(value: CGFloat(pending), color: .statusPending),
+                    .init(value: CGFloat(inProgress), color: .statusInProgress),
+                    .init(value: CGFloat(completed), color: .statusCompleted)
+                ]
+            }
+
+            guard let (bestTechId, bestSolved) = completedByTechId.max(by: { $0.value < $1.value }) else {
+                DispatchQueue.main.async {
+                    self.techOfWeekNameLabel.text = "—"
+                    self.techOfWeekSubtitleLabel.text = "No completed tasks yet"
+                    self.techOfWeekRankLabel.text = "#1"
+                }
+                return
+            }
+
+            self.db.collection("technicians").document(bestTechId).getDocument { [weak self] doc, err in
+                guard let self else { return }
+                if let err = err {
+                    print("❌ tech of week tech fetch error:", err)
+                    return
+                }
+
+                let name = doc?.data()?["name"] as? String ?? "Unknown"
+
+                DispatchQueue.main.async {
+                    self.techOfWeekNameLabel.text = "🎉 \(name) 🎉"
+                    self.techOfWeekSubtitleLabel.text = "\(bestSolved) tasks solved"
+                    self.techOfWeekRankLabel.text = "#1"
+                }
             }
         }
     }
+
+    
+    private var techOfWeekListener: ListenerRegistration?
+
+    private func loadTechnicianOfTheWeek() {
+        techOfWeekListener = db.collection("maintenanceRequest")
+            .whereField("status", isEqualTo: "completed")
+            .addSnapshotListener { [weak self] snap, err in
+                guard let self else { return }
+                if let err = err {
+                    print("❌ Tech of week requests error:", err)
+                    return
+                }
+
+                var counts: [String: Int] = [:]
+                for doc in snap?.documents ?? [] {
+                    let data = doc.data()
+                    guard let techId = data["technicianId"] as? String else { continue }
+                    counts[techId, default: 0] += 1
+                }
+
+                guard let (bestTechId, bestSolved) = counts.max(by: { $0.value < $1.value }) else {
+                    DispatchQueue.main.async {
+                        self.techOfWeekNameLabel.text = "—"
+                        self.techOfWeekSubtitleLabel.text = "No completed tasks yet"
+                        self.techOfWeekRankLabel.text = "#1"
+                    }
+                    return
+                }
+
+                self.db.collection("technicians").document(bestTechId).getDocument { [weak self] doc, err in
+                    guard let self else { return }
+                    if let err = err {
+                        print("❌ Tech of week tech fetch error:", err)
+                        return
+                    }
+
+                    let name = doc?.data()?["name"] as? String ?? "Unknown"
+
+                    DispatchQueue.main.async {
+                        self.techOfWeekNameLabel.text = "🎉 \(name) 🎉"
+                        self.techOfWeekSubtitleLabel.text = "\(bestSolved) tasks solved"
+                        self.techOfWeekRankLabel.text = "#1"
+                    }
+                }
+            }
+    }
+    
+    deinit {
+        techOfWeekListener?.remove()
+        dashboardListener?.remove()
+        requestsListener?.remove()
+    }
+
 
     /*
     // MARK: - Navigation

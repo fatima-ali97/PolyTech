@@ -6,9 +6,12 @@
 //
 
 import UIKit
+import FirebaseAuth
+import FirebaseFirestore
 
 class ServiceFeedbackViewController: UIViewController, UITextViewDelegate {
-    
+    var requestId: String?
+    var requestType: String?
     @IBOutlet weak var submitButton: UIButton!
     @IBOutlet weak var notesTextView: UITextView!
     @IBOutlet var starButtons: [UIButton]!
@@ -18,6 +21,10 @@ class ServiceFeedbackViewController: UIViewController, UITextViewDelegate {
     }
     
     private let placeholderText = "Add a note..."
+    
+    private let db = Firestore.firestore()
+
+    //var requestId: String!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -90,6 +97,51 @@ class ServiceFeedbackViewController: UIViewController, UITextViewDelegate {
             textView.textColor = .secondaryLabel
         }
     }
+    
+    @IBAction func submitTapped(_ sender: UIButton) {
+        guard let requestId = requestId, !requestId.isEmpty else {
+            print("Missing requestId")
+            return
+        }
+        guard let userId = Auth.auth().currentUser?.uid else {
+            print("User not logged in")
+            return
+        }
+        guard rating > 0 else { return }
+
+        let rawNotes = notesTextView.text ?? ""
+        let notes = (rawNotes == placeholderText) ? "" : rawNotes.trimmingCharacters(in: .whitespacesAndNewlines)
+
+        sender.isEnabled = false
+
+        let data: [String: Any] = [
+            "requestId": requestId,
+            "userId": userId,
+            "rating": rating,
+            "notes": notes,
+            "createdAt": FieldValue.serverTimestamp()
+        ]
+
+        db.collection("serviceFeedback").addDocument(data: data) { [weak self] error in
+            guard let self else { return }
+            sender.isEnabled = true
+
+            if let error = error {
+                print("Failed to submit feedback: \(error)")
+                return
+            }
+
+            // success UI
+            let alert = UIAlertController(title: "Thank you!",
+                                          message: "Your feedback was submitted.",
+                                          preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: "OK", style: .default) { _ in
+                self.dismiss(animated: true)
+            })
+            self.present(alert, animated: true)
+        }
+    }
+
     
 
     /*

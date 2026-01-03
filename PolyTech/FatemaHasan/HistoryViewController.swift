@@ -4,74 +4,138 @@ import FirebaseFirestore
 class HistoryViewController: UIViewController {
 
     @IBOutlet weak var SearchBar: UISearchBar!
-    // MARK: - IBOutlets
     @IBOutlet weak var tableView: UITableView!
     
     // MARK: - Properties
-    private var historyItems: [NotificationModel] = []
-    private let db = Firestore.firestore()
-    private var listener: ListenerRegistration?
+    private var maintenanceRequests: [MaintenanceRequestModel] = []
+    private var inventoryRequests: [Inventory] = []
+    private var filteredMaintenanceRequests: [MaintenanceRequestModel] = []
+    private var filteredInventoryRequests: [Inventory] = []
+    private var isSearching = false
     
-    // TODO: Replace with actual user ID from your auth system
-    private let currentUserId = "4gEMMK7yMPfJv3Xghk0iFefRBvH3"
+    private let db = Firestore.firestore()
+    private var maintenanceListener: ListenerRegistration?
+    private var inventoryListener: ListenerRegistration?
+    
+    private let currentUserId = UserDefaults.standard.string(forKey: "userId")
     
     private let refreshControl = UIRefreshControl()
     private let emptyStateView = EmptyStateView()
     
     // MARK: - Lifecycle
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        setupUI()
+//        setupUI()
         setupTableView()
         setupEmptyState()
         loadHistoryItems()
+        
+        SearchBar.delegate = self
+        
+
+        let textField = SearchBar.searchTextField
+        textField.textColor = .onBackground
+        textField.tintColor = .background
+        textField.backgroundColor = .secondarySystemBackground
+
+
+        SearchBar.backgroundImage = UIImage()
+        
+        
+        // Setup custom back button (remove the conflicting lines)
+        let backButton = UIBarButtonItem(
+            image: UIImage(systemName: "chevron.left"),
+            style: .plain,
+            target: self,
+            action: #selector(goBack)
+        )
+        backButton.tintColor = .background
+        navigationItem.leftBarButtonItem = backButton
+        
+        // Only hide the default back button if needed
+        navigationItem.hidesBackButton = true
+    }
+
+    
+    @objc private func goBack() {
+        print("🔙 Back button tapped")
+        
+        // Since we're presented modally, use dismiss instead of pop
+        if presentingViewController != nil {
+            dismiss(animated: true, completion: nil)
+        } else if let navController = navigationController, navController.viewControllers.count > 1 {
+            navController.popViewController(animated: true)
+        } else {
+            print("❌ No way to go back")
+        }
     }
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        listener?.remove()
+        maintenanceListener?.remove()
+        inventoryListener?.remove()
     }
     
-    // MARK: - Setup
+//    // MARK: - Setup
+//    private func setupUI() {
+//        navigationController?.navigationBar.prefersLargeTitles = true
+//        view.backgroundColor = .systemBackground
+//        
+//        // Back to Profile (robust: pop to ProfileVC if found, else pop current)
+//        let backButton = UIBarButtonItem(
+//            image: UIImage(systemName: "arrow.left"),
+//            style: .plain,
+//            target: self,
+//            action: #selector(backToProfile)
+//        )
+//        navigationItem.leftBarButtonItem = backButton
+//    }
+//    
+//    @objc private func backToProfile() {
+//        // If inside a tab bar, try to switch to Profile tab (index 3 as per your UI screenshot)
+//        if let tab = tabBarController, tab.viewControllers?.count ?? 0 > 3 {
+//            tab.selectedIndex = 3
+//            return
+//        }
+//        // Otherwise, pop to an existing ProfileViewController if present in the stack
+//        if let nav = navigationController {
+//            if let profileVC = nav.viewControllers.first(where: { $0 is ProfileViewController }) {
+//                nav.popToViewController(profileVC, animated: true)
+//            } else {
+//                nav.popViewController(animated: true)
+//            }
+//        }
+//    }
     
-    private func setupUI() {
-        title = "History"
-        navigationController?.navigationBar.prefersLargeTitles = true
-        view.backgroundColor = .background
-    }
+    
     
     private func setupTableView() {
         guard let tableView = tableView else {
             print("ERROR: tableView outlet is not connected!")
             return
         }
-        
         tableView.delegate = self
         tableView.dataSource = self
         tableView.separatorStyle = .none
         tableView.backgroundColor = .clear
         tableView.rowHeight = UITableView.automaticDimension
-        tableView.estimatedRowHeight = 100
+        tableView.estimatedRowHeight = 120
+        tableView.register(HistoryTableViewCell.self, forCellReuseIdentifier: "HistoryCell")
         
-        tableView.register(InventoryTableViewCell.self, forCellReuseIdentifier: "InventoryCell")
-        
-        // refresh control
         refreshControl.addTarget(self, action: #selector(refreshHistoryItems), for: .valueChanged)
         tableView.refreshControl = refreshControl
     }
-    // MARK: - EMPTY STATE
+    
+    // MARK: - Empty State
     private func setupEmptyState() {
-        guard let tableView = tableView else {
+        guard tableView != nil else {
             print("ERROR: Cannot setup empty state - tableView outlet is not connected!")
             return
         }
-        
         emptyStateView.configure(
-            //icon: UIImage(systemName: "bell.slash.fill"),
-            title: "No History Items For Now.",
-            message: "Once a request status gets updated, we will notify you immediately."
+            title: "No History Items",
+            message: "Your maintenance and inventory requests will appear here."
         )
         emptyStateView.isHidden = true
         view.addSubview(emptyStateView)
@@ -86,49 +150,71 @@ class HistoryViewController: UIViewController {
     }
     
     // MARK: - Data Loading
-    
     private func loadHistoryItems() {
-        print("load history items for userId: \(currentUserId)")
+        print("📥 Loading history items for userId: \(currentUserId ?? "nil")")
         
-        // Real-time listener for history items
-        listener = db.collection("Notifications")
-            .whereField("userId", isEqualTo: currentUserId)
+        // Maintenance Requests
+        maintenanceListener = db.collection("maintenanceRequest")
+            .whereField("userId", isEqualTo: currentUserId ?? "")
             .addSnapshotListener { [weak self] querySnapshot, error in
                 guard let self = self else { return }
                 
                 if let error = error {
-                    print("**Error fetching history items: \(error.localizedDescription)")
-                    self.showError("Failed to load history items")
-                    return
-                }
-                
-                guard let documents = querySnapshot?.documents else {
-                    print(" No history items for this user!!")
+                    print("❌ Error fetching maintenance requests: \(error.localizedDescription)")
                     self.updateEmptyState()
                     return
                 }
                 
-                self.historyItems = documents.compactMap { document in
-                    let item = NotificationModel(dictionary: document.data(), id: document.documentID)
-                    if item == nil {
-                        print("Failed to parse document: \(document.documentID)")
-                        print("   Data: \(document.data())")
-                    }
-                    return item
+                guard let documents = querySnapshot?.documents else {
+                    self.maintenanceRequests.removeAll()
+                    self.updateEmptyState()
+                    return
                 }
                 
-                print(" Successfully parsed \(self.historyItems.count) history items")
+                self.maintenanceRequests = documents.compactMap {
+                    MaintenanceRequestModel(dictionary: $0.data(), id: $0.documentID)
+                }
+                
+                self.maintenanceRequests.sort { $0.createdAt.dateValue() > $1.createdAt.dateValue() }
                 
                 DispatchQueue.main.async {
-                    guard let tableView = self.tableView else { return }
-                    tableView.reloadData()
+                    self.tableView?.reloadData()
+                    self.updateEmptyState()
+                }
+            }
+        
+        // Inventory Requests (ensure collection name matches your Firestore; if you use "inventoryRequest", change it here)
+        inventoryListener = db.collection("Inventory")
+            .whereField("userId", isEqualTo: currentUserId ?? "")
+            .addSnapshotListener { [weak self] querySnapshot, error in
+                guard let self = self else { return }
+                
+                if let error = error {
+                    print("❌ Error fetching inventory requests: \(error.localizedDescription)")
+                    self.updateEmptyState()
+                    return
+                }
+                
+                guard let documents = querySnapshot?.documents else {
+                    self.inventoryRequests.removeAll()
+                    self.updateEmptyState()
+                    return
+                }
+                
+                self.inventoryRequests = documents.compactMap {
+                    Inventory(dictionary: $0.data(), id: $0.documentID)
+                }
+                
+                self.inventoryRequests.sort { $0.createdAt.dateValue() > $1.createdAt.dateValue() }
+                
+                DispatchQueue.main.async {
+                    self.tableView?.reloadData()
                     self.updateEmptyState()
                 }
             }
     }
     
     @objc private func refreshHistoryItems() {
-        // Refresh is handled automatically by the real-time listener
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
             self.refreshControl.endRefreshing()
         }
@@ -136,138 +222,80 @@ class HistoryViewController: UIViewController {
     
     private func updateEmptyState() {
         guard let tableView = tableView else { return }
-        emptyStateView.isHidden = !historyItems.isEmpty
-        tableView.isHidden = historyItems.isEmpty
+        let isEmpty = maintenanceRequests.isEmpty && inventoryRequests.isEmpty
+        emptyStateView.isHidden = !isEmpty
+        tableView.isHidden = isEmpty
     }
     
-    // MARK: - Actions
-    
-    private func markAsRead(item: NotificationModel) {
-        guard !item.isRead else { return }
-        
-        db.collection("Notifications")
-            .document(item.id)
-            .updateData(["isRead": true]) { error in
-                if let error = error {
-                    print("Error marking item as read: \(error.localizedDescription)")
-                }
-            }
-    }
-    
-    private func deleteItem(at indexPath: IndexPath) {
-        let item = historyItems[indexPath.row]
-        
-        db.collection("Notifications")
-            .document(item.id)
-            .delete { [weak self] error in
-                if let error = error {
-                    print("Error deleting item: \(error.localizedDescription)")
-                    self?.showError("Failed to delete item")
-                } else {
-                    self?.showSuccessToast(message: "Item deleted")
-                }
-            }
-    }
-    
-    // MARK: - UI Helpers
-    
-    private func showError(_ message: String) {
-        let alert = UIAlertController(title: "Error", message: message, preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: "OK", style: .default))
-        present(alert, animated: true)
-    }
-    
-    private func showSuccessToast(message: String) {
-        let toast = UIAlertController(title: nil, message: message, preferredStyle: .alert)
-        present(toast, animated: true)
-        
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
-            toast.dismiss(animated: true)
+    // MARK: - Navigation
+    private func navigateToFeedback(for requestType: String, requestId: String) {
+        // Ensure this VC is embedded in a UINavigationController
+        guard let nav = navigationController else {
+            print("❌ No navigationController; embed HistoryViewController in a UINavigationController.")
+            return
         }
+        
+        let storyboard = UIStoryboard(name: "ServiceFeedback", bundle: nil)
+        guard let vc = storyboard.instantiateViewController(
+            withIdentifier: "ServiceFeedbackViewController"
+        ) as? ServiceFeedbackViewController else {
+            print("❌ ServiceFeedbackViewController not found or wrong class")
+            return
+        }
+        
+        // Pass context to feedback screen (add these properties in ServiceFeedbackViewController)
+        vc.requestType = requestType
+        vc.requestId = requestId
+        
+        nav.pushViewController(vc, animated: true)
     }
     
-    // MARK: - Sample Data (for testing)
+    // MARK: - Helpers
+    private func getTotalCount() -> Int {
+        return isSearching
+            ? filteredMaintenanceRequests.count + filteredInventoryRequests.count
+            : maintenanceRequests.count + inventoryRequests.count
+    }
     
-    private func addSampleHistoryItems() {
-        let sampleItems: [[String: Any]] = [
-            [
-                "userId": currentUserId,
-                "title": "New Message",
-                "message": "John Doe sent you a message",
-                "type": "message",
-                "iconName": "envelope.fill",
-                "isRead": false,
-                "timestamp": Timestamp(date: Date().addingTimeInterval(-300))
-            ],
-            [
-                "userId": currentUserId,
-                "title": "Success!",
-                "message": "Your profile was updated successfully",
-                "type": "success",
-                "iconName": "checkmark.circle.fill",
-                "isRead": false,
-                "timestamp": Timestamp(date: Date().addingTimeInterval(-3600))
-            ],
-            [
-                "userId": currentUserId,
-                "title": "New Follower",
-                "message": "Jane Smith started following you",
-                "type": "follow",
-                "iconName": "person.badge.plus.fill",
-                "isRead": true,
-                "timestamp": Timestamp(date: Date().addingTimeInterval(-7200))
-            ],
-            [
-                "userId": currentUserId,
-                "title": "Warning",
-                "message": "Your storage is almost full",
-                "type": "warning",
-                "iconName": "exclamationmark.triangle.fill",
-                "isRead": true,
-                "timestamp": Timestamp(date: Date().addingTimeInterval(-86400))
-            ],
-            [
-                "userId": currentUserId,
-                "title": "You got a like!",
-                "message": "Sarah Johnson liked your post",
-                "type": "like",
-                "iconName": "heart.fill",
-                "isRead": false,
-                "timestamp": Timestamp(date: Date().addingTimeInterval(-1800))
-            ]
-        ]
+    private func getItemType(at index: Int) -> (type: String, item: Any) {
+        let maintenanceCount = isSearching ? filteredMaintenanceRequests.count : maintenanceRequests.count
         
-        for item in sampleItems {
-            db.collection("Notifications").addDocument(data: item) { error in
-                if let error = error {
-                    print("Error adding sample item: \(error.localizedDescription)")
-                }
-            }
+        if index < maintenanceCount {
+            let item = isSearching ? filteredMaintenanceRequests[index] : maintenanceRequests[index]
+            return ("maintenance", item)
+        } else {
+            let adjustedIndex = index - maintenanceCount
+            let item = isSearching ? filteredInventoryRequests[adjustedIndex] : inventoryRequests[adjustedIndex]
+            return ("inventory", item)
         }
     }
 }
 
 // MARK: - UITableViewDataSource
-
 extension HistoryViewController: UITableViewDataSource {
-    
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return historyItems.count
+        return getTotalCount()
     }
     
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+    func tableView(_ tableView: UITableView,
+                   cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(
-            withIdentifier: "InventoryCell",
+            withIdentifier: "HistoryCell",
             for: indexPath
-        ) as? InventoryTableViewCell else {
+        ) as? HistoryTableViewCell else {
             return UITableViewCell()
         }
         
-        let item = historyItems[indexPath.row]
-        cell.configure(with: item) { [weak self] actionUrl in
-            // Handle action button tap
-            print("Action tapped for URL: \(actionUrl)")
-            self?.handleItemAction(actionUrl: actionUrl, item: item)
+        let itemData = getItemType(at: indexPath.row)
+        
+        if itemData.type == "maintenance", let item = itemData.item as? MaintenanceRequestModel {
+            cell.configure(with: item, feedbackCallback: { [weak self] in
+                self?.navigateToFeedback(for: "maintenance", requestId: item.id)
+            })
+        } else if itemData.type == "inventory", let item = itemData.item as? Inventory {
+            cell.configure(with: item, feedbackCallback: { [weak self] in
+                self?.navigateToFeedback(for: "inventory", requestId: item.id)
+            })
         }
         
         return cell
@@ -275,62 +303,98 @@ extension HistoryViewController: UITableViewDataSource {
 }
 
 // MARK: - UITableViewDelegate
-
 extension HistoryViewController: UITableViewDelegate {
-    
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let item = historyItems[indexPath.row]
+        tableView.deselectRow(at: indexPath, animated: true)
         
-        // Mark as read
-        markAsRead(item: item)
-        
-        // Handle action
-        if let actionUrl = item.actionUrl {
-            handleItemAction(actionUrl: actionUrl, item: item)
-        }
-        
-        // Add haptic feedback
         let generator = UIImpactFeedbackGenerator(style: .light)
         generator.impactOccurred()
-        
-        tableView.deselectRow(at: indexPath, animated: true)
     }
     
-    private func handleItemAction(actionUrl: String, item: NotificationModel) {
-        print("Navigate to: \(actionUrl)")
-        // TODO: Implement navigation based on actionUrl
-        // Example: Navigate to different view controllers based on the URL or item type
-        
-        // You can parse the actionUrl and navigate accordingly
-        // For example:
-        // if actionUrl.contains("request") {
-        //     navigateToRequestDetails(requestId: ...)
-        // } else if actionUrl.contains("location") {
-        //     navigateToLocationTracking(...)
-        // }
-    }
-    
-    // Swipe to delete
-    func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
+    func tableView(_ tableView: UITableView,
+                   trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
         let deleteAction = UIContextualAction(style: .destructive, title: "Delete") { [weak self] _, _, completion in
-            self?.deleteItem(at: indexPath)
+            guard let self = self else { completion(false); return }
+            let itemData = self.getItemType(at: indexPath.row)
+            
+            if itemData.type == "maintenance" {
+                let maintenanceCount = self.isSearching
+                    ? self.filteredMaintenanceRequests.count
+                    : self.maintenanceRequests.count
+                if indexPath.row < maintenanceCount {
+                    let itemIndex = indexPath.row
+                    let id = (self.isSearching ? self.filteredMaintenanceRequests[itemIndex] : self.maintenanceRequests[itemIndex]).id
+                    self.db.collection("maintenanceRequest").document(id).delete { error in
+                        if let error = error { self.showError("Failed to delete: \(error.localizedDescription)") }
+                    }
+                }
+            } else if itemData.type == "inventory" {
+                let maintenanceCount = self.isSearching
+                    ? self.filteredMaintenanceRequests.count
+                    : self.maintenanceRequests.count
+                let adjustedIndex = indexPath.row - maintenanceCount
+                let item = self.isSearching ? self.filteredInventoryRequests[adjustedIndex] : self.inventoryRequests[adjustedIndex]
+                self.db.collection("Inventory").document(item.id).delete { error in
+                    if let error = error { self.showError("Failed to delete: \(error.localizedDescription)") }
+                }
+            }
+            
             completion(true)
         }
-        deleteAction.image = UIImage(systemName: "minus")
-        
-        let item = historyItems[indexPath.row]
-        if !item.isRead {
-            let markReadAction = UIContextualAction(style: .normal, title: "Mark Read") { [weak self] _, _, completion in
-                self?.markAsRead(item: item)
-                completion(true)
-            }
-            // TODO: change this to read
-            markReadAction.backgroundColor = .secondary
-            markReadAction.image = UIImage(systemName: "checkmark")
-            
-            return UISwipeActionsConfiguration(actions: [deleteAction, markReadAction])
-        }
+        deleteAction.image = UIImage(systemName: "trash")
         
         return UISwipeActionsConfiguration(actions: [deleteAction])
+    }
+    
+    // MARK: - UI Helpers
+    private func showError(_ message: String) {
+        let alert = UIAlertController(title: "Error", message: message, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "OK", style: .default))
+        present(alert, animated: true)
+    }
+}
+
+// MARK: - UISearchBarDelegate
+extension HistoryViewController: UISearchBarDelegate {
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        let query = searchText.trimmingCharacters(in: .whitespacesAndNewlines)
+
+        if query.isEmpty {
+            isSearching = false
+            filteredMaintenanceRequests.removeAll()
+            filteredInventoryRequests.removeAll()
+        } else {
+            isSearching = true
+            
+            filteredMaintenanceRequests = maintenanceRequests.filter { item in
+                let nameMatch = item.requestName.range(of: query, options: .caseInsensitive) != nil
+                let locationMatch = item.location.range(of: query, options: .caseInsensitive) != nil
+                let categoryMatch = item.category.range(of: query, options: .caseInsensitive) != nil
+                return nameMatch || locationMatch || categoryMatch
+            }
+            
+            filteredInventoryRequests = inventoryRequests.filter { item in
+                let nameMatch = item.requestName.range(of: query, options: .caseInsensitive) != nil
+                let itemNameMatch = item.itemName.range(of: query, options: .caseInsensitive) != nil
+                let categoryMatch = item.category.range(of: query, options: .caseInsensitive) != nil
+                let locationMatch = item.location.range(of: query, options: .caseInsensitive) != nil
+                return nameMatch || itemNameMatch || categoryMatch || locationMatch
+            }
+        }
+
+        tableView.reloadData()
+    }
+
+    func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
+        isSearching = false
+        searchBar.text = ""
+        filteredMaintenanceRequests.removeAll()
+        filteredInventoryRequests.removeAll()
+        tableView.reloadData()
+        searchBar.resignFirstResponder()
+    }
+
+    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        searchBar.resignFirstResponder()
     }
 }
