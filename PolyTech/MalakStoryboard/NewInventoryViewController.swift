@@ -447,10 +447,12 @@ class NewInventoryViewController: UIViewController {
         docRef.setData(newData) { [weak self] error in
             guard let self = self else { return }
             
-            if let error = error {
-                self.showAlert("Error saving request: \(error.localizedDescription)")
-                return
-            }
+//            if let error = error {
+//                loadingAlert.dismiss(animated: true) {
+//                    self.showAlert("Error saving request: \(error.localizedDescription)")
+//                }
+//                return
+//            }
             
             print("✅ Inventory request saved to Firestore")
             
