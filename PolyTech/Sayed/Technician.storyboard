@@ -241,6 +241,10 @@ Due: 2025-11-15</string>
                     </view>
                     <navigationItem key="navigationItem" title="Tasks" id="DZq-Es-N3f"/>
                     <connections>
+                        <outlet property="btnAll" destination="3Zf-zR-xlJ" id="QsN-Hz-3kt"/>
+                        <outlet property="btnCompleted" destination="qCp-Ts-eBW" id="hW4-4E-F7M"/>
+                        <outlet property="btnInProgress" destination="ywC-US-aoy" id="Iyc-0H-Rhv"/>
+                        <outlet property="btnPending" destination="8k9-sf-b4P" id="uda-z9-e7o"/>
                         <outlet property="filterStackView" destination="V63-8O-Amz" id="kXU-xI-0f8"/>
                         <outlet property="noTasksLabel" destination="ihQ-zH-p5Q" id="1wz-Nk-i6i"/>
                         <outlet property="searchBar" destination="qNv-ei-73L" id="env-Gi-T0v"/>
@@ -420,7 +424,7 @@ Due: 2025-11-15</string>
                                     </userDefinedRuntimeAttribute>
                                 </userDefinedRuntimeAttributes>
                             </imageView>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Description" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Omm-cX-HMg">
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Category" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Omm-cX-HMg">
                                 <rect key="frame" x="86" y="329" width="291" height="24"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <fontDescription key="fontDescription" type="boldSystem" pointSize="20"/>
