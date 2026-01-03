@@ -310,7 +310,7 @@ class NewMaintenanceViewController: UIViewController {
 
                     let alert = UIAlertController(
                         title: "Success",
-                        message: "Maintenance request created ✅\n\nA technician will be automatically assigned.",
+                        message: "Maintenance request created\nA technician will be assigned.",
                         preferredStyle: .alert
                     )
 
@@ -341,7 +341,7 @@ class NewMaintenanceViewController: UIViewController {
         
         let alert = UIAlertController(
             title: "Success",
-            message: "Maintenance request updated successfully ✅",
+            message: "Maintenance request updated successfully",
             preferredStyle: .alert
         )
         

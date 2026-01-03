@@ -89,6 +89,8 @@ final class DelayedRequestsViewController: UIViewController {
     private func loadDelayedRequests() {
         let cutoffDate = Calendar.current.date(byAdding: .day, value: -delayedAfterDays, to: Date())!
         let cutoffTimestamp = Timestamp(date: cutoffDate)
+        
+        print("🔍 Loading delayed requests with cutoff date: \(cutoffDate)")
 
         func rebuildList() {
             var merged = oldMap
@@ -102,13 +104,17 @@ final class DelayedRequestsViewController: UIViewController {
                 return $0.title.localizedCaseInsensitiveCompare($1.title) == .orderedAscending
             }
 
+            print("📊 Total delayed requests to display: \(self.delayedRequests.count)")
+            
             DispatchQueue.main.async {
                 self.tableView.reloadData()
             }
         }
 
+        // Listen for pending requests older than 3 days
         delayedOldListener?.remove()
-        delayedOldListener = db.collection("requests")
+        delayedOldListener = db.collection("maintenanceRequest")
+            .whereField("status", isEqualTo: "pending")
             .whereField("createdAt", isLessThanOrEqualTo: cutoffTimestamp)
             .addSnapshotListener { [weak self] snapshot, error in
                 guard let self else { return }
@@ -118,13 +124,10 @@ final class DelayedRequestsViewController: UIViewController {
                 }
 
                 let docs = snapshot?.documents ?? []
+                print("📊 Found \(docs.count) pending requests older than cutoff")
+                
                 self.oldMap = Dictionary(uniqueKeysWithValues: docs.compactMap { doc in
                     let data = doc.data()
-
-                    // exclude completed
-                    if let status = data["status"] as? String, status.lowercased() == "completed" {
-                        return nil
-                    }
 
                     guard let title = data["requestName"] as? String,
                           let createdAt = data["createdAt"] as? Timestamp else {
@@ -133,6 +136,11 @@ final class DelayedRequestsViewController: UIViewController {
                     
                     let location = data["location"] as? String ?? "Unknown"
                     let daysDelayed = self.calculateDaysDelayed(from: createdAt.dateValue())
+                    
+                    // Only include if truly delayed (3+ days)
+                    guard daysDelayed >= self.delayedAfterDays else {
+                        return nil
+                    }
                     
                     return (doc.documentID, DelayedRequest(
                         id: doc.documentID,
@@ -145,8 +153,9 @@ final class DelayedRequestsViewController: UIViewController {
                 rebuildList()
             }
 
+        // Listen for rejected requests (regardless of age)
         rejectedListener?.remove()
-        rejectedListener = db.collection("requests")
+        rejectedListener = db.collection("maintenanceRequest")
             .whereField("rejected", isEqualTo: true)
             .addSnapshotListener { [weak self] snapshot, error in
                 guard let self else { return }
@@ -156,10 +165,12 @@ final class DelayedRequestsViewController: UIViewController {
                 }
 
                 let docs = snapshot?.documents ?? []
+                print("📊 Found \(docs.count) rejected requests")
+                
                 self.rejectedMap = Dictionary(uniqueKeysWithValues: docs.compactMap { doc in
                     let data = doc.data()
 
-                    // exclude completed
+                    // Skip completed rejected requests
                     if let status = data["status"] as? String, status.lowercased() == "completed" {
                         return nil
                     }
@@ -211,6 +222,8 @@ final class DelayedRequestsViewController: UIViewController {
                 }
 
                 self.technicians.sort { $0.name.localizedCaseInsensitiveCompare($1.name) == .orderedAscending }
+                
+                print("👥 Loaded \(self.technicians.count) technicians")
 
                 DispatchQueue.main.async {
                     self.tableView.reloadData()
@@ -222,7 +235,7 @@ final class DelayedRequestsViewController: UIViewController {
     
     private func assign(requestId: String, technician: TechnicianItem) {
         // First get the request details
-        db.collection("requests").document(requestId).getDocument { [weak self] document, error in
+        db.collection("maintenanceRequest").document(requestId).getDocument { [weak self] document, error in
             guard let self = self else { return }
             
             if let error = error {
@@ -250,7 +263,7 @@ final class DelayedRequestsViewController: UIViewController {
                 "updatedAt": FieldValue.serverTimestamp()
             ]
             
-            self.db.collection("requests").document(requestId).updateData(updates) { error in
+            self.db.collection("maintenanceRequest").document(requestId).updateData(updates) { error in
                 if let error = error {
                     print("❌ Failed to reassign:", error)
                     self.showError("Failed to assign technician")
