@@ -27,6 +27,7 @@ class ProfileViewController: UIViewController {
         
         setupScrollViewUI()
         fetchUserData()
+        setupClearNotificationsTap()
     }
     
     func setupScrollViewUI() {
@@ -44,6 +45,28 @@ class ProfileViewController: UIViewController {
                 self?.nameLabel.text = data["fullName"] as? String ?? "No Name"
                 self?.emailLabel.text = data["email"] as? String ?? "No Email"
             }
+        }
+    }
+    
+    private func setupClearNotificationsTap() {
+        // Find the view containing "Clear Notifications" - adjust the tag or identifier as needed
+        // You can set a tag in storyboard or find it programmatically
+        // For example, if it's in a UIView with tag 100:
+        if let clearNotificationsView = view.viewWithTag(97) {
+            let tapGesture = UITapGestureRecognizer(target: self, action: #selector(clearNotificationsTapped))
+            clearNotificationsView.isUserInteractionEnabled = true
+            clearNotificationsView.addGestureRecognizer(tapGesture)
+        }
+    }
+    
+    @objc private func clearNotificationsTapped() {
+        let notificationsStoryboard = UIStoryboard(name: "NotificationStoryboard", bundle: nil)
+        
+        if let notificationsVC = notificationsStoryboard.instantiateInitialViewController() {
+            notificationsVC.modalPresentationStyle = .formSheet
+            self.present(notificationsVC, animated: true, completion: nil)
+        } else {
+            print("Notifications storyboard missing 'Is Initial View Controller' setting.")
         }
     }
     
