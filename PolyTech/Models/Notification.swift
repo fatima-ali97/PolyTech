@@ -12,65 +12,108 @@ struct NotificationModel {
     let actionUrl: String?
     let room: String?
     
-    enum NotificationType: String {
-        case success
-        case error
-        case fail
-        case info
-        case message
-        case accept
-        case location
-    }
-    
     var displayTime: String {
         let formatter = RelativeDateTimeFormatter()
-        formatter.unitsStyle = .short
+        formatter.unitsStyle = .abbreviated
         return formatter.localizedString(for: timestamp, relativeTo: Date())
     }
     
+    enum NotificationType: String {
+        case success = "success"
+        case error = "error"
+        case fail = "fail"
+        case info = "info"
+        case message = "message"
+        case accept = "accept"
+        case location = "location"
+        
+        init?(rawValue: String) {
+            switch rawValue.lowercased() {
+            case "success":
+                self = .success
+            case "error":
+                self = .error
+            case "fail":
+                self = .fail
+            case "info":
+                self = .info
+            case "message":
+                self = .message
+            case "accept":
+                self = .accept
+            case "location":
+                self = .location
+            default:
+                return nil
+            }
+        }
+    }
+    
+    // MARK: - Initialize from Firestore Document
+    
     init?(dictionary: [String: Any], id: String) {
-        // ✅ FIXED: More lenient parsing with debug logging
-        guard let userId = dictionary["userId"] as? String else {
-            print("❌ Missing userId in notification")
-            return nil
-        }
-        
-        guard let title = dictionary["title"] as? String else {
-            print("❌ Missing title in notification")
-            return nil
-        }
-        
-        guard let message = dictionary["message"] as? String else {
-            print("❌ Missing message in notification")
-            return nil
-        }
-        
-        guard let typeString = dictionary["type"] as? String else {
-            print("❌ Missing type in notification")
-            return nil
-        }
-        
-        guard let type = NotificationType(rawValue: typeString) else {
-            print("❌ Invalid type: \(typeString)")
-            return nil
-        }
-        
-        guard let timestamp = dictionary["timestamp"] as? Timestamp else {
-            print("❌ Missing or invalid timestamp in notification")
-            return nil
-        }
-        
-        // ✅ All required fields present
+        // Document ID is passed separately
         self.id = id
+        
+        // Parse required fields
+        guard let userId = dictionary["userId"] as? String,
+              let title = dictionary["title"] as? String,
+              let message = dictionary["message"] as? String,
+              let typeString = dictionary["type"] as? String,
+              let type = NotificationType(rawValue: typeString) else {
+            print("❌ Failed to parse notification - missing required fields")
+            print("   Document ID: \(id)")
+            print("   Data: \(dictionary)")
+            return nil
+        }
+        
         self.userId = userId
         self.title = title
         self.message = message
         self.type = type
-        self.timestamp = timestamp.dateValue()
+        
+        // Parse timestamp
+        if let timestamp = dictionary["timestamp"] as? Timestamp {
+            self.timestamp = timestamp.dateValue()
+        } else if let timestamp = dictionary["timestamp"] as? Date {
+            self.timestamp = timestamp
+        } else {
+            print("⚠️ No timestamp found, using current date")
+            self.timestamp = Date()
+        }
+        
+        // Parse optional fields
         self.isRead = dictionary["isRead"] as? Bool ?? false
         self.actionUrl = dictionary["actionUrl"] as? String
         self.room = dictionary["room"] as? String
         
-        print("✅ Successfully created NotificationModel with ID: \(id)")
+        print("✅ Successfully parsed notification:")
+        print("   ID: \(id)")
+        print("   Title: \(title)")
+        print("   Type: \(type.rawValue)")
+        print("   IsRead: \(isRead)")
+    }
+    
+    // MARK: - Convert to Dictionary (for creating new notifications)
+    
+    func toDictionary() -> [String: Any] {
+        var dict: [String: Any] = [
+            "userId": userId,
+            "title": title,
+            "message": message,
+            "type": type.rawValue,
+            "timestamp": Timestamp(date: timestamp),
+            "isRead": isRead
+        ]
+        
+        if let actionUrl = actionUrl {
+            dict["actionUrl"] = actionUrl
+        }
+        
+        if let room = room {
+            dict["room"] = room
+        }
+        
+        return dict
     }
 }
