@@ -247,7 +247,8 @@ class NewMaintenanceViewController: UIViewController {
             "category": categoryEnum.rawValue,
             "location": locationText,
             "urgency": urgencyEnum.rawValue,
-            "updatedAt": Timestamp()
+            "updatedAt": Timestamp(),
+            "userId": Auth.auth().currentUser?.uid ?? ""
         ]
         
         if let imageUrl = uploadedImageUrl {
