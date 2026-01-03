@@ -198,6 +198,7 @@ class MaintenanceViewController: UIViewController {
         📍 Location: \(item.location)
         🏷️ Category: \(item.category.capitalized)
         ⚡ Urgency: \(item.urgency.rawValue.capitalized)
+        👤 Assigned Tech: \(item.assignedTechDisplay)
         🕐 Created: \(item.formattedDate)
         """
         

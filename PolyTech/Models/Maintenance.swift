@@ -14,6 +14,9 @@ struct MaintenanceRequestModel: Codable {
     var imageUrl: String?
     var userId: String?
     
+    // NEW: Assigned technician
+    var assignedTech: String?   // optional, can be nil if not yet assigned
+    
     // MARK: - Urgency Enum
     enum UrgencyLevel: String, Codable {
         case low
@@ -44,6 +47,7 @@ struct MaintenanceRequestModel: Codable {
         self.updatedAt = updatedAt
         self.imageUrl = dictionary["imageUrl"] as? String
         self.userId = dictionary["userId"] as? String
+        self.assignedTech = dictionary["assignedTech"] as? String   // ✅ parse from Firestore
         
         // Handle location saved as String or Int
         if let locStr = dictionary["location"] as? String {
@@ -67,6 +71,7 @@ struct MaintenanceRequestModel: Codable {
         ]
         if let imageUrl = imageUrl { dict["imageUrl"] = imageUrl }
         if let userId = userId { dict["userId"] = userId }
+        if let assignedTech = assignedTech { dict["assignedTech"] = assignedTech } // ✅ include
         return dict
     }
     
@@ -104,5 +109,10 @@ struct MaintenanceRequestModel: Codable {
         case "facility_issue": return "building.2.fill"
         default: return "exclamationmark.circle.fill"
         }
+    }
+    
+    // NEW: Computed property for display
+    var assignedTechDisplay: String {
+        return assignedTech?.isEmpty == false ? assignedTech! : "Pending"
     }
 }
