@@ -290,7 +290,27 @@ extension HistoryViewController: UITableViewDataSource {
         
         if itemData.type == "maintenance", let item = itemData.item as? MaintenanceRequestModel {
             cell.configure(with: item, feedbackCallback: { [weak self] in
-                self?.navigateToFeedback(for: "maintenance", requestId: item.id)
+                guard let self else { return }
+
+                let status = item.status.lowercased()
+                let isCompleted = (status == "completed" || status == "done")
+
+                let alreadySubmitted = item.feedbackSubmitted
+
+                guard isCompleted && !alreadySubmitted else {
+                    let alert = UIAlertController(
+                        title: "Feedback not available",
+                        message: alreadySubmitted
+                            ? "You already submitted feedback for this request."
+                            : "You can only leave feedback after the request is completed.",
+                        preferredStyle: .alert
+                    )
+                    alert.addAction(UIAlertAction(title: "OK", style: .default))
+                    self.present(alert, animated: true)
+                    return
+                }
+
+                self.navigateToFeedback(for: "maintenance", requestId: item.id)
             })
         } else if itemData.type == "inventory", let item = itemData.item as? Inventory {
             cell.configure(with: item, feedbackCallback: { [weak self] in
