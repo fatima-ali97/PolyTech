@@ -431,8 +431,8 @@ Due: 2025-11-15</string>
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Install new HVAC system" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="iN1-Ae-0on">
-                                <rect key="frame" x="86" y="361" width="291" height="20"/>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Install new HVAC system" textAlignment="natural" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="iN1-Ae-0on">
+                                <rect key="frame" x="86" y="361" width="291" height="78"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="16"/>
                                 <nil key="textColor"/>
@@ -536,8 +536,9 @@ Due: 2025-11-15</string>
                     <connections>
                         <outlet property="AddressLabel" destination="pJq-o8-y1c" id="Uzf-D2-lJl"/>
                         <outlet property="acceptedDateLabel" destination="bkH-TA-cbG" id="fLa-Pi-8Mv"/>
+                        <outlet property="categoryLabel" destination="iN1-Ae-0on" id="c85-P8-MN8"/>
                         <outlet property="clientLabel" destination="0Oe-5Z-CsM" id="7e8-qZ-srX"/>
-                        <outlet property="descriptionLabel" destination="iN1-Ae-0on" id="v1c-Ka-DKz"/>
+                        <outlet property="descriptionLabel" destination="Omm-cX-HMg" id="z7M-nm-iqP"/>
                         <outlet property="notesTextView" destination="6Uw-gl-2To" id="HZV-SG-zPR"/>
                         <outlet property="statusSegmentedControl" destination="yJC-ne-SPT" id="TCV-1C-qOI"/>
                         <outlet property="taskIDLabel" destination="Bzb-DN-MEm" id="aR1-HF-yLk"/>
@@ -545,7 +546,7 @@ Due: 2025-11-15</string>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="FEK-vr-4zr" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="3750" y="8"/>
+            <point key="canvasLocation" x="3748.8549618320608" y="7.746478873239437"/>
         </scene>
         <!--Technician Dashboard-->
         <scene sceneID="WZC-73-NZm">

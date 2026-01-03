@@ -20,7 +20,8 @@ class DetailsTasksViewController: UIViewController {
     @IBOutlet weak var notesTextView: UITextView!
     @IBOutlet weak var acceptedDateLabel: UILabel!
     @IBOutlet weak var AddressLabel: UILabel!
-
+    @IBOutlet weak var categoryLabel: UILabel!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         setupTextViewUI()
@@ -40,8 +41,15 @@ class DetailsTasksViewController: UIViewController {
         let formattedCategory = task.category.replacingOccurrences(of: "_", with: " ")
         descriptionLabel.text = formattedCategory
         acceptedDateLabel.text = "Accepted on: \(task.acceptedDate)"
+        categoryLabel.text="\(task.requestName)"
         AddressLabel.text = "\(task.address)"
         notesTextView.text = task.note
+        
+        categoryLabel.numberOfLines = 0
+        categoryLabel.lineBreakMode = .byWordWrapping
+        categoryLabel.text = task.requestName
+        categoryLabel.sizeToFit()
+        
         switch task.status {
         case "pending":
             statusSegmentedControl.selectedSegmentIndex = 0
