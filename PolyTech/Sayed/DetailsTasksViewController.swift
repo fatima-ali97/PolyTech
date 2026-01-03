@@ -35,18 +35,18 @@ class DetailsTasksViewController: UIViewController {
     }
 
     func updateUI(with task: TaskRequest) {
-        clientLabel.text = "Client: \(task.client)"
+        clientLabel.text = "User: \(task.fullName)"
         taskIDLabel.text = "Task ID: \(task.id)"
         descriptionLabel.text = task.description
         acceptedDateLabel.text = "Accepted on: \(task.acceptedDate)"
         AddressLabel.text = "\(task.address)"
         notesTextView.text = task.note
         switch task.status {
-        case "Pending":
+        case "pending":
             statusSegmentedControl.selectedSegmentIndex = 0
-        case "In Progress":
+        case "in progress", "in_progress":
             statusSegmentedControl.selectedSegmentIndex = 1
-        case "Completed":
+        case "completed":
             statusSegmentedControl.selectedSegmentIndex = 2
         default:
             statusSegmentedControl.selectedSegmentIndex = 1
@@ -61,23 +61,24 @@ class DetailsTasksViewController: UIViewController {
         guard let docID = task?.documentID else { return }
         
         let selectedIndex = statusSegmentedControl.selectedSegmentIndex
-        var newStatus = "In Progress"
+        var newStatus = "in_progress"
         
-        if selectedIndex == 0 { newStatus = "Pending" }
-        else if selectedIndex == 2 { newStatus = "Completed" }
+        if selectedIndex == 0 { newStatus = "pending" }
+        else if selectedIndex == 2 { newStatus = "completed" }
         
         let newNote = notesTextView.text ?? ""
 
-        db.collection("TasksRequests").document(docID).updateData([
-                "status": newStatus,
-                "note": newNote
-            ]) { error in
-            if let error = error {
-                print("Error updating document: \(error.localizedDescription)")
-            } else {
-                print("Success: Task updated to \(newStatus)")
-                self.showSuccessAlert()
-            }
+        db.collection("maintenanceRequest").document(docID).updateData([
+                    "status": newStatus,
+                    "note": newNote,
+                    "updatedAt": FieldValue.serverTimestamp()
+                ]) { error in
+                if let error = error {
+                    print("Error updating document: \(error.localizedDescription)")
+                } else {
+                    print("Success: Task updated to \(newStatus)")
+                    self.showSuccessAlert()
+                }
         }
     }
 

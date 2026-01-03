@@ -13,6 +13,9 @@ struct MaintenanceRequestModel: Codable {
     var updatedAt: Timestamp
     var imageUrl: String?
     var userId: String?
+    var status: String
+    var technicianID: String
+    var declinedBy: [String]
     
     // NEW: Assigned technician
     var assignedTech: String?   // optional, can be nil if not yet assigned
@@ -47,8 +50,13 @@ struct MaintenanceRequestModel: Codable {
         self.updatedAt = updatedAt
         self.imageUrl = dictionary["imageUrl"] as? String
         self.userId = dictionary["userId"] as? String
+
         self.assignedTech = dictionary["assignedTech"] as? String   // ✅ parse from Firestore
-        
+
+        self.status = dictionary["status"] as? String ?? "Pending"
+        self.technicianID = dictionary["technicianID"] as? String ?? ""
+        self.declinedBy = dictionary["declinedBy"] as? [String] ?? []
+
         // Handle location saved as String or Int
         if let locStr = dictionary["location"] as? String {
             self.location = locStr
@@ -67,7 +75,10 @@ struct MaintenanceRequestModel: Codable {
             "location": location,
             "urgency": urgency.rawValue,
             "createdAt": createdAt,
-            "updatedAt": updatedAt
+            "updatedAt": updatedAt,
+            "status": status,
+            "technicianID": technicianID,
+            "declinedBy": declinedBy
         ]
         if let imageUrl = imageUrl { dict["imageUrl"] = imageUrl }
         if let userId = userId { dict["userId"] = userId }

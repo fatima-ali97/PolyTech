@@ -120,12 +120,12 @@ class TasksViewController: UIViewController, UITableViewDataSource, UITableViewD
 
         let task = tasks[indexPath.row]
         cell.taskIdLabel.text = "ID: \(task.id)"
-        cell.clientLabel.text = "Client: \(task.client)"
+        
+        cell.clientLabel.text = "Client: \(task.fullName)"
+        
         cell.dueDateLabel.text = "Due: \(task.createdAt)"
         cell.statusBtn.setTitle(task.status, for: .normal)
-
         cell.delegate = self
-
         return cell
     }
     
@@ -139,7 +139,7 @@ class TasksViewController: UIViewController, UITableViewDataSource, UITableViewD
         let lowercasedSearchText = searchText.lowercased()
 
         tasks = allTasksFromFirebase.filter { task in
-            let matchesSearchText = task.client.lowercased().contains(lowercasedSearchText) ||
+            let matchesSearchText = task.fullName.lowercased().contains(lowercasedSearchText) ||
                 task.id.lowercased().contains(lowercasedSearchText) ||
                 task.status.lowercased().contains(lowercasedSearchText)
 
@@ -195,19 +195,31 @@ extension TasksViewController: TaskCellDelegate {
     func fetchTasksFromFirebase() {
         guard let currentUserID = Auth.auth().currentUser?.uid else { return }
 
-        db.collection("TasksRequests")
+        db.collection("maintenanceRequest")
             .whereField("technicianID", isEqualTo: currentUserID)
-            .addSnapshotListener { (querySnapshot, error) in
-                if let error = error {
-                    print("Error: \(error.localizedDescription)")
-                    return
+            .addSnapshotListener { [weak self] (querySnapshot, _) in
+                guard let self = self, let docs = querySnapshot?.documents else { return }
+
+                self.allTasksFromFirebase = docs.compactMap { TaskRequest(docID: $0.documentID, dictionary: $0.data()) }
+                
+                let group = DispatchGroup()
+                for index in 0..<self.allTasksFromFirebase.count {
+                    let uid = self.allTasksFromFirebase[index].userId
+                    if uid.isEmpty { continue }
+                    
+                    group.enter()
+                    self.db.collection("users").document(uid).getDocument { (snap, _) in
+                        if let name = snap?.data()?["fullName"] as? String {
+                            self.allTasksFromFirebase[index].fullName = name
+                        }
+                        group.leave()
+                    }
                 }
 
-                self.allTasksFromFirebase = querySnapshot?.documents.compactMap { document in
-                    return TaskRequest(docID: document.documentID, dictionary: document.data())
-                } ?? []
-                
-                self.filterTasks(by: self.currentFilter)
+                group.notify(queue: .main) {
+                    self.filterTasks(by: self.currentFilter)
+                    self.tableView.reloadData()
+                }
             }
     }
     

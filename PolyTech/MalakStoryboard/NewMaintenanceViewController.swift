@@ -414,21 +414,34 @@ class NewMaintenanceViewController: UIViewController {
             return
         }
         
-        // First upload voice if exists
-        uploadVoiceToCloudinary { [weak self] success in
-            guard let self = self, success else { return }
+        var data: [String: Any] = [
+            "requestName": requestNameText,
+            "category": categoryEnum.rawValue,
+            "location": locationText,
+            "urgency": urgencyEnum.rawValue,
+            "updatedAt": Timestamp(),
+            "userId": Auth.auth().currentUser?.uid ?? ""
+        ]
+        
+        if let imageUrl = uploadedImageUrl {
+            data["imageUrl"] = imageUrl
+        }
+        
+        if isEditMode, let documentId = documentId {
+            // UPDATE existing request
+            database.collection("maintenanceRequest")
+                .document(documentId)
+                .updateData(data, completion: handleUpdateResult)
+        } else {
+            // CREATE new request
+            data["createdAt"] = Timestamp()
+            data["status"] = "pending"
+            data["technicianID"] = ""
+            data["declinedBy"] = []
+            data["note"] = ""
             
-            // Then save to Firestore
-            var data: [String: Any] = [
-                "requestName": requestNameText,
-                "category": categoryEnum.rawValue,
-                "location": locationText,
-                "urgency": urgencyEnum.rawValue,
-                "updatedAt": Timestamp()
-            ]
-            
-            if let imageUrl = self.uploadedImageUrl {
-                data["imageUrl"] = imageUrl
+            if let userId = UserDefaults.standard.string(forKey: "userId") {
+                data["userId"] = userId
             }
             
             if let voiceUrl = self.uploadedVoiceUrl {
