@@ -50,16 +50,19 @@ class DetailsTasksViewController: UIViewController {
         categoryLabel.text = task.requestName
         categoryLabel.sizeToFit()
         
-        switch task.status {
-        case "pending":
-            statusSegmentedControl.selectedSegmentIndex = 0
-        case "in progress", "in_progress":
-            statusSegmentedControl.selectedSegmentIndex = 1
-        case "completed":
-            statusSegmentedControl.selectedSegmentIndex = 2
-        default:
-            statusSegmentedControl.selectedSegmentIndex = 1
-        }
+        let currentStatus = task.status.lowercased().trimmingCharacters(in: .whitespaces)
+            
+            switch currentStatus {
+            case "pending":
+                statusSegmentedControl.selectedSegmentIndex = 0
+            case "in progress", "in_progress":
+                statusSegmentedControl.selectedSegmentIndex = 1
+            case "completed":
+                statusSegmentedControl.selectedSegmentIndex = 2
+            default:
+                print("⚠️ Unknown status found: \(currentStatus)")
+                statusSegmentedControl.selectedSegmentIndex = 0
+            }
     }
 
     @IBAction func updateStatusTapped(_ sender: UIButton) {
