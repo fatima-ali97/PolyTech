@@ -263,7 +263,10 @@ class NewMaintenanceViewController: UIViewController {
             // CREATE new request
             data["createdAt"] = Timestamp()
             data["status"] = "pending"
-
+            data["technicianID"] = ""
+            data["declinedBy"] = []
+            data["note"] = ""
+            
             if let userId = UserDefaults.standard.string(forKey: "userId") {
                 data["userId"] = userId
             }
