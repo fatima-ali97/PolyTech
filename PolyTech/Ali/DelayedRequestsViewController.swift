@@ -1,10 +1,3 @@
-//
-//  DelayedRequestsViewController.swift
-//  PolyTech
-//
-//  Created by BP-36-212-04 on 31/12/2025.
-//
-
 import UIKit
 import FirebaseFirestore
 
@@ -13,6 +6,8 @@ final class DelayedRequestsViewController: UIViewController {
     struct DelayedRequest {
         let id: String
         let title: String
+        let daysDelayed: Int
+        let location: String
     }
     
     struct TechnicianItem {
@@ -37,7 +32,6 @@ final class DelayedRequestsViewController: UIViewController {
     private var oldMap: [String: DelayedRequest] = [:]
     private var rejectedMap: [String: DelayedRequest] = [:]
 
-
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -50,6 +44,20 @@ final class DelayedRequestsViewController: UIViewController {
 
         loadDelayedRequests()
         loadTechnicians()
+        
+        // 🔔 Start monitoring for delayed requests and send notifications
+        DelayedRequestNotificationService.shared.startMonitoringDelayedRequests()
+        
+        // 🔔 Check for existing delayed requests immediately
+        DelayedRequestNotificationService.shared.checkForDelayedRequests { [weak self] count in
+            print("📊 Initial delayed requests check: \(count) requests found")
+            if count > 0 {
+                // Show a banner notification to admin
+                DispatchQueue.main.async {
+                    self?.showDelayedRequestsBanner(count: count)
+                }
+            }
+        }
     }
 
     deinit {
@@ -57,7 +65,27 @@ final class DelayedRequestsViewController: UIViewController {
         rejectedListener?.remove()
         techListener?.remove()
     }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        // Don't stop monitoring - let it continue in background
+    }
+    
+    // MARK: - Show Banner
+    
+    private func showDelayedRequestsBanner(count: Int) {
+        let message = count == 1
+            ? "There is 1 delayed request requiring attention"
+            : "There are \(count) delayed requests requiring attention"
+        
+        NotificationManager.shared.showWarning(
+            title: "Delayed Requests ⚠️",
+            message: message
+        )
+    }
 
+    // MARK: - Load Delayed Requests
+    
     private func loadDelayedRequests() {
         let cutoffDate = Calendar.current.date(byAdding: .day, value: -delayedAfterDays, to: Date())!
         let cutoffTimestamp = Timestamp(date: cutoffDate)
@@ -67,7 +95,11 @@ final class DelayedRequestsViewController: UIViewController {
             rejectedMap.forEach { merged[$0.key] = $0.value }
 
             self.delayedRequests = Array(merged.values).sorted {
-                $0.title.localizedCaseInsensitiveCompare($1.title) == .orderedAscending
+                // Sort by days delayed (most delayed first)
+                if $0.daysDelayed != $1.daysDelayed {
+                    return $0.daysDelayed > $1.daysDelayed
+                }
+                return $0.title.localizedCaseInsensitiveCompare($1.title) == .orderedAscending
             }
 
             DispatchQueue.main.async {
@@ -94,8 +126,20 @@ final class DelayedRequestsViewController: UIViewController {
                         return nil
                     }
 
-                    guard let title = data["requestName"] as? String else { return nil }
-                    return (doc.documentID, DelayedRequest(id: doc.documentID, title: title))
+                    guard let title = data["requestName"] as? String,
+                          let createdAt = data["createdAt"] as? Timestamp else {
+                        return nil
+                    }
+                    
+                    let location = data["location"] as? String ?? "Unknown"
+                    let daysDelayed = self.calculateDaysDelayed(from: createdAt.dateValue())
+                    
+                    return (doc.documentID, DelayedRequest(
+                        id: doc.documentID,
+                        title: title,
+                        daysDelayed: daysDelayed,
+                        location: location
+                    ))
                 })
 
                 rebuildList()
@@ -120,14 +164,35 @@ final class DelayedRequestsViewController: UIViewController {
                         return nil
                     }
 
-                    guard let title = data["requestName"] as? String else { return nil }
-                    return (doc.documentID, DelayedRequest(id: doc.documentID, title: title))
+                    guard let title = data["requestName"] as? String,
+                          let createdAt = data["createdAt"] as? Timestamp else {
+                        return nil
+                    }
+                    
+                    let location = data["location"] as? String ?? "Unknown"
+                    let daysDelayed = self.calculateDaysDelayed(from: createdAt.dateValue())
+                    
+                    return (doc.documentID, DelayedRequest(
+                        id: doc.documentID,
+                        title: title,
+                        daysDelayed: daysDelayed,
+                        location: location
+                    ))
                 })
 
                 rebuildList()
             }
     }
-
+    
+    // MARK: - Calculate Days Delayed
+    
+    private func calculateDaysDelayed(from date: Date) -> Int {
+        let calendar = Calendar.current
+        let components = calendar.dateComponents([.day], from: date, to: Date())
+        return components.day ?? 0
+    }
+    
+    // MARK: - Load Technicians
     
     private func loadTechnicians() {
         techListener = db.collection("technicians")
@@ -153,23 +218,82 @@ final class DelayedRequestsViewController: UIViewController {
             }
     }
     
+    // MARK: - Assign Technician
+    
     private func assign(requestId: String, technician: TechnicianItem) {
-        let updates: [String: Any] = [
-            "assignedTechnicianId": technician.id,
-            "assignedTechnicianName": technician.name,
-            "status": "in_progress",
-            "updatedAt": FieldValue.serverTimestamp()
-        ]
-
-        db.collection("requests").document(requestId).updateData(updates) { error in
+        // First get the request details
+        db.collection("requests").document(requestId).getDocument { [weak self] document, error in
+            guard let self = self else { return }
+            
             if let error = error {
-                print("❌ Failed to reassign:", error)
-            } else {
-                print("✅ Reassigned request \(requestId) to \(technician.name)")
+                print("❌ Failed to fetch request: \(error)")
+                self.showError("Failed to assign technician")
+                return
+            }
+            
+            guard let data = document?.data(),
+                  let requestName = data["requestName"] as? String,
+                  let location = data["location"] as? String else {
+                print("❌ Missing request data")
+                self.showError("Failed to assign technician")
+                return
+            }
+            
+            let urgency = data["urgency"] as? String ?? "normal"
+            let category = data["category"] as? String ?? "general"
+            
+            // Update the request with assignment
+            let updates: [String: Any] = [
+                "assignedTechnicianId": technician.id,
+                "assignedTechnicianName": technician.name,
+                "status": "in_progress",
+                "updatedAt": FieldValue.serverTimestamp()
+            ]
+            
+            self.db.collection("requests").document(requestId).updateData(updates) { error in
+                if let error = error {
+                    print("❌ Failed to reassign:", error)
+                    self.showError("Failed to assign technician")
+                } else {
+                    print("✅ Reassigned request \(requestId) to \(technician.name)")
+                    
+                    // 🔔 Notify the technician about the assignment
+                    TechnicianNotificationService.shared.notifyTechnicianAssignment(
+                        technicianId: technician.id,
+                        technicianName: technician.name,
+                        requestId: requestId,
+                        requestName: requestName,
+                        location: location,
+                        urgency: urgency,
+                        category: category
+                    )
+                    
+                    // Show success message
+                    self.showSuccess("Request assigned to \(technician.name)")
+                    
+                    // 🔔 The student will automatically receive "Work Started 🔧" notification
+                    // via RequestStatusNotificationService (status changed to in_progress)
+                }
             }
         }
     }
+    
+    // MARK: - UI Helpers
+    
+    private func showSuccess(_ message: String) {
+        let alert = UIAlertController(title: "Success", message: message, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "OK", style: .default))
+        present(alert, animated: true)
+    }
+    
+    private func showError(_ message: String) {
+        let alert = UIAlertController(title: "Error", message: message, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "OK", style: .default))
+        present(alert, animated: true)
+    }
 }
+
+// MARK: - UITableViewDataSource & Delegate
 
 extension DelayedRequestsViewController: UITableViewDataSource, UITableViewDelegate {
 
@@ -178,15 +302,20 @@ extension DelayedRequestsViewController: UITableViewDataSource, UITableViewDeleg
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-
-            guard let cell = tableView.dequeueReusableCell(withIdentifier: "DelayedRequestCell", for: indexPath) as? DelayedRequestCell else {
-                return UITableViewCell()
-            }
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: "DelayedRequestCell", for: indexPath) as? DelayedRequestCell else {
+            return UITableViewCell()
+        }
 
         let request = delayedRequests[indexPath.row]
-        cell.titleLabel.text = request.title
+        
+        // Set title with days delayed info
+        let daysText = request.daysDelayed == 1 ? "1 day" : "\(request.daysDelayed) days"
+        cell.titleLabel.text = "\(request.title) • \(daysText) delayed"
+        
+        // Set location if you have a label for it
+        // cell.locationLabel.text = request.location
 
-        // Make it a menu button
+        // Make reassign button a menu
         cell.reassignButton.showsMenuAsPrimaryAction = true
 
         // Build menu actions from technicians
@@ -198,21 +327,22 @@ extension DelayedRequestsViewController: UITableViewDataSource, UITableViewDeleg
 
         cell.reassignButton.menu = UIMenu(title: "Reassign to", children: actions)
 
-
-            return cell
-        }
-
-
-    
-
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destination.
-        // Pass the selected object to the new view controller.
+        return cell
     }
-    */
-
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        tableView.deselectRow(at: indexPath, animated: true)
+        
+        let request = delayedRequests[indexPath.row]
+        
+        // Show details alert
+        let daysText = request.daysDelayed == 1 ? "1 day" : "\(request.daysDelayed) days"
+        let alert = UIAlertController(
+            title: request.title,
+            message: "Location: \(request.location)\nDelayed: \(daysText)",
+            preferredStyle: .alert
+        )
+        alert.addAction(UIAlertAction(title: "OK", style: .default))
+        present(alert, animated: true)
+    }
 }
