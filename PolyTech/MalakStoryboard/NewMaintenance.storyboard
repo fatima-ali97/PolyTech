@@ -168,7 +168,7 @@
                         <outlet property="categoryDropDown" destination="eA6-uy-09t" id="URD-ek-wlf"/>
                         <outlet property="location" destination="jEs-HO-JZY" id="BWE-dO-6YN"/>
                         <outlet property="pageTitle" destination="gHP-Lv-BcV" id="1iA-QX-Ky1"/>
-                        <outlet property="recordVoiceButton" destination="8n4-Du-a9b" id="7OQ-x0-RN1"/>
+                        <outlet property="recordVoiceButton" destination="8n4-Du-a9b" id="Xie-Li-guE"/>
                         <outlet property="requestName" destination="y7O-ik-8p4" id="pfK-Pf-Pm1"/>
                         <outlet property="savebtn" destination="F8X-sl-1RF" id="iVK-Wd-Hmf"/>
                         <outlet property="uploadImage" destination="CDW-0Y-tZ7" id="cLv-1M-RYR"/>

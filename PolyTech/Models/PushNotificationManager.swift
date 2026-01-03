@@ -115,10 +115,10 @@ class PushNotificationManager {
         case "submitted":
             title = "Request Submitted"
             message = "Your \(requestType) request '\(requestName)' has been submitted successfully."
-            type = "success"
+            type = "info"
             
         case "approved":
-            title = "Request Approved ✓"
+            title = "Request Approved"
             message = "Your \(requestType) request '\(requestName)' has been approved."
             type = "success"
             
@@ -128,7 +128,7 @@ class PushNotificationManager {
             type = "error"
             
         case "completed":
-            title = "Request Completed ✓"
+            title = "Request Completed"
             message = "Your \(requestType) request '\(requestName)' has been completed."
             type = "success"
             

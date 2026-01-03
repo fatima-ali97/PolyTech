@@ -3,12 +3,14 @@ import FirebaseFirestore
 import FirebaseAuth
 
 class NewInventoryViewController: UIViewController {
-
+    
+    // MARK: - Properties
     var itemToEdit: Inventory?
     var isEditMode = false
     var documentId: String?
     var existingData: [String: Any]?
-
+    
+    // MARK: - IBOutlets
     @IBOutlet weak var itemName: UITextField!
     @IBOutlet weak var category: UITextField!
     @IBOutlet weak var quantity: UITextField!
@@ -24,6 +26,8 @@ class NewInventoryViewController: UIViewController {
     private var selectedInventoryItem: String?
     private let categoryPicker = UIPickerView()
     private let inventoryItemPicker = UIPickerView()
+    
+    // MARK: - Enums
     
     enum InventoryCategory: String, CaseIterable {
         case electronics = "electronics"
@@ -54,7 +58,9 @@ class NewInventoryViewController: UIViewController {
             return self.rawValue
         }
     }
-
+    
+    // MARK: - Lifecycle
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         setupPickers()
@@ -62,6 +68,11 @@ class NewInventoryViewController: UIViewController {
         setupQuantityField()
         configureEditMode()
         setupNavigationBackButton()
+        
+        // Dismiss keyboard when tapping outside
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
+        tapGesture.cancelsTouchesInView = false
+        view.addGestureRecognizer(tapGesture)
         
         // 🔔 Request notification permissions
         PushNotificationManager.shared.requestAuthorization { granted in
@@ -73,7 +84,20 @@ class NewInventoryViewController: UIViewController {
         }
     }
     
-
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        // Ensure keyboard is dismissed when view appears
+        view.endEditing(true)
+    }
+    
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        // Clean up keyboard when leaving view
+        view.endEditing(true)
+    }
+    
+    // MARK: - Setup Methods
+    
     private func setupNavigationBackButton() {
         navigationItem.hidesBackButton = true
         navigationItem.leftBarButtonItem = nil
@@ -95,18 +119,18 @@ class NewInventoryViewController: UIViewController {
     private func setupQuantityField() {
         quantity.delegate = self
         quantity.keyboardType = .numberPad
-        
-        let toolbar = UIToolbar()
-        toolbar.sizeToFit()
-        
-        let flexSpace = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
-        let doneButton = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(dismissKeyboard))
-        
-        toolbar.items = [flexSpace, doneButton]
-        quantity.inputAccessoryView = toolbar
+              // ✅ REMOVED: No toolbar/done button for quantity field
     }
     
     @objc private func dismissKeyboard() {
+        // Force all text fields to resign first responder
+        itemName.resignFirstResponder()
+        category.resignFirstResponder()
+        quantity.resignFirstResponder()
+        location.resignFirstResponder()
+        reason.resignFirstResponder()
+        
+        // Also call view.endEditing as a fallback
         view.endEditing(true)
     }
     
@@ -140,8 +164,10 @@ class NewInventoryViewController: UIViewController {
     }
     
     private func setupPickers() {
+        // Category Picker
         categoryPicker.delegate = self
         categoryPicker.dataSource = self
+        categoryPicker.tag = 1
         category.inputView = categoryPicker
         
         let categoryToolbar = UIToolbar()
@@ -151,8 +177,10 @@ class NewInventoryViewController: UIViewController {
         categoryToolbar.items = [categoryFlex, categoryDone]
         category.inputAccessoryView = categoryToolbar
         
+        // Inventory Item Picker
         inventoryItemPicker.delegate = self
         inventoryItemPicker.dataSource = self
+        inventoryItemPicker.tag = 2
         itemName.inputView = inventoryItemPicker
         
         let itemToolbar = UIToolbar()
@@ -216,7 +244,6 @@ class NewInventoryViewController: UIViewController {
         }
         
         let cancelAction = UIAlertAction(title: "Cancel", style: .cancel) { [weak self] _ in
-            // Reset to previous selection or clear
             if self?.selectedInventoryItem == nil {
                 self?.itemName.text = ""
             }
@@ -227,7 +254,9 @@ class NewInventoryViewController: UIViewController {
         
         present(alert, animated: true)
     }
-
+    
+    // MARK: - Save Action
+    
     @IBAction func saveBtn(_ sender: UIButton) {
         resetFieldBorders()
         
@@ -245,7 +274,6 @@ class NewInventoryViewController: UIViewController {
         if isEditMode, let documentId = documentId {
             updateRequest(documentId: documentId, data: data)
         } else {
-            // Check stock before creating new request
             checkStockAndCreateRequest(data: data)
         }
     }
@@ -388,40 +416,76 @@ class NewInventoryViewController: UIViewController {
             field?.layer.borderWidth = 0
         }
     }
-
+    
+    // MARK: - Database Operations
+    
     func newRequest(data: [String: Any]) {
         var newData = data
         newData["createdAt"] = Timestamp()
-        newData["status"] = "pending"  // 🔔 Add initial status
+        newData["status"] = "pending"
         
-        // Add the current user's ID
-
         if let userId = Auth.auth().currentUser?.uid {
             newData["userId"] = userId
         }
         
-        let requestNameText = itemName.text ?? "Inventory Item"
-        let locationText = location.text ?? ""
+        let collectionRef = database.collection("inventoryRequest")
         
-        database.collection("inventoryRequest").addDocument(data: newData) { [weak self] error in
+        // ✅ Create document reference first
+        let docRef = collectionRef.document()
+        let requestId = docRef.documentID
+        
+        // ✅ Write data
+        docRef.setData(newData) { [weak self] error in
             guard let self = self else { return }
             
             if let error = error {
-                self.showAlert("Error: \(error.localizedDescription)")
+                loadingAlert.dismiss(animated: true) {
+                    self.showAlert("Error saving request: \(error.localizedDescription)")
+                }
                 return
             }
             
             print("✅ Inventory request saved to Firestore")
             
+            // 🤖 Auto-assign technician
+            AutoAssignmentService.shared.autoAssignTechnician(
+                requestId: requestId,
+                requestType: "inventory",
+                category: self.selectedCategory?.rawValue ?? "general",
+                location: self.location.text ?? "",
+                urgency: "normal"
+            ) { success, errorMessage in
+                if !success {
+                    print("⚠️ Stock decrease failed, but request was saved")
+                }
+
+                // 🤖 Step 3: Auto-assign technician
+                AutoAssignmentService.shared.autoAssignTechnician(
+                    requestId: requestId,
+                    requestType: "inventory",
+                    category: self.selectedCategory?.rawValue ?? "general",
+                    location: self.location.text ?? "",
+                    urgency: "normal"
+                ) { success, errorMessage in
+                    if !success {
+                        print("⚠️ Auto-assign failed: \(errorMessage ?? "unknown error")")
+                    }
+                }
+            }
+            
+            // 🔔 Push notification
+            let itemNameText = self.itemName.text ?? "Inventory Item"
+            let locationText = self.location.text ?? ""
+            
             PushNotificationManager.shared.createNotificationForRequest(
                 requestType: "Inventory",
-                requestName: requestNameText,
+                requestName: itemNameText,
                 status: "submitted",
                 location: locationText
             ) { success in
                 if success {
                     print("✅ Push notification scheduled successfully")
-
+                    
                     NotificationManager.shared.showSuccess(
                         title: "Request Submitted ✓",
                         message: "Your inventory request has been submitted successfully."
@@ -429,7 +493,7 @@ class NewInventoryViewController: UIViewController {
                 } else {
                     print("⚠️ Failed to schedule push notification")
                 }
-
+                
                 let alert = UIAlertController(
                     title: "Success",
                     message: "Inventory request created successfully ✅\n\nYou will receive a notification shortly.",
@@ -450,7 +514,9 @@ class NewInventoryViewController: UIViewController {
                 self?.handleUpdateResult(error: error)
             }
     }
-
+    
+    // MARK: - Result Handlers
+    
     private func handleUpdateResult(error: Error?) {
         if let error = error {
             showAlert("Error: \(error.localizedDescription)")
@@ -474,6 +540,8 @@ class NewInventoryViewController: UIViewController {
     }
 }
 
+// MARK: - UIPickerView Delegate & DataSource
+
 extension NewInventoryViewController: UIPickerViewDelegate, UIPickerViewDataSource {
     
     func numberOfComponents(in pickerView: UIPickerView) -> Int {
@@ -481,29 +549,30 @@ extension NewInventoryViewController: UIPickerViewDelegate, UIPickerViewDataSour
     }
     
     func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
-        if pickerView == categoryPicker {
+        if pickerView.tag == 1 {
             return InventoryCategory.allCases.count
-        } else if pickerView == inventoryItemPicker {
+        } else if pickerView.tag == 2 {
             return InventoryItem.allCases.count
         }
         return 0
     }
     
     func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
-        if pickerView == categoryPicker {
+        if pickerView.tag == 1 {
             return InventoryCategory.allCases[row].displayName
-        } else if pickerView == inventoryItemPicker {
+        } else if pickerView.tag == 2 {
             return InventoryItem.allCases[row].displayName
         }
         return nil
     }
     
     func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
-        if pickerView == categoryPicker {
+        if pickerView.tag == 1 {
             let cat = InventoryCategory.allCases[row]
             selectedCategory = cat
             category.text = cat.displayName
-        } else if pickerView == inventoryItemPicker {
+            category.resignFirstResponder()
+        } else if pickerView.tag == 2 {
             let item = InventoryItem.allCases[row]
             
             if item == .other {
@@ -514,11 +583,13 @@ extension NewInventoryViewController: UIPickerViewDelegate, UIPickerViewDataSour
             } else {
                 selectedInventoryItem = item.displayName
                 itemName.text = item.displayName
+                itemName.resignFirstResponder()
             }
         }
     }
 }
 
+// MARK: - UITextField Delegate
 
 extension NewInventoryViewController: UITextFieldDelegate {
     

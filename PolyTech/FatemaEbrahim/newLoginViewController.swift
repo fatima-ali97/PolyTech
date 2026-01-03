@@ -44,7 +44,7 @@ class newLoginViewController: UIViewController {
         
         // Hide error label initially
         errorLabel?.isHidden = true
-        errorLabel?.textColor = .systemRed
+        errorLabel?.textColor = .error
         errorLabel?.numberOfLines = 0
         
         // Add text field delegates for real-time feedback
@@ -119,13 +119,12 @@ class newLoginViewController: UIViewController {
             
             if error == nil, let userId = authResult?.user.uid {
                 // Student login successful
-                print("✅ Student login successful")
+                
                 self.fetchUserRole(userId: userId)
                 return
             }
             
             // Student login failed, try staff email format
-            print("⚠️ Student login failed, trying staff format...")
             let staffEmail = identifier + self.staffEmailSuffix
             
             Auth.auth().signIn(withEmail: staffEmail, password: password) { authResult, error in
@@ -143,13 +142,12 @@ class newLoginViewController: UIViewController {
                 }
                 
                 // Staff login successful
-                print("✅ Staff login successful")
                 self.fetchUserRole(userId: userId)
             }
         }
     }
     
-    // MARK: - Firestore
+    // MARK: - Firestore - fetch user role
     private func fetchUserRole(userId: String) {
         db.collection("users").document(userId).getDocument { [weak self] document, error in
             guard let self = self else { return }
@@ -229,7 +227,6 @@ class newLoginViewController: UIViewController {
             )
             
         case .userCancel:
-            // User canceled, just sign them out
             print("User canceled biometric authentication")
             signOutUser()
             shouldHighlightFields = false
@@ -241,7 +238,6 @@ class newLoginViewController: UIViewController {
             
         case .biometryNotAvailable:
             // Biometrics not available, proceed without it
-            print("ℹ️ Face ID not available, proceeding to dashboard")
             navigateToHome(for: role, userId: userId)
             shouldHighlightFields = false
             
@@ -280,12 +276,21 @@ class newLoginViewController: UIViewController {
             
         case .passcodeNotSet:
             // No passcode set on device, proceed directly to dashboard
-            print("ℹ️ Device passcode not set, proceeding to dashboard")
+            
             navigateToHome(for: role, userId: userId)
             shouldHighlightFields = false
             
+        case .touchIDNotAvailable:
+            navigateToHome(for: role, userId: userId)
+            shouldHighlightFields = false
+        case .touchIDNotEnrolled:
+            navigateToHome(for: role, userId: userId)
+            shouldHighlightFields = false
+        case .touchIDLockout:
+            navigateToHome(for: role, userId: userId)
+            shouldHighlightFields = false
         @unknown default:
-            // Unknown error, proceed without biometrics
+            // proceed without biometrics
             navigateToHome(for: role, userId: userId)
             shouldHighlightFields = false
         }
@@ -298,7 +303,6 @@ class newLoginViewController: UIViewController {
     
     private func handleBiometricNotAvailable(_ error: NSError?, role: String, userId: String) {
         // If biometrics are not available at all, just proceed to dashboard
-        print("ℹ️ Biometric authentication not available, proceeding to dashboard")
         navigateToHome(for: role, userId: userId)
     }
     
@@ -324,7 +328,7 @@ class newLoginViewController: UIViewController {
     
     private func authenticateWithPasscode(role: String, userId: String) {
         let context = LAContext()
-        let reason = "Authenticate to access your account"
+        let reason = "Authenticate user to access your account"
         
         context.evaluatePolicy(.deviceOwnerAuthentication, localizedReason: reason) { [weak self] success, error in
             DispatchQueue.main.async {
@@ -345,9 +349,8 @@ class newLoginViewController: UIViewController {
         UserDefaults.standard.set(userId, forKey: "userId")
         UserDefaults.standard.set(role, forKey: "userRole")
         
-        print("📱 Navigating to home for role: \(role)")
-        print("💾 Saved login state to UserDefaults")
-        
+        print("User role: \(role)")
+        print("User ID: \(String(describing: UserDefaults.standard.string(forKey: userId)))")
         if let sceneDelegate = view.window?.windowScene?.delegate as? SceneDelegate {
             sceneDelegate.switchToDashboard()
         }
@@ -408,12 +411,12 @@ class newLoginViewController: UIViewController {
     
     private func highlightFieldsAsError() {
         // Highlight both input fields in red
-        academicIdTextField.layer.borderColor = UIColor.systemRed.cgColor
-        academicIdTextField.layer.borderWidth = 2.0
+        academicIdTextField.layer.borderColor = UIColor.error.cgColor
+        academicIdTextField.layer.borderWidth = 1.0
         academicIdTextField.layer.cornerRadius = 8.0
         
-        passwordTextField.layer.borderColor = UIColor.systemRed.cgColor
-        passwordTextField.layer.borderWidth = 2.0
+        passwordTextField.layer.borderColor = UIColor.error.cgColor
+        passwordTextField.layer.borderWidth = 1.0
         passwordTextField.layer.cornerRadius = 8.0
         
         // Shake animation only on fields
@@ -429,8 +432,8 @@ class newLoginViewController: UIViewController {
         // Highlight the problematic fields
         let fieldsToHighlight = highlightMultiple ?? [textField]
         for field in fieldsToHighlight {
-            field.layer.borderColor = UIColor.systemRed.cgColor
-            field.layer.borderWidth = 2.0
+            field.layer.borderColor = UIColor.error.cgColor
+            field.layer.borderWidth = 1.0
             field.layer.cornerRadius = 8.0
             
             // Shake animation

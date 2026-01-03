@@ -109,6 +109,7 @@ class NotificationTableViewCell: UITableViewCell {
     
     private var actionUrlString: String?
     private var actionCallback: ((String) -> Void)?
+    weak var parentViewController: UIViewController?
     
     // MARK: - Initialization
     
@@ -183,23 +184,27 @@ class NotificationTableViewCell: UITableViewCell {
     
     // MARK: - Configuration
     
-    func configure(with notification: NotificationModel, actionCallback: ((String) -> Void)? = nil) {
+    func configure(with notification: NotificationModel,
+                   parentViewController: UIViewController? = nil,
+                   actionCallback: ((String) -> Void)? = nil) {
         titleLabel.text = notification.title
         messageLabel.text = notification.message
         timeLabel.text = notification.displayTime
         locationLabel.text = notification.room
+        self.parentViewController = parentViewController
         self.actionCallback = actionCallback
-        self.actionUrlString = notification.actionUrl
         
         // Set icon based on notification type
         configureIcon(for: notification.type)
         
-        // Configure action button if actionUrl exists
-        if let actionUrl = notification.actionUrl {
+        // Only show action button for success type
+        if notification.type == .success {
             actionButton.isHidden = false
-            configureActionButton(for: notification.type, actionUrl: actionUrl)
+            self.actionUrlString = "serviceFeedback"
+            configureActionButton(for: notification.type, actionUrl: "serviceFeedback")
         } else {
             actionButton.isHidden = true
+            self.actionUrlString = nil
         }
         
         // Update border color based on read status
@@ -208,7 +213,7 @@ class NotificationTableViewCell: UITableViewCell {
             containerView.layer.borderWidth = 1.0
         } else {
             // Unread notification - use primary color
-            containerView.layer.borderColor = UIColor.primary.cgColor
+            containerView.layer.borderColor = UIColor.appPrimary.cgColor
             containerView.layer.borderWidth = 2.0
         }
     }
@@ -223,7 +228,7 @@ class NotificationTableViewCell: UITableViewCell {
             case .fail:
                 return ("xmark", .accent)
             case .info:
-                return ("mappin.and.ellipse", .accent)
+                return ("info", .accent)
             case .message:
                 return ("envelope.fill", .accent)
             case .accept:
@@ -241,13 +246,13 @@ class NotificationTableViewCell: UITableViewCell {
         let config: (title: String, icon: String, backgroundColor: UIColor, textColor: UIColor) = {
             switch type {
             case .success:
-                return ("Rate The Service", "hand.thumbsup.fill", .primary, .white)
+                return ("Rate The Service", "hand.thumbsup.fill", .appPrimary, .onPrimary)
             case .info:
-                return ("Track Location", "mappin.circle.fill", .primary, .white)
+                return ("View Request Info", "info", .appPrimary, .onPrimary)
             case .error, .fail, .accept, .location:
-                return ("View Request Details", "doc.text.fill", .primary, .white)
+                return ("View Request Details", "doc.text.fill", .appPrimary, .onPrimary)
             case .message:
-                return ("View Message", "envelope.fill", .primary, .white)
+                return ("View Message", "envelope.fill", .appPrimary, .onPrimary)
             }
         }()
         
@@ -271,8 +276,39 @@ class NotificationTableViewCell: UITableViewCell {
     }
     
     @objc private func actionButtonTapped() {
-        if let actionUrl = actionUrlString {
-            actionCallback?(actionUrl)
+        guard let actionUrl = actionUrlString else { return }
+        
+        // Call the callback first (for any additional logic)
+        actionCallback?(actionUrl)
+        
+        // Navigate to storyboard
+        navigateToStoryboard(actionUrl)
+    }
+    
+    // MARK: - Navigation
+    
+    private func navigateToStoryboard(_ storyboardName: String) {
+        guard let parentVC = parentViewController else {
+            print("Error: Parent view controller not set")
+            return
+        }
+        
+        // Create storyboard instance
+        let storyboard = UIStoryboard(name: storyboardName, bundle: nil)
+        
+        // Instantiate the initial view controller from the storyboard
+        guard let destinationVC = storyboard.instantiateInitialViewController() else {
+            print("Error: Could not instantiate initial view controller from storyboard: \(storyboardName)")
+            return
+        }
+        
+        // Navigate using the navigation controller if available
+        if let navigationController = parentVC.navigationController {
+            navigationController.pushViewController(destinationVC, animated: true)
+        } else {
+            // Present modally if no navigation controller
+            destinationVC.modalPresentationStyle = .fullScreen
+            parentVC.present(destinationVC, animated: true)
         }
     }
     
@@ -299,5 +335,6 @@ class NotificationTableViewCell: UITableViewCell {
         actionUrlString = nil
         actionCallback = nil
         actionButton.isHidden = true
+        parentViewController = nil
     }
 }
