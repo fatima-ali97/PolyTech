@@ -208,7 +208,7 @@ class NotificationTableViewCell: UITableViewCell {
             containerView.layer.borderWidth = 1.0
         } else {
             // Unread notification - use primary color
-            containerView.layer.borderColor = UIColor.primary.cgColor
+            containerView.layer.borderColor = UIColor.appPrimary.cgColor
             containerView.layer.borderWidth = 2.0
         }
     }
@@ -241,13 +241,13 @@ class NotificationTableViewCell: UITableViewCell {
         let config: (title: String, icon: String, backgroundColor: UIColor, textColor: UIColor) = {
             switch type {
             case .success:
-                return ("Rate The Service", "hand.thumbsup.fill", .primary, .white)
+                return ("Rate The Service", "hand.thumbsup.fill", .appPrimary, .white)
             case .info:
-                return ("Track Location", "mappin.circle.fill", .primary, .white)
+                return ("Track Location", "mappin.circle.fill", .appPrimary, .white)
             case .error, .fail, .accept, .location:
-                return ("View Request Details", "doc.text.fill", .primary, .white)
+                return ("View Request Details", "doc.text.fill", .appPrimary, .white)
             case .message:
-                return ("View Message", "envelope.fill", .primary, .white)
+                return ("View Message", "envelope.fill", .appPrimary, .white)
             }
         }()
         

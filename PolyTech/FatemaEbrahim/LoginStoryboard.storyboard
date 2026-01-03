@@ -81,7 +81,7 @@
                                 <state key="normal" title="Button"/>
                                 <buttonConfiguration key="configuration" style="filled" title="Login">
                                     <backgroundConfiguration key="background">
-                                        <color key="backgroundColor" name="AccentColor"/>
+                                        <color key="backgroundColor" name="AppPrimary"/>
                                     </backgroundConfiguration>
                                     <fontDescription key="titleFontDescription" type="boldSystem" pointSize="14"/>
                                 </buttonConfiguration>
@@ -113,6 +113,7 @@
                         <color key="backgroundColor" name="Background"/>
                         <constraints>
                             <constraint firstItem="GBW-IC-nH4" firstAttribute="leading" secondItem="0Co-Ua-PiX" secondAttribute="leading" constant="49" id="47d-B0-Phd"/>
+                            <constraint firstItem="7lu-oG-JW5" firstAttribute="centerX" secondItem="lR6-6L-lmT" secondAttribute="centerX" id="6JO-Yg-eTl"/>
                             <constraint firstItem="aV0-Gf-GNr" firstAttribute="top" secondItem="TZX-RF-uVE" secondAttribute="bottom" constant="50" id="79w-gj-RW9"/>
                             <constraint firstItem="aV0-Gf-GNr" firstAttribute="leading" secondItem="0Co-Ua-PiX" secondAttribute="leading" constant="45" id="7ti-oF-PYb"/>
                             <constraint firstItem="Oel-oX-OG8" firstAttribute="leading" secondItem="TZX-RF-uVE" secondAttribute="leading" id="8EM-fl-wKT"/>
@@ -121,7 +122,7 @@
                             <constraint firstItem="nNa-Xi-d56" firstAttribute="top" secondItem="lR6-6L-lmT" secondAttribute="bottom" constant="17" id="BJB-g8-iZb"/>
                             <constraint firstItem="TZX-RF-uVE" firstAttribute="top" secondItem="nNa-Xi-d56" secondAttribute="bottom" constant="22" id="CDb-oe-wfj"/>
                             <constraint firstItem="lR6-6L-lmT" firstAttribute="top" secondItem="GBW-IC-nH4" secondAttribute="bottom" constant="8" symbolic="YES" id="CUJ-ML-rWT"/>
-                            <constraint firstItem="Y2E-M7-EYU" firstAttribute="leading" secondItem="0Co-Ua-PiX" secondAttribute="leading" id="CkB-lJ-M29"/>
+                            <constraint firstAttribute="trailing" secondItem="Y2E-M7-EYU" secondAttribute="trailing" id="EFv-ab-xmD"/>
                             <constraint firstItem="lR6-6L-lmT" firstAttribute="leading" secondItem="0Co-Ua-PiX" secondAttribute="leading" constant="45" id="HO9-98-dWA"/>
                             <constraint firstItem="nNa-Xi-d56" firstAttribute="leading" secondItem="0Co-Ua-PiX" secondAttribute="leading" constant="49" id="Mea-76-8kq"/>
                             <constraint firstItem="7lu-oG-JW5" firstAttribute="trailing" secondItem="85H-js-NjB" secondAttribute="trailing" id="NfF-zd-oZU"/>
@@ -132,6 +133,7 @@
                             <constraint firstItem="0Co-Ua-PiX" firstAttribute="bottom" secondItem="aV0-Gf-GNr" secondAttribute="bottom" constant="101.33333333333337" id="e8h-NN-eBc"/>
                             <constraint firstItem="85H-js-NjB" firstAttribute="top" secondItem="Y2E-M7-EYU" secondAttribute="bottom" constant="40" id="kPc-dF-69N"/>
                             <constraint firstItem="Oel-oX-OG8" firstAttribute="centerX" secondItem="Y2E-M7-EYU" secondAttribute="centerX" id="oCs-6t-js3"/>
+                            <constraint firstItem="Y2E-M7-EYU" firstAttribute="leading" secondItem="0Co-Ua-PiX" secondAttribute="leading" id="oax-22-xkE"/>
                             <constraint firstItem="Y2E-M7-EYU" firstAttribute="top" secondItem="Nf0-a1-04g" secondAttribute="top" constant="-30" id="pAh-as-Wcn"/>
                             <constraint firstItem="nNa-Xi-d56" firstAttribute="centerX" secondItem="Y2E-M7-EYU" secondAttribute="centerX" id="qkM-W2-QjJ"/>
                             <constraint firstItem="GBW-IC-nH4" firstAttribute="top" secondItem="7lu-oG-JW5" secondAttribute="bottom" constant="30" id="un0-5t-d3K"/>
@@ -154,8 +156,8 @@
     <color key="tintColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
     <resources>
         <image name="PolyTechLogo" width="806" height="613"/>
-        <namedColor name="AccentColor">
-            <color red="1" green="0.79199999570846558" blue="0.15700000524520874" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        <namedColor name="AppPrimary">
+            <color red="0.086000002920627594" green="0.16500000655651093" blue="0.25900000333786011" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
         <namedColor name="Background">
             <color red="0.97299998998641968" green="0.97600001096725464" blue="0.98000001907348633" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
