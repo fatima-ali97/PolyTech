@@ -30,7 +30,7 @@ class NotificationsViewController: UIViewController {
         config.image = UIImage(systemName: "trash.fill")
         config.imagePlacement = .leading
         config.imagePadding = 8
-        config.baseBackgroundColor = .primary
+        config.baseBackgroundColor = .appPrimary
         config.baseForegroundColor = .white
         config.cornerStyle = .medium
         config.contentInsets = NSDirectionalEdgeInsets(top: 16, leading: 20, bottom: 16, trailing: 20)
@@ -455,7 +455,7 @@ class EmptyStateView: UIView {
     private let titleLabel: UILabel = {
         let label = UILabel()
         label.font = .systemFont(ofSize: 20, weight: .semibold)
-        label.textColor = .primary
+        label.textColor = .appPrimary
         label.textAlignment = .center
         label.numberOfLines = 0
         return label
@@ -464,7 +464,7 @@ class EmptyStateView: UIView {
     private let messageLabel: UILabel = {
         let label = UILabel()
         label.font = .systemFont(ofSize: 16, weight: .regular)
-        label.textColor = .primary
+        label.textColor = .appPrimary
         label.textAlignment = .center
         label.numberOfLines = 0
         return label

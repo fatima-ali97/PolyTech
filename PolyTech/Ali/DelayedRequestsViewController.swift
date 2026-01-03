@@ -1,30 +1,18 @@
-//
-//  DelayedRequestsViewController.swift
-//  PolyTech
-//
-//  Created by BP-36-212-04 on 31/12/2025.
-//
-
 import UIKit
 import FirebaseFirestore
 
 final class DelayedRequestsViewController: UIViewController {
-    
-    enum Availability: String {
-        case available
-        case busy
-        case unavailable
-    }
 
     struct DelayedRequest {
         let id: String
         let title: String
+        let daysDelayed: Int
+        let location: String
     }
     
     struct TechnicianItem {
         let id: String
         let name: String
-        let hours: String
     }
 
     @IBOutlet weak var tableView: UITableView!
@@ -40,12 +28,9 @@ final class DelayedRequestsViewController: UIViewController {
     
     private var delayedOldListener: ListenerRegistration?
     private var rejectedListener: ListenerRegistration?
-    private var activeTasksListener: ListenerRegistration?
 
     private var oldMap: [String: DelayedRequest] = [:]
     private var rejectedMap: [String: DelayedRequest] = [:]
-    private var activeCountByTechId: [String: Int] = [:]
-
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -60,16 +45,47 @@ final class DelayedRequestsViewController: UIViewController {
         loadDelayedRequests()
         loadTechnicians()
         
-        startActiveTasksListener()
+        // 🔔 Start monitoring for delayed requests and send notifications
+        DelayedRequestNotificationService.shared.startMonitoringDelayedRequests()
+        
+        // 🔔 Check for existing delayed requests immediately
+        DelayedRequestNotificationService.shared.checkForDelayedRequests { [weak self] count in
+            print("📊 Initial delayed requests check: \(count) requests found")
+            if count > 0 {
+                // Show a banner notification to admin
+                DispatchQueue.main.async {
+                    self?.showDelayedRequestsBanner(count: count)
+                }
+            }
+        }
     }
 
     deinit {
         delayedOldListener?.remove()
         rejectedListener?.remove()
         techListener?.remove()
-        activeTasksListener?.remove()
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        // Don't stop monitoring - let it continue in background
+    }
+    
+    // MARK: - Show Banner
+    
+    private func showDelayedRequestsBanner(count: Int) {
+        let message = count == 1
+            ? "There is 1 delayed request requiring attention"
+            : "There are \(count) delayed requests requiring attention"
+        
+        NotificationManager.shared.showWarning(
+            title: "Delayed Requests ⚠️",
+            message: message
+        )
     }
 
+    // MARK: - Load Delayed Requests
+    
     private func loadDelayedRequests() {
         let cutoffDate = Calendar.current.date(byAdding: .day, value: -delayedAfterDays, to: Date())!
         let cutoffTimestamp = Timestamp(date: cutoffDate)
@@ -79,7 +95,11 @@ final class DelayedRequestsViewController: UIViewController {
             rejectedMap.forEach { merged[$0.key] = $0.value }
 
             self.delayedRequests = Array(merged.values).sorted {
-                $0.title.localizedCaseInsensitiveCompare($1.title) == .orderedAscending
+                // Sort by days delayed (most delayed first)
+                if $0.daysDelayed != $1.daysDelayed {
+                    return $0.daysDelayed > $1.daysDelayed
+                }
+                return $0.title.localizedCaseInsensitiveCompare($1.title) == .orderedAscending
             }
 
             DispatchQueue.main.async {
@@ -88,7 +108,7 @@ final class DelayedRequestsViewController: UIViewController {
         }
 
         delayedOldListener?.remove()
-        delayedOldListener = db.collection("maintenanceRequest")
+        delayedOldListener = db.collection("requests")
             .whereField("createdAt", isLessThanOrEqualTo: cutoffTimestamp)
             .addSnapshotListener { [weak self] snapshot, error in
                 guard let self else { return }
@@ -106,34 +126,73 @@ final class DelayedRequestsViewController: UIViewController {
                         return nil
                     }
 
-                    guard let title = data["requestName"] as? String else { return nil }
-                    return (doc.documentID, DelayedRequest(id: doc.documentID, title: title))
+                    guard let title = data["requestName"] as? String,
+                          let createdAt = data["createdAt"] as? Timestamp else {
+                        return nil
+                    }
+                    
+                    let location = data["location"] as? String ?? "Unknown"
+                    let daysDelayed = self.calculateDaysDelayed(from: createdAt.dateValue())
+                    
+                    return (doc.documentID, DelayedRequest(
+                        id: doc.documentID,
+                        title: title,
+                        daysDelayed: daysDelayed,
+                        location: location
+                    ))
                 })
 
                 rebuildList()
             }
 
         rejectedListener?.remove()
-        rejectedListener = db.collection("maintenanceRequest")
-            .whereField("status", isEqualTo: "rejected")
+        rejectedListener = db.collection("requests")
+            .whereField("rejected", isEqualTo: true)
             .addSnapshotListener { [weak self] snapshot, error in
                 guard let self else { return }
                 if let error = error {
-                    print("❌ rejected(status) requests error:", error)
+                    print("❌ rejected requests error:", error)
                     return
                 }
 
                 let docs = snapshot?.documents ?? []
                 self.rejectedMap = Dictionary(uniqueKeysWithValues: docs.compactMap { doc in
                     let data = doc.data()
-                    guard let title = data["requestName"] as? String else { return nil }
-                    return (doc.documentID, DelayedRequest(id: doc.documentID, title: title))
+
+                    // exclude completed
+                    if let status = data["status"] as? String, status.lowercased() == "completed" {
+                        return nil
+                    }
+
+                    guard let title = data["requestName"] as? String,
+                          let createdAt = data["createdAt"] as? Timestamp else {
+                        return nil
+                    }
+                    
+                    let location = data["location"] as? String ?? "Unknown"
+                    let daysDelayed = self.calculateDaysDelayed(from: createdAt.dateValue())
+                    
+                    return (doc.documentID, DelayedRequest(
+                        id: doc.documentID,
+                        title: title,
+                        daysDelayed: daysDelayed,
+                        location: location
+                    ))
                 })
 
                 rebuildList()
             }
     }
-
+    
+    // MARK: - Calculate Days Delayed
+    
+    private func calculateDaysDelayed(from date: Date) -> Int {
+        let calendar = Calendar.current
+        let components = calendar.dateComponents([.day], from: date, to: Date())
+        return components.day ?? 0
+    }
+    
+    // MARK: - Load Technicians
     
     private func loadTechnicians() {
         techListener = db.collection("technicians")
@@ -147,12 +206,8 @@ final class DelayedRequestsViewController: UIViewController {
                 let docs = snapshot?.documents ?? []
                 self.technicians = docs.compactMap { doc in
                     let data = doc.data()
-                    guard
-                        let name = data["name"] as? String,
-                        let hours = data["hours"] as? String
-                    else { return nil }
-
-                    return TechnicianItem(id: doc.documentID, name: name, hours: hours)
+                    guard let name = data["name"] as? String else { return nil }
+                    return TechnicianItem(id: doc.documentID, name: name)
                 }
 
                 self.technicians.sort { $0.name.localizedCaseInsensitiveCompare($1.name) == .orderedAscending }
@@ -163,121 +218,82 @@ final class DelayedRequestsViewController: UIViewController {
             }
     }
     
-    private func startActiveTasksListener() {
-        activeTasksListener?.remove()
-
-        activeTasksListener = db.collection("maintenanceRequest")
-            .whereField("status", in: ["pending", "in_progress"])
-            .addSnapshotListener { [weak self] snap, err in
-                guard let self else { return }
-                if let err = err {
-                    print("❌ active tasks listener error:", err)
-                    return
-                }
-
-                var map: [String: Int] = [:]
-                for doc in snap?.documents ?? [] {
-                    let data = doc.data()
-                    if let techId = data["technicianId"] as? String, !techId.isEmpty {
-                        map[techId, default: 0] += 1
-                    }
-                }
-
-                self.activeCountByTechId = map
-
-                DispatchQueue.main.async {
-                    self.tableView.reloadData()
-                }
-            }
-    }
+    // MARK: - Assign Technician
     
     private func assign(requestId: String, technician: TechnicianItem) {
-        let updates: [String: Any] = [
-            "technicianId": technician.id,
-            "assignedTechnicianName": technician.name,
-            "status": "in_progress",
-            "updatedAt": FieldValue.serverTimestamp()
-        ]
-
-        db.collection("maintenanceRequest").document(requestId).updateData(updates) { error in
+        // First get the request details
+        db.collection("requests").document(requestId).getDocument { [weak self] document, error in
+            guard let self = self else { return }
+            
             if let error = error {
-                print("❌ Failed to reassign:", error)
-            } else {
-                print("✅ Reassigned request \(requestId) to \(technician.name)")
+                print("❌ Failed to fetch request: \(error)")
+                self.showError("Failed to assign technician")
+                return
+            }
+            
+            guard let data = document?.data(),
+                  let requestName = data["requestName"] as? String,
+                  let location = data["location"] as? String else {
+                print("❌ Missing request data")
+                self.showError("Failed to assign technician")
+                return
+            }
+            
+            let urgency = data["urgency"] as? String ?? "normal"
+            let category = data["category"] as? String ?? "general"
+            
+            // Update the request with assignment
+            let updates: [String: Any] = [
+                "assignedTechnicianId": technician.id,
+                "assignedTechnicianName": technician.name,
+                "status": "in_progress",
+                "updatedAt": FieldValue.serverTimestamp()
+            ]
+            
+            self.db.collection("requests").document(requestId).updateData(updates) { error in
+                if let error = error {
+                    print("❌ Failed to reassign:", error)
+                    self.showError("Failed to assign technician")
+                } else {
+                    print("✅ Reassigned request \(requestId) to \(technician.name)")
+                    
+                    // 🔔 Notify the technician about the assignment
+                    TechnicianNotificationService.shared.notifyTechnicianAssignment(
+                        technicianId: technician.id,
+                        technicianName: technician.name,
+                        requestId: requestId,
+                        requestName: requestName,
+                        location: location,
+                        urgency: urgency,
+                        category: category
+                    )
+                    
+                    // Show success message
+                    self.showSuccess("Request assigned to \(technician.name)")
+                    
+                    // 🔔 The student will automatically receive "Work Started 🔧" notification
+                    // via RequestStatusNotificationService (status changed to in_progress)
+                }
             }
         }
     }
     
-    private func isNowWithinHours(_ hoursString: String, now: Date = Date()) -> Bool {
-        let s = hoursString.trimmingCharacters(in: .whitespacesAndNewlines)
-        if s.isEmpty { return false }
-
-        let lower = s.lowercased()
-
-        if lower.contains("24/7") || lower.contains("247") || lower.contains("24x7") || lower.contains("24-7") {
-            return true
-        }
-
-        if lower.contains("closed") || lower.contains("off") { return false }
-
-        let normalized = s
-            .replacingOccurrences(of: "–", with: "-")
-            .replacingOccurrences(of: "—", with: "-")
-            .replacingOccurrences(of: "to", with: "-")
-            .replacingOccurrences(of: " ", with: "")
-
-        let parts = normalized.split(separator: "-", omittingEmptySubsequences: true)
-        guard parts.count == 2 else { return false }
-
-        let startStr = String(parts[0])
-        let endStr   = String(parts[1])
-
-        let formats = ["HH:mm", "H:mm", "h:mma", "hh:mma", "h:mm a", "hh:mm a", "ha", "h a"]
-
-        func parseTimeToday(_ timeStr: String) -> Date? {
-            let cal = Calendar.current
-            let day = cal.dateComponents([.year, .month, .day], from: now)
-
-            for f in formats {
-                let df = DateFormatter()
-                df.locale = Locale(identifier: "en_US_POSIX")
-                df.dateFormat = f
-
-                if let t = df.date(from: timeStr) {
-                    let tc = cal.dateComponents([.hour, .minute], from: t)
-                    var comps = DateComponents()
-                    comps.year = day.year
-                    comps.month = day.month
-                    comps.day = day.day
-                    comps.hour = tc.hour
-                    comps.minute = tc.minute
-                    return cal.date(from: comps)
-                }
-            }
-            return nil
-        }
-
-        guard let start = parseTimeToday(startStr),
-              let endSameDay = parseTimeToday(endStr) else {
-            return false
-        }
-
-        let cal = Calendar.current
-        let _ = (endSameDay >= start) ? endSameDay : cal.date(byAdding: .day, value: 1, to: endSameDay)!
-
-        if endSameDay < start {
-            let endTomorrow = cal.date(byAdding: .day, value: 1, to: endSameDay)!
-
-            if now >= start {
-                return now <= endTomorrow
-            } else {
-                return now <= endSameDay
-            }
-        }
-
-        return (now >= start && now <= endSameDay)
+    // MARK: - UI Helpers
+    
+    private func showSuccess(_ message: String) {
+        let alert = UIAlertController(title: "Success", message: message, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "OK", style: .default))
+        present(alert, animated: true)
+    }
+    
+    private func showError(_ message: String) {
+        let alert = UIAlertController(title: "Error", message: message, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "OK", style: .default))
+        present(alert, animated: true)
     }
 }
+
+// MARK: - UITableViewDataSource & Delegate
 
 extension DelayedRequestsViewController: UITableViewDataSource, UITableViewDelegate {
 
@@ -286,23 +302,24 @@ extension DelayedRequestsViewController: UITableViewDataSource, UITableViewDeleg
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-
-            guard let cell = tableView.dequeueReusableCell(withIdentifier: "DelayedRequestCell", for: indexPath) as? DelayedRequestCell else {
-                return UITableViewCell()
-            }
-
-        let request = delayedRequests[indexPath.row]
-        cell.titleLabel.text = request.title
-
-        cell.reassignButton.showsMenuAsPrimaryAction = true
-
-        let availableTechs = technicians.filter { tech in
-            let withinHours = isNowWithinHours(tech.hours)
-            let hasActiveTasks = activeCountByTechId[tech.id, default: 0] > 0
-            return withinHours && !hasActiveTasks
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: "DelayedRequestCell", for: indexPath) as? DelayedRequestCell else {
+            return UITableViewCell()
         }
 
-        let actions = availableTechs.map { tech in
+        let request = delayedRequests[indexPath.row]
+        
+        // Set title with days delayed info
+        let daysText = request.daysDelayed == 1 ? "1 day" : "\(request.daysDelayed) days"
+        cell.titleLabel.text = "\(request.title) • \(daysText) delayed"
+        
+        // Set location if you have a label for it
+        // cell.locationLabel.text = request.location
+
+        // Make reassign button a menu
+        cell.reassignButton.showsMenuAsPrimaryAction = true
+
+        // Build menu actions from technicians
+        let actions = technicians.map { tech in
             UIAction(title: tech.name) { [weak self] _ in
                 self?.assign(requestId: request.id, technician: tech)
             }
@@ -310,21 +327,22 @@ extension DelayedRequestsViewController: UITableViewDataSource, UITableViewDeleg
 
         cell.reassignButton.menu = UIMenu(title: "Reassign to", children: actions)
 
-
-            return cell
-        }
-
-
-    
-
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destination.
-        // Pass the selected object to the new view controller.
+        return cell
     }
-    */
-
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        tableView.deselectRow(at: indexPath, animated: true)
+        
+        let request = delayedRequests[indexPath.row]
+        
+        // Show details alert
+        let daysText = request.daysDelayed == 1 ? "1 day" : "\(request.daysDelayed) days"
+        let alert = UIAlertController(
+            title: request.title,
+            message: "Location: \(request.location)\nDelayed: \(daysText)",
+            preferredStyle: .alert
+        )
+        alert.addAction(UIAlertAction(title: "OK", style: .default))
+        present(alert, animated: true)
+    }
 }
