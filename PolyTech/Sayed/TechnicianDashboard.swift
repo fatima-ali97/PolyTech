@@ -19,7 +19,6 @@ class TechnicianDashboardViewController: UIViewController {
     @IBOutlet weak var inProgressLegendLabel: UILabel!
     @IBOutlet weak var pendingLegendLabel: UILabel!
     
-    @IBOutlet weak var taskListButton: UIButton!
     @IBOutlet weak var donutChartView: DonutChartViewTwo!
     // Popup view
     //vars for notifications
@@ -297,10 +296,6 @@ class TechnicianDashboardViewController: UIViewController {
                     applyCardStyling(to: card, cornerRadius: cornerRadius)
                 }
             }
-            
-            taskListButton.layer.cornerRadius = 15.0
-            taskListButton.backgroundColor = UIColor(named: "PrimaryDarkBlue") ?? .darkGray
-            taskListButton.setTitleColor(.white, for: .normal)
         }
         
         func applyCardStyling(to view: UIView, cornerRadius: CGFloat) {
