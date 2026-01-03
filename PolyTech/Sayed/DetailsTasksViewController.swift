@@ -20,20 +20,88 @@ class DetailsTasksViewController: UIViewController {
     @IBOutlet weak var notesTextView: UITextView!
     @IBOutlet weak var acceptedDateLabel: UILabel!
     @IBOutlet weak var AddressLabel: UILabel!
+    @IBOutlet weak var voicePlayerContainer: UIView? // Add this to your storyboard
+    
+    // Voice player
+    private var voicePlayerView: VoicePlayerView?
 
     override func viewDidLoad() {
         super.viewDidLoad()
         setupTextViewUI()
+        setupVoicePlayer()
         
         if let currentTask = task {
             updateUI(with: currentTask)
+            loadVoiceNote(for: currentTask)
         } else {
             setErrorMessage()
         }
         
         setupSegmentedControlAppearance()
     }
-
+    
+    // MARK: - Voice Player Setup
+    
+    private func setupVoicePlayer() {
+        // Check if container exists
+        guard let container = voicePlayerContainer else {
+            print("⚠️ Voice player container not available")
+            return
+        }
+        
+        // Create voice player view
+        let playerView = VoicePlayerView()
+        playerView.translatesAutoresizingMaskIntoConstraints = false
+        container.addSubview(playerView)
+        
+        NSLayoutConstraint.activate([
+            playerView.topAnchor.constraint(equalTo: container.topAnchor),
+            playerView.leadingAnchor.constraint(equalTo: container.leadingAnchor),
+            playerView.trailingAnchor.constraint(equalTo: container.trailingAnchor),
+            playerView.bottomAnchor.constraint(equalTo: container.bottomAnchor)
+        ])
+        
+        voicePlayerView = playerView
+        
+        // Hide initially until we know if there's a voice note
+        container.isHidden = true
+        
+        // Set error callback
+        playerView.onError = { [weak self] errorMessage in
+            self?.showAlert("Voice Note Error", message: errorMessage)
+        }
+    }
+    
+    private func loadVoiceNote(for task: TaskRequest) {
+        let docID = task.documentID  // Use it directly
+        
+        // Fetch the complete document to get voiceUrl
+        db.collection("maintenanceRequest").document(docID).getDocument { [weak self] document, error in
+            guard let self = self else { return }
+            
+            if let error = error {
+                print("❌ Error fetching document: \(error.localizedDescription)")
+                return
+            }
+            
+            guard let document = document, document.exists,
+                  let data = document.data() else {
+                print("ℹ️ Document does not exist")
+                self.voicePlayerContainer?.isHidden = true
+                return
+            }
+            
+            // Check if voiceUrl exists and is a String
+            if let voiceUrlString = data["voiceUrl"] as? String, !voiceUrlString.isEmpty {
+                print("✅ Voice note found: \(voiceUrlString)")
+                self.voicePlayerContainer?.isHidden = false
+                self.voicePlayerView?.configure(with: voiceUrlString)
+            } else {
+                print("ℹ️ No voice note available for this task")
+                self.voicePlayerContainer?.isHidden = true
+            }
+        }
+    }
     func updateUI(with task: TaskRequest) {
         clientLabel.text = "User: \(task.fullName)"
         taskIDLabel.text = "Task ID: \(task.id)"
@@ -103,6 +171,12 @@ class DetailsTasksViewController: UIViewController {
         alert.addAction(UIAlertAction(title: "OK", style: .default) { _ in
             self.navigationController?.popViewController(animated: true)
         })
+        present(alert, animated: true)
+    }
+    
+    private func showAlert(_ title: String, message: String) {
+        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "OK", style: .default))
         present(alert, animated: true)
     }
 }
