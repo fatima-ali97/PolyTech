@@ -100,6 +100,9 @@ final class DelayedRequestsViewController: UIViewController {
                     let status = (data["status"] as? String ?? "").lowercased()
                     if status == "completed" { return nil }
 
+                    // Hide only those that were reassigned (so it disappears after you reassign)
+                    if data["reassignedAt"] != nil { return nil }
+
                     guard let title = data["requestName"] as? String else { return nil }
                     return (doc.documentID, DelayedRequest(id: doc.documentID, title: title))
                 })
@@ -158,8 +161,9 @@ final class DelayedRequestsViewController: UIViewController {
     }
 
     private func startActiveTasksListener() {
+        activeTasksListener?.remove()
+
         activeTasksListener = db.collection("maintenanceRequest")
-            .whereField("status", in: ["pending", "in_progress"])
             .addSnapshotListener { [weak self] snapshot, error in
                 guard let self = self else { return }
                 if let error = error {
@@ -168,9 +172,17 @@ final class DelayedRequestsViewController: UIViewController {
                 }
 
                 var map: [String: Int] = [:]
+
                 for doc in snapshot?.documents ?? [] {
                     let data = doc.data()
-                    if let techId = data["technicianId"] as? String {
+                    guard let techId = data["technicianId"] as? String else { continue }
+
+                    let status = (data["status"] as? String ?? "")
+                        .trimmingCharacters(in: .whitespacesAndNewlines)
+                        .lowercased()
+                        .replacingOccurrences(of: " ", with: "_")
+
+                    if status == "pending" || status == "in_progress" {
                         map[techId, default: 0] += 1
                     }
                 }
@@ -188,63 +200,86 @@ final class DelayedRequestsViewController: UIViewController {
             "technicianId": technician.id,
             "assignedTechnicianName": technician.name,
             "status": "in_progress",
-            "updatedAt": FieldValue.serverTimestamp()
+            "updatedAt": FieldValue.serverTimestamp(),
+            "reassignedAt": FieldValue.serverTimestamp()
         ]
 
         db.collection("maintenanceRequest").document(requestId).updateData(updates)
     }
 
-    private func isNowWithinHours(_ hours: String, now: Date = Date()) -> Bool {
-        let trimmed = hours.trimmingCharacters(in: .whitespacesAndNewlines)
-        if trimmed.isEmpty { return false }
+    private func isNowWithinHours(_ hoursString: String, now: Date = Date()) -> Bool {
+        let s = hoursString.trimmingCharacters(in: .whitespacesAndNewlines)
+        if s.isEmpty { return false }
 
-        let lower = trimmed.lowercased()
-        if lower.contains("24/7") { return true }
-        if lower.contains("closed") || lower.contains("off") { return false }
+        let lower = s.lowercased()
 
-        let normalized = trimmed
+        if lower.contains("24/7") || lower.contains("247") || lower.contains("24x7") || lower.contains("24-7") {
+            return true
+        }
+
+        if lower.contains("closed") || lower.contains("off") {
+            return false
+        }
+
+        let normalized = s
             .replacingOccurrences(of: "–", with: "-")
             .replacingOccurrences(of: "—", with: "-")
             .replacingOccurrences(of: "to", with: "-")
             .replacingOccurrences(of: " ", with: "")
 
-        let parts = normalized.split(separator: "-")
+        let parts = normalized.split(separator: "-", omittingEmptySubsequences: true)
         guard parts.count == 2 else { return false }
 
-        let formatter = DateFormatter()
-        formatter.locale = Locale(identifier: "en_US_POSIX")
-        formatter.dateFormat = "HH:mm"
+        let startStr = String(parts[0])
+        let endStr = String(parts[1])
 
-        guard
-            let start = formatter.date(from: String(parts[0])),
-            let end = formatter.date(from: String(parts[1]))
-        else { return false }
+        let formats = ["HH:mm", "H:mm", "h:mma", "hh:mma", "h:mm a", "hh:mm a", "ha", "h a"]
 
-        let calendar = Calendar.current
-        let startToday = calendar.date(
-            bySettingHour: calendar.component(.hour, from: start),
-            minute: calendar.component(.minute, from: start),
-            second: 0,
-            of: now
-        )!
+        func parseTimeToday(_ timeStr: String) -> Date? {
+            let cal = Calendar.current
+            let today = cal.dateComponents([.year, .month, .day], from: now)
 
-        let endToday = calendar.date(
-            bySettingHour: calendar.component(.hour, from: end),
-            minute: calendar.component(.minute, from: end),
-            second: 0,
-            of: now
-        )!
+            for format in formats {
+                let df = DateFormatter()
+                df.locale = Locale(identifier: "en_US_POSIX")
+                df.dateFormat = format
 
-        return now >= startToday && now <= endToday
+                if let parsed = df.date(from: timeStr) {
+                    let time = cal.dateComponents([.hour, .minute], from: parsed)
+                    var comps = DateComponents()
+                    comps.year = today.year
+                    comps.month = today.month
+                    comps.day = today.day
+                    comps.hour = time.hour
+                    comps.minute = time.minute
+                    return cal.date(from: comps)
+                }
+            }
+            return nil
+        }
+
+        guard let start = parseTimeToday(startStr),
+              let endSameDay = parseTimeToday(endStr) else {
+            return false
+        }
+
+        let cal = Calendar.current
+
+        if endSameDay >= start {
+            return now >= start && now <= endSameDay
+        } else {
+            let endTomorrow = cal.date(byAdding: .day, value: 1, to: endSameDay)!
+            return now >= start || now <= endTomorrow
+        }
     }
 }
 
 extension DelayedRequestsViewController: UITableViewDataSource, UITableViewDelegate {
-
+    
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         delayedRequests.count
     }
-
+    
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard
             let cell = tableView.dequeueReusableCell(
@@ -254,47 +289,48 @@ extension DelayedRequestsViewController: UITableViewDataSource, UITableViewDeleg
         else {
             return UITableViewCell()
         }
-
+        
         let request = delayedRequests[indexPath.row]
         cell.titleLabel.text = request.title
         cell.reassignButton.showsMenuAsPrimaryAction = true
-
+        
         let availableTechs = technicians.filter { tech in
-                    let withinHours = isNowWithinHours(tech.hours)
-                    let hasActiveTasks = activeCountByTechId[tech.id, default: 0] > 0
-                    return withinHours && !hasActiveTasks
+            let withinHours = isNowWithinHours(tech.hours)
+            let hasActiveTasks = activeCountByTechId[tech.id, default: 0] > 0
+            return withinHours && !hasActiveTasks
+        }
+        
+        let actions: [UIAction]
+        
+        if availableTechs.isEmpty {
+            actions = [
+                UIAction(
+                    title: "No available technicians",
+                    attributes: [.disabled],
+                    handler: { _ in }
+                )
+            ]
+        } else {
+            actions = availableTechs.map { tech in
+                UIAction(title: tech.name) { [weak self] _ in
+                    self?.assign(requestId: request.id, technician: tech)
                 }
-
-                let actions: [UIAction]
-
-                if availableTechs.isEmpty {
-                    actions = [
-                        UIAction(
-                            title: "No available technicians",
-                            attributes: [.disabled],
-                            handler: { _ in }
-                        )
-                    ]
-                } else {
-                    actions = availableTechs.map { tech in
-                        UIAction(title: tech.name) { [weak self] _ in
-                            self?.assign(requestId: request.id, technician: tech)
-                        }
-                    }
-                }
-
-                cell.reassignButton.menu = UIMenu(title: "Reassign to", children: actions)
+            }
+        }
+        
+        cell.reassignButton.menu = UIMenu(title: "Reassign to", children: actions)
         return cell
     }
+    
+    
+    
+    /*
+         // MARK: - Navigation
+     
+         // In a storyboard-based application, you will often want to do a little preparation before navigation
+         override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+             // Get the new view controller using segue.destination.
+             // Pass the selected object to the new view controller.
+         }
+         */
 }
-
-/*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destination.
-        // Pass the selected object to the new view controller.
-    }
-    */
-

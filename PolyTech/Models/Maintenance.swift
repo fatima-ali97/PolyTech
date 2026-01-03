@@ -13,9 +13,8 @@ struct MaintenanceRequestModel: Codable {
     var updatedAt: Timestamp
     var imageUrl: String?
     var userId: String?
-    var status: String
-    var technicianID: String
-    var declinedBy: [String]
+    let status: String
+    let feedbackSubmitted: Bool
     
     // MARK: - Urgency Enum
     enum UrgencyLevel: String, Codable {
@@ -47,9 +46,8 @@ struct MaintenanceRequestModel: Codable {
         self.updatedAt = updatedAt
         self.imageUrl = dictionary["imageUrl"] as? String
         self.userId = dictionary["userId"] as? String
-        self.status = dictionary["status"] as? String ?? "Pending"
-        self.technicianID = dictionary["technicianID"] as? String ?? ""
-        self.declinedBy = dictionary["declinedBy"] as? [String] ?? []
+        self.status = (dictionary["status"] as? String) ?? ""
+        self.feedbackSubmitted = (dictionary["feedbackSubmitted"] as? Bool) ?? false
         
         // Handle location saved as String or Int
         if let locStr = dictionary["location"] as? String {
@@ -69,10 +67,7 @@ struct MaintenanceRequestModel: Codable {
             "location": location,
             "urgency": urgency.rawValue,
             "createdAt": createdAt,
-            "updatedAt": updatedAt,
-            "status": status,
-            "technicianID": technicianID,
-            "declinedBy": declinedBy
+            "updatedAt": updatedAt
         ]
         if let imageUrl = imageUrl { dict["imageUrl"] = imageUrl }
         if let userId = userId { dict["userId"] = userId }
