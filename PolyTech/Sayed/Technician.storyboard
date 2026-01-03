@@ -19,7 +19,7 @@
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
                     <connections>
-                        <segue destination="QFQ-2a-HY4" kind="relationship" relationship="rootViewController" id="9VR-f4-bL0"/>
+                        <segue destination="QFQ-2a-HY4" kind="relationship" relationship="rootViewController" id="pAh-XM-S0k"/>
                     </connections>
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="4W1-Y9-Nz5" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
@@ -703,7 +703,7 @@ Due: 2025-11-15</string>
                         <viewLayoutGuide key="safeArea" id="eOZ-Oe-BV6"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                     </view>
-                    <navigationItem key="navigationItem" title="Technician Dashboard" id="yK8-Iz-hzE"/>
+                    <navigationItem key="navigationItem" title="Technician Dashboard" largeTitleDisplayMode="never" id="yK8-Iz-hzE"/>
                     <connections>
                         <outlet property="StatusCard" destination="qJu-xs-gbh" id="IFC-fu-iiu"/>
                         <outlet property="completedCard" destination="dTj-bi-wDL" id="BdB-b1-BhR"/>
