@@ -119,19 +119,7 @@ class NewInventoryViewController: UIViewController {
     private func setupQuantityField() {
         quantity.delegate = self
         quantity.keyboardType = .numberPad
-//        quantity.delegate = self
-//        quantity.keyboardType = .numberPad
-        
-//        let toolbar = UIToolbar()
-//        toolbar.sizeToFit()
-//        toolbar.barStyle = .default
-//        toolbar.isTranslucent = true
-//        
-//        let flexSpace = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
-//        let doneButton = UIBarButtonItem(title: "Done", style: .done, target: self, action: #selector(dismissKeyboard))
-//        
-//        toolbar.items = [flexSpace, doneButton]
-//        quantity.inputAccessoryView = toolbar
+              // ✅ REMOVED: No toolbar/done button for quantity field
     }
     
     @objc private func dismissKeyboard() {
@@ -451,7 +439,9 @@ class NewInventoryViewController: UIViewController {
             guard let self = self else { return }
             
             if let error = error {
-                self.showAlert("Error saving request: \(error.localizedDescription)")
+                loadingAlert.dismiss(animated: true) {
+                    self.showAlert("Error saving request: \(error.localizedDescription)")
+                }
                 return
             }
             
@@ -466,7 +456,20 @@ class NewInventoryViewController: UIViewController {
                 urgency: "normal"
             ) { success, errorMessage in
                 if !success {
-                    print("⚠️ Auto-assign failed: \(errorMessage ?? "unknown error")")
+                    print("⚠️ Stock decrease failed, but request was saved")
+                }
+
+                // 🤖 Step 3: Auto-assign technician
+                AutoAssignmentService.shared.autoAssignTechnician(
+                    requestId: requestId,
+                    requestType: "inventory",
+                    category: self.selectedCategory?.rawValue ?? "general",
+                    location: self.location.text ?? "",
+                    urgency: "normal"
+                ) { success, errorMessage in
+                    if !success {
+                        print("⚠️ Auto-assign failed: \(errorMessage ?? "unknown error")")
+                    }
                 }
             }
             
