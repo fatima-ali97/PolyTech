@@ -118,14 +118,20 @@ class TasksViewController: UIViewController, UITableViewDataSource, UITableViewD
             filterTasks(by: currentFilter)
             return
         }
-
         let lowercasedSearchText = searchText.lowercased()
-        tasks = allTasksFromFirebase.filter { task in
-            let matchesSearchText = task.fullName.lowercased().contains(lowercasedSearchText) ||
-                task.id.lowercased().contains(lowercasedSearchText) ||
-                task.status.lowercased().contains(lowercasedSearchText)
 
-            return currentFilter == .all ? matchesSearchText : (matchesSearchText && task.status == currentFilter.rawValue)
+        tasks = allTasksFromFirebase.filter { task in
+            let nameMatch = task.fullName.lowercased().contains(lowercasedSearchText)
+            let idMatch = task.id.lowercased().contains(lowercasedSearchText)
+            let statusMatch = task.status.lowercased().contains(lowercasedSearchText)
+            
+            let matchesSearchText = nameMatch || idMatch || statusMatch
+
+            if currentFilter == .all {
+                return matchesSearchText
+            } else {
+                return matchesSearchText && task.status.lowercased() == currentFilter.rawValue.lowercased()
+            }
         }
         
         updateNoTasksLabel()
