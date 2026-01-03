@@ -315,6 +315,16 @@
                                             <action selector="goToHistoryTapped:" destination="4YU-c1-hhC" eventType="touchUpInside" id="xRg-bC-OlO"/>
                                         </connections>
                                     </button>
+                                    <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="hnr-gs-JT4" userLabel="HistoryButton">
+                                        <rect key="frame" x="0.0" y="395" width="393" height="106"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                        <state key="normal" title="Button"/>
+                                        <buttonConfiguration key="configuration" style="plain"/>
+                                        <connections>
+                                            <action selector="clearAllNotificationsTapped:" destination="4YU-c1-hhC" eventType="touchUpInside" id="6sO-cR-skG"/>
+                                            <action selector="goToHistoryTapped:" destination="4YU-c1-hhC" eventType="touchUpInside" id="pIO-bT-U0a"/>
+                                        </connections>
+                                    </button>
                                 </subviews>
                                 <viewLayoutGuide key="contentLayoutGuide" id="GhR-vr-pAc"/>
                                 <viewLayoutGuide key="frameLayoutGuide" id="ppZ-Nu-1P3"/>

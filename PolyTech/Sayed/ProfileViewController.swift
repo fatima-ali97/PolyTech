@@ -153,5 +153,56 @@ class ProfileViewController: UIViewController {
             }
         }
     }
+            
+        @IBAction func clearAllNotificationsTapped(_ sender: UIButton) {
+            let alert = UIAlertController(title: "Clear Notifications", message: "Are you sure you want to delete all notifications? This cannot be undone.", preferredStyle: .alert)
+            
+            alert.addAction(UIAlertAction(title: "Cancel", style: .cancel))
+            alert.addAction(UIAlertAction(title: "Clear All", style: .destructive) { _ in
+                self.performClearNotifications()
+            })
+            
+            present(alert, animated: true)
+        }
+
+        private func performClearNotifications() {
+            guard let uid = Auth.auth().currentUser?.uid else { return }
+            
+            db.collection("Notifications")
+                .whereField("userId", isEqualTo: uid)
+                .getDocuments { [weak self] (querySnapshot, error) in
+                    if let error = error {
+                        print("Error fetching notifications: \(error.localizedDescription)")
+                        return
+                    }
+                    
+                    guard let documents = querySnapshot?.documents, !documents.isEmpty else {
+                        self?.showSimpleAlert(message: "No notifications found to clear.")
+                        return
+                    }
+                    
+                    let batch = self?.db.batch()
+                    documents.forEach { doc in
+                        batch?.deleteDocument(doc.reference)
+                    }
+                    
+                    batch?.commit { error in
+                        if let error = error {
+                            print("Batch delete failed: \(error.localizedDescription)")
+                        } else {
+                            print("All notifications cleared successfully")
+                            self?.showSimpleAlert(message: "All notifications cleared.")
+                        }
+                    }
+                }
+        }
+
+        private func showSimpleAlert(message: String) {
+            let alert = UIAlertController(title: nil, message: message, preferredStyle: .alert)
+            present(alert, animated: true)
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
+                alert.dismiss(animated: true)
+            }
+        }
     
 }
