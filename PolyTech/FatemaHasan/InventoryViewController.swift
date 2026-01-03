@@ -50,15 +50,7 @@ class InventoryViewController: UIViewController {
             target: self,
             action: #selector(addTapped)
         )
-        // Left: Return text
-        let returnBarButton = UIBarButtonItem(
-            title: "Return",
-            style: .plain,
-            target: self,
-            action: #selector(returnInventoryTapped)
-        )
         navigationItem.rightBarButtonItem = addBarButton
-        navigationItem.leftBarButtonItem = returnBarButton
     }
     
     @objc private func addTapped() {
@@ -66,16 +58,6 @@ class InventoryViewController: UIViewController {
         guard let vc = storyboard.instantiateViewController(withIdentifier: "NewInventoryViewController")
                 as? NewInventoryViewController else {
             print("❌ NewInventoryViewController not found or wrong class")
-            return
-        }
-        navigationController?.pushViewController(vc, animated: true)
-    }
-    
-    @objc private func returnInventoryTapped() {
-        let storyboard = UIStoryboard(name: "ReturnInventory", bundle: nil)
-        guard let vc = storyboard.instantiateViewController(withIdentifier: "ReturnInventoryViewController")
-                as? ReturnInventoryViewController else {
-            print("❌ ReturnInventoryViewController not found or wrong class")
             return
         }
         navigationController?.pushViewController(vc, animated: true)
@@ -287,6 +269,115 @@ class InventoryViewController: UIViewController {
                 }
             }
     }
+    
+    // MARK: - Return Inventory
+    private func returnInventoryItem(at indexPath: IndexPath) {
+        let item = filteredItems[indexPath.row]
+        
+        let alert = UIAlertController(
+            title: "Return Inventory",
+            message: "Are you sure you want to return \(item.quantity) unit(s) of '\(item.itemName)'? This will update the inventory stock.",
+            preferredStyle: .alert
+        )
+        
+        alert.addAction(UIAlertAction(title: "Cancel", style: .cancel))
+        alert.addAction(UIAlertAction(title: "Return", style: .default) { [weak self] _ in
+            self?.performReturn(item: item)
+        })
+        
+        present(alert, animated: true)
+    }
+    
+    private func performReturn(item: Inventory) {
+
+        let loadingAlert = UIAlertController(
+            title: nil,
+            message: "Returning inventory...",
+            preferredStyle: .alert
+        )
+        let indicator = UIActivityIndicatorView(style: .medium)
+        indicator.startAnimating()
+        indicator.translatesAutoresizingMaskIntoConstraints = false
+        loadingAlert.view.addSubview(indicator)
+
+        NSLayoutConstraint.activate([
+            indicator.centerXAnchor.constraint(equalTo: loadingAlert.view.centerXAnchor),
+            indicator.bottomAnchor.constraint(equalTo: loadingAlert.view.bottomAnchor, constant: -20)
+        ])
+
+        present(loadingAlert, animated: true)
+
+        // ✅ Use a SAFE document ID (recommended)
+        let stockRef = db.collection("inventoryStock")
+            .document(item.itemName.lowercased().replacingOccurrences(of: " ", with: "_"))
+
+        let requestRef = db.collection("inventoryRequest").document(item.id)
+
+        db.runTransaction({ transaction, errorPointer in
+
+            let stockDoc: DocumentSnapshot
+            do {
+                stockDoc = try transaction.getDocument(stockRef)
+            } catch {
+                errorPointer?.pointee = error as NSError
+                return nil
+            }
+
+            let currentQty = stockDoc.data()?["quantity"] as? Int ?? 0
+            let newQty = currentQty + item.quantity
+
+            // 🔼 Increase stock
+            transaction.setData([
+                "itemName": item.itemName,
+                "category": item.category,
+                "location": item.location,
+                "quantity": newQty,
+                "lastUpdated": FieldValue.serverTimestamp()
+            ], forDocument: stockRef, merge: true)
+
+            // 🗑 Delete request
+            transaction.deleteDocument(requestRef)
+
+            return nil
+
+        }) { [weak self] _, error in
+            guard let self = self else { return }
+
+            loadingAlert.dismiss(animated: true) {
+                if let error = error {
+                    print("❌ Return failed:", error.localizedDescription)
+                    self.showReturnErrorAlert(message: error.localizedDescription)
+                } else {
+                    print("✅ Inventory returned & stock updated")
+                    self.showReturnSuccessAlert(
+                        itemName: item.itemName,
+                        quantity: item.quantity
+                    )
+                }
+            }
+        }
+    }
+
+    
+    private func showReturnSuccessAlert(itemName: String, quantity: Int) {
+        let alert = UIAlertController(
+            title: "Success",
+            message: "Successfully returned \(quantity) unit(s) of '\(itemName)' to inventory stock.",
+            preferredStyle: .alert
+        )
+        alert.addAction(UIAlertAction(title: "OK", style: .default))
+        present(alert, animated: true)
+    }
+    
+    private func showReturnErrorAlert(message: String) {
+        let alert = UIAlertController(
+            title: "Error",
+            message: "Failed to return inventory: \(message)",
+            preferredStyle: .alert
+        )
+        alert.addAction(UIAlertAction(title: "OK", style: .default))
+        present(alert, animated: true)
+    }
 }
 
 // MARK: - UITableViewDataSource
@@ -319,6 +410,7 @@ extension InventoryViewController: UITableViewDelegate {
         showDetailsPopup(for: filteredItems[indexPath.row])
     }
     
+    // MARK: - Left Swipe Actions (trailing)
     func tableView(_ tableView: UITableView,
                    trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath)
     -> UISwipeActionsConfiguration? {
@@ -345,6 +437,21 @@ extension InventoryViewController: UITableViewDelegate {
         viewAction.image = UIImage(systemName: "info.circle")
         
         return UISwipeActionsConfiguration(actions: [deleteAction, editAction, viewAction])
+    }
+    
+    // MARK: - Right Swipe Actions (leading)
+    func tableView(_ tableView: UITableView,
+                   leadingSwipeActionsConfigurationForRowAt indexPath: IndexPath)
+    -> UISwipeActionsConfiguration? {
+        
+        let returnAction = UIContextualAction(style: .normal, title: "Return") { [weak self] _, _, completion in
+            self?.returnInventoryItem(at: indexPath)
+            completion(true)
+        }
+        returnAction.backgroundColor = .systemOrange
+        returnAction.image = UIImage(systemName: "arrow.uturn.backward")
+        
+        return UISwipeActionsConfiguration(actions: [returnAction])
     }
 }
 

@@ -32,6 +32,17 @@ class HistoryViewController: UIViewController {
         loadHistoryItems()
         
         SearchBar.delegate = self
+        
+
+        let textField = SearchBar.searchTextField
+        textField.textColor = .onBackground
+        textField.tintColor = .background
+        textField.backgroundColor = .secondarySystemBackground
+
+
+        SearchBar.backgroundImage = UIImage()
+        
+        
         // Setup custom back button (remove the conflicting lines)
         let backButton = UIBarButtonItem(
             image: UIImage(systemName: "chevron.left"),
