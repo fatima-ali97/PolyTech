@@ -1,11 +1,3 @@
-//
-//  DelayedRequestNotificationService.swift
-//  PolyTech
-//
-//  Created by BP-36-213-19 on 03/01/2026.
-//
-
-
 import Foundation
 import FirebaseFirestore
 import UserNotifications
@@ -16,7 +8,7 @@ class DelayedRequestNotificationService {
     
     private let db = Firestore.firestore()
     private var delayedRequestsListener: ListenerRegistration?
-    private var trackedDelayedRequests: Set<String> = []  // Track which requests we've already notified about
+    private var trackedDelayedRequests: Set<String> = []
     
     private let delayedAfterDays: Int = 3
     
@@ -32,7 +24,9 @@ class DelayedRequestNotificationService {
         let cutoffTimestamp = Timestamp(date: cutoffDate)
         
         // Monitor requests older than 3 days with pending status
-        delayedRequestsListener = db.collection("requests")
+        // Query specifically for pending status
+        delayedRequestsListener = db.collection("maintenanceRequest")
+            .whereField("status", isEqualTo: "pending")
             .whereField("createdAt", isLessThanOrEqualTo: cutoffTimestamp)
             .addSnapshotListener { [weak self] snapshot, error in
                 guard let self = self else { return }
@@ -42,12 +36,15 @@ class DelayedRequestNotificationService {
                     return
                 }
                 
-                guard let changes = snapshot?.documentChanges else { return }
+                guard let documents = snapshot?.documents else {
+                    print("⚠️ No documents found")
+                    return
+                }
                 
-                for change in changes {
-                    if change.type == .added {
-                        self.handleNewDelayedRequest(document: change.document)
-                    }
+                print("📊 Found \(documents.count) delayed pending requests")
+                
+                for document in documents {
+                    self.handleNewDelayedRequest(document: document)
                 }
             }
     }
@@ -71,15 +68,9 @@ class DelayedRequestNotificationService {
             return
         }
         
-        // Check if request is completed (exclude completed requests)
-        if let status = data["status"] as? String, status.lowercased() == "completed" {
-            print("⏭️ Skipping completed request: \(requestId)")
-            return
-        }
-        
-        // Check if request has pending status or no status
-        let status = (data["status"] as? String ?? "pending").lowercased()
-        guard status == "pending" || status == "submitted" else {
+        // Double-check status is pending
+        let status = (data["status"] as? String ?? "").lowercased()
+        guard status == "pending" else {
             print("⏭️ Skipping non-pending request: \(requestId) - status: \(status)")
             return
         }
@@ -95,6 +86,12 @@ class DelayedRequestNotificationService {
         
         // Calculate how many days delayed
         let daysDelayed = calculateDaysDelayed(from: createdAt.dateValue())
+        
+        // Only process if actually delayed (3+ days)
+        guard daysDelayed >= delayedAfterDays else {
+            print("⏭️ Request not yet delayed enough: \(requestId) - only \(daysDelayed) days old")
+            return
+        }
         
         print("⏰ New delayed request detected: '\(requestName)' - \(daysDelayed) days old")
         
@@ -190,6 +187,7 @@ class DelayedRequestNotificationService {
                 }
                 
                 let adminUsers = snapshot?.documents ?? []
+                print("👥 Found \(adminUsers.count) admin users to notify")
                 
                 for adminDoc in adminUsers {
                     let adminId = adminDoc.documentID
@@ -279,7 +277,10 @@ class DelayedRequestNotificationService {
         let cutoffDate = Calendar.current.date(byAdding: .day, value: -delayedAfterDays, to: Date())!
         let cutoffTimestamp = Timestamp(date: cutoffDate)
         
-        db.collection("requests")
+        print("🔍 Checking for delayed requests older than \(cutoffDate)")
+        
+        db.collection("maintenanceRequest")
+            .whereField("status", isEqualTo: "pending")
             .whereField("createdAt", isLessThanOrEqualTo: cutoffTimestamp)
             .getDocuments { [weak self] snapshot, error in
                 guard let self = self else { return }
@@ -291,16 +292,20 @@ class DelayedRequestNotificationService {
                 }
                 
                 let documents = snapshot?.documents ?? []
+                print("📊 Query returned \(documents.count) documents")
                 
-                // Filter out completed requests
+                // Filter to ensure they're truly delayed (3+ days)
                 let delayedRequests = documents.filter { doc in
                     let data = doc.data()
-                    let status = (data["status"] as? String ?? "pending").lowercased()
-                    return status != "completed"
+                    guard let createdAt = data["createdAt"] as? Timestamp else {
+                        return false
+                    }
+                    let daysDelayed = self.calculateDaysDelayed(from: createdAt.dateValue())
+                    return daysDelayed >= self.delayedAfterDays
                 }
                 
                 let count = delayedRequests.count
-                print("📊 Found \(count) delayed requests")
+                print("📊 Found \(count) truly delayed requests (3+ days old)")
                 
                 // Process each delayed request
                 for document in delayedRequests {
