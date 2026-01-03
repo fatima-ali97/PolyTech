@@ -140,11 +140,14 @@ class InventoryViewController: UIViewController {
             }
     }
     
-    // MARK: - Pull to refresh
+    // MARK: - Pull to refresh (optional)
     @objc private func refreshInventoryItems() {
-        // The listener already provides real-time updates
-        // Just end the refresh control animation
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+        // Reattach listener to force a re-sync (optional)
+        listener?.remove()
+        listener = nil
+        attachInventoryListener()
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
             self.refreshControl.endRefreshing()
         }
     }
@@ -267,13 +270,13 @@ class InventoryViewController: UIViewController {
             }
     }
     
-    // MARK: - Return Inventory (Updated to match ReturnInventoryViewController)
+    // MARK: - Return Inventory
     private func returnInventoryItem(at indexPath: IndexPath) {
         let item = filteredItems[indexPath.row]
         
         let alert = UIAlertController(
             title: "Return Inventory",
-            message: "Are you sure you want to return \(item.quantity) unit(s) of '\(item.itemName)'? This will increase the inventory stock.",
+            message: "Are you sure you want to return \(item.quantity) unit(s) of '\(item.itemName)'? This will update the inventory stock.",
             preferredStyle: .alert
         )
         
@@ -286,103 +289,75 @@ class InventoryViewController: UIViewController {
     }
     
     private func performReturn(item: Inventory) {
-        // Show loading indicator
-        let loadingAlert = UIAlertController(title: nil, message: "Processing return...", preferredStyle: .alert)
-        let loadingIndicator = UIActivityIndicatorView(style: .medium)
-        loadingIndicator.translatesAutoresizingMaskIntoConstraints = false
-        loadingIndicator.startAnimating()
-        loadingAlert.view.addSubview(loadingIndicator)
+
+        let loadingAlert = UIAlertController(
+            title: nil,
+            message: "Returning inventory...",
+            preferredStyle: .alert
+        )
+        let indicator = UIActivityIndicatorView(style: .medium)
+        indicator.startAnimating()
+        indicator.translatesAutoresizingMaskIntoConstraints = false
+        loadingAlert.view.addSubview(indicator)
+
         NSLayoutConstraint.activate([
-            loadingIndicator.centerXAnchor.constraint(equalTo: loadingAlert.view.centerXAnchor),
-            loadingIndicator.bottomAnchor.constraint(equalTo: loadingAlert.view.bottomAnchor, constant: -20)
+            indicator.centerXAnchor.constraint(equalTo: loadingAlert.view.centerXAnchor),
+            indicator.bottomAnchor.constraint(equalTo: loadingAlert.view.bottomAnchor, constant: -20)
         ])
+
         present(loadingAlert, animated: true)
-        
-        // Update the stock (increase) using the exact logic from ReturnInventoryViewController
-        updateInventoryStock(itemName: item.itemName, returnQuantity: item.quantity) { [weak self] success in
+
+        // ✅ Use a SAFE document ID (recommended)
+        let stockRef = db.collection("inventoryStock")
+            .document(item.itemName.lowercased().replacingOccurrences(of: " ", with: "_"))
+
+        let requestRef = db.collection("inventoryRequest").document(item.id)
+
+        db.runTransaction({ transaction, errorPointer in
+
+            let stockDoc: DocumentSnapshot
+            do {
+                stockDoc = try transaction.getDocument(stockRef)
+            } catch {
+                errorPointer?.pointee = error as NSError
+                return nil
+            }
+
+            let currentQty = stockDoc.data()?["quantity"] as? Int ?? 0
+            let newQty = currentQty + item.quantity
+
+            // 🔼 Increase stock
+            transaction.setData([
+                "itemName": item.itemName,
+                "category": item.category,
+                "location": item.location,
+                "quantity": newQty,
+                "lastUpdated": FieldValue.serverTimestamp()
+            ], forDocument: stockRef, merge: true)
+
+            // 🗑 Delete request
+            transaction.deleteDocument(requestRef)
+
+            return nil
+
+        }) { [weak self] _, error in
             guard let self = self else { return }
-            
-            if success {
-                // Delete the original inventory request after successful stock update
-                self.db.collection("inventoryRequest")
-                    .document(item.id)
-                    .delete { deleteError in
-                        loadingAlert.dismiss(animated: true) {
-                            if let deleteError = deleteError {
-                                self.showAlert("Stock updated but failed to delete request: \(deleteError.localizedDescription)")
-                            } else {
-                                self.showReturnSuccessAlert(itemName: item.itemName, quantity: item.quantity)
-                            }
-                        }
-                    }
-            } else {
-                loadingAlert.dismiss(animated: true) {
-                    self.showAlert("Failed to update stock. Please try again.")
-                }
-            }
-        }
-    }
-    
-    // MARK: - Stock Management (Exact match to ReturnInventoryViewController)
-    
-    private func updateInventoryStock(itemName: String, returnQuantity: Int, completion: @escaping (Bool) -> Void) {
-        // Query inventory stock by itemName (exact same logic as ReturnInventoryViewController)
-        db.collection("inventoryStock")
-            .whereField("itemName", isEqualTo: itemName)
-            .getDocuments { [weak self] snapshot, error in
-                guard let self = self else {
-                    completion(false)
-                    return
-                }
-                
+
+            loadingAlert.dismiss(animated: true) {
                 if let error = error {
-                    print("❌ Error querying inventory stock: \(error.localizedDescription)")
-                    completion(false)
-                    return
-                }
-                
-                if let documents = snapshot?.documents, !documents.isEmpty {
-                    // Item exists in stock, update it (increase quantity)
-                    let document = documents[0]
-                    let stockDocumentId = document.documentID
-                    let currentStock = document.data()["quantity"] as? Int ?? 0
-                    let newStock = currentStock + returnQuantity
-                    
-                    self.db.collection("inventoryStock")
-                        .document(stockDocumentId)
-                        .updateData(["quantity": newStock]) { error in
-                            if let error = error {
-                                print("❌ Error updating stock: \(error.localizedDescription)")
-                                completion(false)
-                            } else {
-                                print("✅ Stock updated: \(currentStock) -> \(newStock)")
-                                completion(true)
-                            }
-                        }
+                    print("❌ Return failed:", error.localizedDescription)
+                    self.showReturnErrorAlert(message: error.localizedDescription)
                 } else {
-                    // Item doesn't exist in stock, create new entry
-                    self.createNewStockEntry(itemName: itemName, quantity: returnQuantity, completion: completion)
+                    print("✅ Inventory returned & stock updated")
+                    self.showReturnSuccessAlert(
+                        itemName: item.itemName,
+                        quantity: item.quantity
+                    )
                 }
-            }
-    }
-    
-    private func createNewStockEntry(itemName: String, quantity: Int, completion: @escaping (Bool) -> Void) {
-        let stockData: [String: Any] = [
-            "itemName": itemName,
-            "quantity": quantity,
-            "createdAt": Timestamp()
-        ]
-        
-        db.collection("inventoryStock").addDocument(data: stockData) { error in
-            if let error = error {
-                print("❌ Error creating stock entry: \(error.localizedDescription)")
-                completion(false)
-            } else {
-                print("✅ New stock entry created for '\(itemName)' with quantity: \(quantity)")
-                completion(true)
             }
         }
     }
+
     
     private func showReturnSuccessAlert(itemName: String, quantity: Int) {
         let alert = UIAlertController(
@@ -394,8 +369,12 @@ class InventoryViewController: UIViewController {
         present(alert, animated: true)
     }
     
-    private func showAlert(_ message: String) {
-        let alert = UIAlertController(title: "Error", message: message, preferredStyle: .alert)
+    private func showReturnErrorAlert(message: String) {
+        let alert = UIAlertController(
+            title: "Error",
+            message: "Failed to return inventory: \(message)",
+            preferredStyle: .alert
+        )
         alert.addAction(UIAlertAction(title: "OK", style: .default))
         present(alert, animated: true)
     }
