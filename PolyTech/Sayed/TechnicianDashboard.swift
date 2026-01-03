@@ -231,7 +231,7 @@ class TechnicianDashboardViewController: UIViewController {
     func fetchDashboardData() {
         guard let currentUserID = Auth.auth().currentUser?.uid else { return }
 
-        db.collection("TasksRequests").addSnapshotListener { [weak self] (querySnapshot, error) in
+        db.collection("maintenanceRequest").addSnapshotListener { [weak self] (querySnapshot, error) in
             guard let documents = querySnapshot?.documents else {
                 print("Error fetching tasks: \(error?.localizedDescription ?? "Unknown error")")
                 return

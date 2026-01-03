@@ -195,7 +195,7 @@ extension TasksViewController: TaskCellDelegate {
     func fetchTasksFromFirebase() {
         guard let currentUserID = Auth.auth().currentUser?.uid else { return }
 
-        db.collection("TasksRequests")
+        db.collection("maintenanceRequest")
             .whereField("technicianID", isEqualTo: currentUserID)
             .addSnapshotListener { (querySnapshot, error) in
                 if let error = error {
