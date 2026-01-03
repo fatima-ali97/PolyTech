@@ -9,7 +9,10 @@ import UIKit
 import FirebaseFirestore
 
 class AdminDashboardViewController: UIViewController {
-
+    
+    
+    var userId =  UserDefaults.standard.string(forKey: "userId")
+    
     @IBOutlet weak var techOfWeekRankLabel: UILabel!
     @IBOutlet weak var techOfWeekSubtitleLabel: UILabel!
     @IBOutlet weak var techOfWeekNameLabel: UILabel!
@@ -24,7 +27,28 @@ class AdminDashboardViewController: UIViewController {
     @IBOutlet var cardViews: [UIView]!
     
     private let db = Firestore.firestore()
-    
+    private var notificationListener: ListenerRegistration?
+    private var unreadCount: Int = 0
+    private let notificationPopup: UIView = {
+        let view = UIView()
+        view.backgroundColor = .systemBackground
+        view.layer.cornerRadius = 12
+        view.layer.shadowColor = UIColor.black.cgColor
+        view.layer.shadowOpacity = 0.2
+        view.layer.shadowOffset = CGSize(width: 0, height: 4)
+        view.layer.shadowRadius = 8
+        view.alpha = 0
+        view.transform = CGAffineTransform(scaleX: 0.8, y: 0.8)
+        return view
+    }()
+    private let popupLabel: UILabel = {
+        let label = UILabel()
+        label.font = .systemFont(ofSize: 14, weight: .semibold)
+        label.textColor = .label
+        label.textAlignment = .center
+        label.numberOfLines = 0
+        return label
+    }()
     override func viewDidLoad() {
         super.viewDidLoad()
         title = "Admin Dashboard"
@@ -51,7 +75,7 @@ class AdminDashboardViewController: UIViewController {
         }
         
         startDashboardListener()
-        
+        setupNotificationPopup()
         loadTechnicianOfTheWeek()
         
         db.collection("maintenanceRequest").getDocuments { snap, err in
@@ -61,6 +85,120 @@ class AdminDashboardViewController: UIViewController {
             }
             let count = snap?.documents.count ?? 0
             print("✅ Admin smoke test maintenanceRequests count:", count)
+        }
+    }
+    override func viewWillAppear(_ animated: Bool){
+        super.viewWillAppear(animated)
+        // Refresh unread count when view appears
+        fetchUnreadNotificationCount()
+    }
+    private func setupNotificationPopup() {
+        // Add popup to view
+        view.addSubview(notificationPopup)
+        notificationPopup.addSubview(popupLabel)
+        
+        notificationPopup.translatesAutoresizingMaskIntoConstraints = false
+        popupLabel.translatesAutoresizingMaskIntoConstraints = false
+        
+        NSLayoutConstraint.activate([
+            // Position popup below notification bell (adjust these values based on your layout)
+            notificationPopup.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 20),
+            notificationPopup.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: 10),
+            notificationPopup.widthAnchor.constraint(equalToConstant: 200),
+            notificationPopup.heightAnchor.constraint(greaterThanOrEqualToConstant: 60),
+            
+            // Label inside popup
+            popupLabel.topAnchor.constraint(equalTo: notificationPopup.topAnchor, constant: 12),
+            popupLabel.leadingAnchor.constraint(equalTo: notificationPopup.leadingAnchor, constant: 12),
+            popupLabel.trailingAnchor.constraint(equalTo: notificationPopup.trailingAnchor, constant: -12),
+            popupLabel.bottomAnchor.constraint(equalTo: notificationPopup.bottomAnchor, constant: -12)
+        ])
+        
+        // Add tap gesture to dismiss popup
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(dismissPopup))
+        notificationPopup.addGestureRecognizer(tapGesture)
+    }
+    
+    // MARK: - Fetch Unread Notifications
+    
+    private func startListeningForNotifications() {
+        guard let userId = userId else {
+            print("⚠️ No user ID available")
+            return
+        }
+        
+        // Real-time listener for unread notifications
+        notificationListener = db.collection("Notifications")
+            .whereField("userId", isEqualTo: userId)
+            .whereField("isRead", isEqualTo: false)
+            .addSnapshotListener { [weak self] querySnapshot, error in
+                guard let self = self else { return }
+                
+                if let error = error {
+                    print("❌ Error fetching notifications: \(error.localizedDescription)")
+                    return
+                }
+                
+                let count = querySnapshot?.documents.count ?? 0
+                self.unreadCount = count
+                
+                DispatchQueue.main.async {
+                    //self.updateBadge(count: count)
+                }
+            }
+    }
+    
+    private func fetchUnreadNotificationCount() {
+        guard let userId = userId else { return }
+        
+        db.collection("Notifications")
+            .whereField("userId", isEqualTo: userId)
+            .whereField("isRead", isEqualTo: false)
+            .getDocuments { [weak self] querySnapshot, error in
+                guard let self = self else { return }
+                
+                if let error = error {
+                    print("❌ Error fetching unread count: \(error.localizedDescription)")
+                    return
+                }
+                
+                let count = querySnapshot?.documents.count ?? 0
+                self.unreadCount = count
+                
+                DispatchQueue.main.async {
+                   // self.updateBadge(count: count)
+                    
+                    // Show popup only on first load if there are unread notifications
+                    if count > 0 {
+                        self.showNotificationPopup(count: count)
+                    }
+                }
+            }
+    }
+    
+    
+    private func showNotificationPopup(count: Int) {
+
+        let message = count == 1
+            ? "You have 1 unread notification"
+            : "You have \(count) unread notifications"
+        popupLabel.text = message
+        
+
+        UIView.animate(withDuration: 0.4, delay: 0.2, usingSpringWithDamping: 0.7, initialSpringVelocity: 0.5, options: .curveEaseOut) {
+            self.notificationPopup.alpha = 1
+            self.notificationPopup.transform = .identity
+        }
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 3) { [weak self] in
+            self?.dismissPopup()
+        }
+    }
+    
+    @objc private func dismissPopup() {
+        UIView.animate(withDuration: 0.3) {
+            self.notificationPopup.alpha = 0
+            self.notificationPopup.transform = CGAffineTransform(scaleX: 0.8, y: 0.8)
         }
     }
     
