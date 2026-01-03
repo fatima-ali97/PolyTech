@@ -18,7 +18,8 @@ struct TaskRequest {
     let createdAt: String
     let note: String
     let acceptedDate: String
-
+    let category: String
+    
     init(docID: String, dictionary: [String: Any]) {
         self.documentID = docID
         self.id = dictionary["id"] as? String ?? String(docID.prefix(6))
@@ -31,7 +32,8 @@ struct TaskRequest {
         self.status = rawStatus.capitalized
         self.address = dictionary["location"] as? String ?? (dictionary["Address"] as? String ?? "No Address")
         self.note = dictionary["note"] as? String ?? ""
-
+        self.category = dictionary["category"] as? String ?? "General"
+        
         let formatter = DateFormatter()
         formatter.dateFormat = "dd/MM/yyyy"
         if let ts = dictionary["createdAt"] as? Timestamp {
