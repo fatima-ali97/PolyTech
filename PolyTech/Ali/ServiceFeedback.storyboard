@@ -43,7 +43,7 @@
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <subviews>
                                     <stackView opaque="NO" contentMode="scaleToFill" fixedFrame="YES" axis="vertical" distribution="fillEqually" alignment="center" spacing="12" translatesAutoresizingMaskIntoConstraints="NO" id="SQ6-h1-s9a">
-                                        <rect key="frame" x="0.0" y="8" width="340" height="112.66666666666666"/>
+                                        <rect key="frame" x="0.0" y="8.0000000000000071" width="340" height="112.66666666666669"/>
                                         <subviews>
                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="How would you rate this service?" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="pce-yJ-qHq">
                                                 <rect key="frame" x="38.333333333333343" y="0.0" width="263.33333333333326" height="50.333333333333336"/>
@@ -147,7 +147,7 @@
                                         <nil key="highlightedColor"/>
                                     </label>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Ali Fadhel" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="mng-CN-WPf">
-                                        <rect key="frame" x="22" y="95" width="80" height="21"/>
+                                        <rect key="frame" x="22" y="95" width="200" height="21"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                         <fontDescription key="fontDescription" type="boldSystem" pointSize="17"/>
                                         <nil key="textColor"/>
@@ -204,6 +204,7 @@
                     <connections>
                         <outlet property="notesTextView" destination="PGZ-IJ-CIt" id="ItD-MD-1RL"/>
                         <outlet property="submitButton" destination="5fU-UZ-ztd" id="SZn-tn-gJP"/>
+                        <outlet property="technicianNameLabel" destination="mng-CN-WPf" id="VmL-9d-0lT"/>
                         <outletCollection property="starButtons" destination="nvW-ng-FzP" collectionClass="NSMutableArray" id="Fs7-Ey-kOE"/>
                         <outletCollection property="starButtons" destination="QbE-Ls-biY" collectionClass="NSMutableArray" id="9n5-x9-xTR"/>
                         <outletCollection property="starButtons" destination="YFK-hs-jFS" collectionClass="NSMutableArray" id="q7Q-pr-DFz"/>
@@ -214,7 +215,7 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="BBk-mm-J2p" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
                 <exit id="TA0-mT-vPJ" userLabel="Exit" sceneMemberID="exit"/>
             </objects>
-            <point key="canvasLocation" x="-1031" y="22"/>
+            <point key="canvasLocation" x="-1031.2977099236641" y="21.83098591549296"/>
         </scene>
     </scenes>
     <resources>

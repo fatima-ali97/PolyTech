@@ -12,9 +12,12 @@ import FirebaseFirestore
 class ServiceFeedbackViewController: UIViewController, UITextViewDelegate {
     var requestId: String?
     var requestType: String?
+    @IBOutlet weak var technicianNameLabel: UILabel!
     @IBOutlet weak var submitButton: UIButton!
     @IBOutlet weak var notesTextView: UITextView!
     @IBOutlet var starButtons: [UIButton]!
+    
+    private var loadedTechnicianId: String?
     
     private var rating = 0 {
         didSet { updateSubmitButtonState() }
@@ -30,6 +33,7 @@ class ServiceFeedbackViewController: UIViewController, UITextViewDelegate {
         super.viewDidLoad()
         updateStars()
         updateSubmitButtonState()
+        loadRequestInfo()
         
         notesTextView.layer.cornerRadius = 12
         notesTextView.layer.borderWidth = 1
@@ -98,6 +102,77 @@ class ServiceFeedbackViewController: UIViewController, UITextViewDelegate {
         }
     }
     
+    private func loadTechnicianForRequest() {
+        guard let requestId = requestId else {
+            technicianNameLabel.text = "—"
+            return
+        }
+
+        db.collection("maintenanceRequest").document(requestId).getDocument { [weak self] snap, error in
+            guard let self else { return }
+
+            if let error = error {
+                print("Failed to fetch request: \(error)")
+                self.technicianNameLabel.text = "—"
+                return
+            }
+
+            guard let data = snap?.data() else {
+                self.technicianNameLabel.text = "—"
+                return
+            }
+
+            // If you stored technicianName directly on the request, use it (fastest)
+            if let techName = data["technicianName"] as? String, !techName.isEmpty {
+                self.technicianNameLabel.text = techName
+                return
+            }
+
+            // Otherwise, fetch technician doc by technicianId
+            guard let techId = data["technicianId"] as? String, !techId.isEmpty else {
+                self.technicianNameLabel.text = "—"
+                return
+            }
+
+            self.db.collection("technicians").document(techId).getDocument { [weak self] techSnap, error in
+                guard let self else { return }
+
+                if let error = error {
+                    print("Failed to fetch technician: \(error)")
+                    self.technicianNameLabel.text = "—"
+                    return
+                }
+
+                let techData = techSnap?.data()
+                let name = (techData?["name"] as? String) ?? "—"
+                self.technicianNameLabel.text = name
+            }
+        }
+    }
+    
+    private func loadRequestInfo() {
+        guard let requestId = requestId else { return }
+
+        db.collection("maintenanceRequest").document(requestId).getDocument { [weak self] snap, error in
+            guard let self else { return }
+
+            if let error = error {
+                print("Failed to load request: \(error)")
+                return
+            }
+
+            guard let data = snap?.data() else { return }
+
+            // Pull technicianId from whichever field your request uses
+            let techId =
+                (data["technicianId"] as? String) ??
+                (data["assignedTechnicianId"] as? String) ??
+                ""
+
+            self.loadedTechnicianId = techId.isEmpty ? nil : techId
+        }
+    }
+    
     @IBAction func submitTapped(_ sender: UIButton) {
         guard let requestId = requestId, !requestId.isEmpty else {
             print("Missing requestId")
@@ -117,6 +192,7 @@ class ServiceFeedbackViewController: UIViewController, UITextViewDelegate {
         let data: [String: Any] = [
             "requestId": requestId,
             "userId": userId,
+            "technicianId": loadedTechnicianId ?? "",
             "rating": rating,
             "notes": notes,
             "createdAt": FieldValue.serverTimestamp()
@@ -130,8 +206,14 @@ class ServiceFeedbackViewController: UIViewController, UITextViewDelegate {
                 print("Failed to submit feedback: \(error)")
                 return
             }
+            
+            let requestRef = db.collection("maintenanceRequest").document(requestId)
 
-            // success UI
+            requestRef.updateData([
+                "feedbackSubmitted": true,
+                "feedbackSubmittedAt": FieldValue.serverTimestamp()
+            ])
+
             let alert = UIAlertController(title: "Thank you!",
                                           message: "Your feedback was submitted.",
                                           preferredStyle: .alert)
