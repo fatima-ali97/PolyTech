@@ -3,8 +3,6 @@ import FirebaseFirestore
 
 // MARK: - Models
 struct FAQRow: Hashable {
-    // id: unique identifier for each FAQRow.
-    // Used by Swift when comparing/Hashing items (useful for updates, diffable data sources, etc.)
     let id = UUID()
     let question: String
     let answer: String
@@ -18,18 +16,18 @@ struct FAQSection {
 }
 
 // MARK: - FAQ Screen
- class FAQViewController: UIViewController {
+class FAQViewController: UIViewController {
 
-    // MARK: UI Outlets
+    // MARK: - UI Outlets
     @IBOutlet weak var searchBar: UISearchBar!
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var getHelpButton: UIButton!
 
-    // MARK: Data
+    // MARK: - Properties
     private var sections: [FAQSection] = []
     private var visibleSections: [FAQSection] = []
 
-    // MARK: Lifecycle
+    // MARK: - Lifecycle Methods
     override func viewDidLoad() {
         super.viewDidLoad()
         setupUI()
@@ -55,7 +53,7 @@ struct FAQSection {
         navigationController?.setNavigationBarHidden(false, animated: animated)
     }
 
-    // MARK: UI Setup
+    // MARK: - UI Setup
     private func setupUI() {
         searchBar.delegate = self
 
@@ -71,7 +69,7 @@ struct FAQSection {
         getHelpButton.clipsToBounds = true
     }
 
-    // MARK: Get Help Navigation
+    // MARK: - Get Help Navigation
     private func setupGetHelpBtn() {
         getHelpButton.isUserInteractionEnabled = true
         getHelpButton.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(helpBtnTapped)))
@@ -83,11 +81,10 @@ struct FAQSection {
         navigationController?.pushViewController(vc, animated: true)
     }
 
-    // MARK: Data (Firestore Fetch)
+    // MARK: - Data Loading
     private func loadFAQData() {
         let db = Firestore.firestore()
 
-        // Document IDs you want to fetch (in order)
         let documentIDs = ["1", "2", "3", "4", "5", "6", "7"]
 
         var faqRows: [FAQRow] = []
@@ -121,7 +118,6 @@ struct FAQSection {
             }
         }
 
-        // Update UI once ALL documents are fetched
         group.notify(queue: .main) {
             self.sections = [
                 FAQSection(title: "General", isCollapsed: false, rows: faqRows)
@@ -131,7 +127,7 @@ struct FAQSection {
         }
     }
 
-    // MARK: Expand / Collapse
+    // MARK: - Expand/Collapse Logic
     private func toggleSectionCollapse(_ sectionIndex: Int) {
         guard visibleSections.indices.contains(sectionIndex) else { return }
         visibleSections[sectionIndex].isCollapsed.toggle()
@@ -152,7 +148,7 @@ struct FAQSection {
         tableView.reloadRows(at: [IndexPath(row: row, section: section)], with: .automatic)
     }
 
-    // MARK: Search
+    // MARK: - Search Logic
     private func applySearch(_ query: String) {
         let q = query.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
 
@@ -175,10 +171,12 @@ struct FAQSection {
     }
 }
 
-// MARK: - Table (DataSource & Delegate)
+// MARK: - TableView DataSource & Delegate
 extension FAQViewController: UITableViewDataSource, UITableViewDelegate {
 
-    func numberOfSections(in tableView: UITableView) -> Int { visibleSections.count }
+    func numberOfSections(in tableView: UITableView) -> Int {
+        visibleSections.count
+    }
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         visibleSections[section].isCollapsed ? 0 : visibleSections[section].rows.count
@@ -192,7 +190,9 @@ extension FAQViewController: UITableViewDataSource, UITableViewDelegate {
         return header
     }
 
-    func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat { 44 }
+    func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+        44
+    }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: FAQCell.reuseID, for: indexPath) as! FAQCell
@@ -208,19 +208,36 @@ extension FAQViewController: UITableViewDataSource, UITableViewDelegate {
 
 // MARK: - SearchBar Delegate
 extension FAQViewController: UISearchBarDelegate {
-    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) { applySearch(searchText) }
-    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) { searchBar.resignFirstResponder() }
+    
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        applySearch(searchText)
+    }
+    
+    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        searchBar.resignFirstResponder()
+    }
 }
 
 // MARK: - Section Header View
 final class FAQSectionHeaderView: UIView {
+    
+    // MARK: - Properties
     private let titleLabel = UILabel()
     private let chevron = UIImageView()
     var onTap: (() -> Void)?
 
-    override init(frame: CGRect) { super.init(frame: frame); setup() }
-    required init?(coder: NSCoder) { super.init(coder: coder); setup() }
+    // MARK: - Initialization
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        setup()
+    }
+    
+    required init?(coder: NSCoder) {
+        super.init(coder: coder)
+        setup()
+    }
 
+    // MARK: - Setup
     private func setup() {
         backgroundColor = .clear
 
@@ -256,17 +273,22 @@ final class FAQSectionHeaderView: UIView {
         addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(didTap)))
     }
 
+    // MARK: - Configuration
     func configure(title: String, isCollapsed: Bool) {
         titleLabel.text = title
         chevron.image = isCollapsed ? UIImage(systemName: "chevron.down") : UIImage(systemName: "chevron.up")
     }
 
-    @objc private func didTap() { onTap?() }
+    // MARK: - Actions
+    @objc private func didTap() {
+        onTap?()
+    }
 }
 
 // MARK: - FAQ Cell
 final class FAQCell: UITableViewCell {
 
+    // MARK: - Properties
     static let reuseID = "FAQCell"
 
     private let cardView = UIView()
@@ -278,15 +300,18 @@ final class FAQCell: UITableViewCell {
     private var collapsedBottomConstraint: NSLayoutConstraint!
     private var expandedBottomConstraint: NSLayoutConstraint!
 
+    // MARK: - Initialization
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         setup()
     }
+    
     required init?(coder: NSCoder) {
         super.init(coder: coder)
         setup()
     }
 
+    // MARK: - Setup
     private func setup() {
         selectionStyle = .none
         backgroundColor = .clear
@@ -347,6 +372,7 @@ final class FAQCell: UITableViewCell {
         answerLabel.isHidden = true
     }
 
+    // MARK: - Configuration
     func configure(question: String, answer: String, expanded: Bool) {
         questionLabel.text = question
         answerLabel.text = answer

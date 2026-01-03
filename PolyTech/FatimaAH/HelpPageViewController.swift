@@ -1,14 +1,16 @@
 import UIKit
 
+// MARK: - Help Page View Controller
 class HelpPageViewController: UIViewController {
 
-    // MARK: - IBOutlets (Labels)
+    // MARK: - UI Outlets
     @IBOutlet weak var emailLabel: UILabel!
     @IBOutlet weak var phoneLabel: UILabel!
     @IBOutlet weak var instagramLabel: UILabel!
     @IBOutlet weak var linkedinLabel: UILabel!
     @IBOutlet weak var tiktokLabel: UILabel!
 
+    // MARK: - Lifecycle Methods
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -21,7 +23,7 @@ class HelpPageViewController: UIViewController {
         navigationController?.setNavigationBarHidden(false, animated: animated)
     }
 
-    // MARK: - Back Button
+    // MARK: - Navigation Setup
     private func setupBackButton() {
         let backButton = UIBarButtonItem(
             image: UIImage(systemName: "chevron.left"),
@@ -37,7 +39,7 @@ class HelpPageViewController: UIViewController {
         navigationController?.popViewController(animated: true)
     }
 
-    // MARK: - Tap Gestures
+    // MARK: - Tap Gestures Setup
     private func setupTapGestures() {
         makeLabelTappable(emailLabel, action: #selector(emailTapped))
         makeLabelTappable(phoneLabel, action: #selector(phoneTapped))
@@ -87,7 +89,7 @@ class HelpPageViewController: UIViewController {
         openWeb("https://www.tiktok.com/@bahrainpolytechnic")
     }
 
-    // MARK: - Helpers
+    // MARK: - Helper Methods
     private func openIfPossible(urlString: String, fallbackText: String) {
         guard let url = URL(string: urlString) else { return }
 
