@@ -84,15 +84,7 @@ class NewInventoryViewController: UIViewController {
     private func setupQuantityField() {
         quantity.delegate = self
         quantity.keyboardType = .numberPad
-        
-        let toolbar = UIToolbar()
-        toolbar.sizeToFit()
-        
-        let flexSpace = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
-        let doneButton = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(dismissKeyboard))
-        
-        toolbar.items = [flexSpace, doneButton]
-        quantity.inputAccessoryView = toolbar
+        // ✅ REMOVED: No toolbar/done button for quantity field
     }
     
     @objc private func dismissKeyboard() {
@@ -172,10 +164,10 @@ class NewInventoryViewController: UIViewController {
         ]
         
         if isEditMode, let documentId = documentId {
-            // UPDATE existing request (no push notification)
+            // UPDATE existing request (no stock change, no push notification)
             updateRequest(documentId: documentId, data: data)
         } else {
-            // CREATE new request (with push notification)
+            // CREATE new request (decrease stock and send push notification)
             newRequest(data: data)
         }
     }
@@ -234,6 +226,17 @@ class NewInventoryViewController: UIViewController {
     // MARK: - Database Operations
     
     func newRequest(data: [String: Any]) {
+        // Show loading indicator
+        let loadingAlert = UIAlertController(title: nil, message: "Creating request...", preferredStyle: .alert)
+        let loadingIndicator = UIActivityIndicatorView(style: .medium)
+        loadingIndicator.translatesAutoresizingMaskIntoConstraints = false
+        loadingIndicator.startAnimating()
+        loadingAlert.view.addSubview(loadingIndicator)
+        NSLayoutConstraint.activate([
+            loadingIndicator.centerXAnchor.constraint(equalTo: loadingAlert.view.centerXAnchor),
+            loadingIndicator.bottomAnchor.constraint(equalTo: loadingAlert.view.bottomAnchor, constant: -20)
+        ])
+        present(loadingAlert, animated: true)
 
         var newData = data
         newData["createdAt"] = Timestamp()
@@ -244,52 +247,112 @@ class NewInventoryViewController: UIViewController {
         }
 
         let collectionRef = database.collection("inventoryRequest")
-
-        // ✅ Create document reference first
         let docRef = collectionRef.document()
         let requestId = docRef.documentID
+        
+        let itemNameText = newData["itemName"] as! String
+        let requestQuantity = newData["quantity"] as! Int
 
-        // ✅ Write data
+        // ✅ Step 1: Write the request to Firestore
         docRef.setData(newData) { [weak self] error in
             guard let self = self else { return }
 
             if let error = error {
-                self.showAlert("Error saving request: \(error.localizedDescription)")
+                loadingAlert.dismiss(animated: true) {
+                    self.showAlert("Error saving request: \(error.localizedDescription)")
+                }
                 return
             }
 
-            // 🤖 Auto-assign technician
-            AutoAssignmentService.shared.autoAssignTechnician(
-                requestId: requestId,
-                requestType: "inventory",
-                category: self.selectedCategory?.rawValue ?? "general",
-                location: self.location.text ?? "",
-                urgency: "normal"
-            ) { success, errorMessage in
-                if !success {
-                    print("⚠️ Auto-assign failed: \(errorMessage ?? "unknown error")")
-                }
-            }
+            print("✅ Inventory request saved to Firestore")
 
-            // 🔔 Push notification
-            PushNotificationManager.shared.createNotificationForRequest(
-                requestType: "Inventory",
-                requestName: self.requestName.text ?? "",
-                status: "submitted",
-                location: self.location.text ?? ""
-            ) { _ in
-                DispatchQueue.main.async {
-                    self.navigationController?.popViewController(animated: true)
+            // ✅ Step 2: Decrease inventory stock
+            self.decreaseInventoryStock(itemName: itemNameText, requestQuantity: requestQuantity) { success in
+                
+                if !success {
+                    print("⚠️ Stock decrease failed, but request was saved")
+                }
+
+                // 🤖 Step 3: Auto-assign technician
+                AutoAssignmentService.shared.autoAssignTechnician(
+                    requestId: requestId,
+                    requestType: "inventory",
+                    category: self.selectedCategory?.rawValue ?? "general",
+                    location: self.location.text ?? "",
+                    urgency: "normal"
+                ) { success, errorMessage in
+                    if !success {
+                        print("⚠️ Auto-assign failed: \(errorMessage ?? "unknown error")")
+                    }
+                }
+
+                // 🔔 Step 4: Push notification
+                PushNotificationManager.shared.createNotificationForRequest(
+                    requestType: "Inventory",
+                    requestName: self.requestName.text ?? "",
+                    status: "submitted",
+                    location: self.location.text ?? ""
+                ) { _ in
+                    loadingAlert.dismiss(animated: true) {
+                        self.showSuccessAndPop(message: success ? "Request created and stock updated ✅" : "Request created but stock update failed ⚠️")
+                    }
                 }
             }
         }
     }
+    
+    // MARK: - Stock Management
+    
+    private func decreaseInventoryStock(itemName: String, requestQuantity: Int, completion: @escaping (Bool) -> Void) {
+        // Query inventory stock
+        database.collection("inventoryStock")
+            .whereField("itemName", isEqualTo: itemName)
+            .getDocuments { [weak self] snapshot, error in
+                guard let self = self else {
+                    completion(false)
+                    return
+                }
+                
+                if let error = error {
+                    print("❌ Error querying inventory stock: \(error.localizedDescription)")
+                    completion(false)
+                    return
+                }
+                
+                if let documents = snapshot?.documents, !documents.isEmpty {
+                    // Item exists in stock, decrease it
+                    let document = documents[0]
+                    let stockDocumentId = document.documentID
+                    let currentStock = document.data()["quantity"] as? Int ?? 0
+                    
+                    if currentStock < requestQuantity {
+                        print("⚠️ Insufficient stock: current=\(currentStock), requested=\(requestQuantity)")
+                        // Still allow the request but log warning
+                    }
+                    
+                    let newStock = max(0, currentStock - requestQuantity) // Don't go below 0
+                    
+                    self.database.collection("inventoryStock")
+                        .document(stockDocumentId)
+                        .updateData(["quantity": newStock]) { error in
+                            if let error = error {
+                                print("❌ Error updating stock: \(error.localizedDescription)")
+                                completion(false)
+                            } else {
+                                print("✅ Stock decreased: \(currentStock) -> \(newStock)")
+                                completion(true)
+                            }
+                        }
+                } else {
+                    // Item doesn't exist in stock - create with negative quantity or just warn
+                    print("⚠️ Item '\(itemName)' not found in stock. Cannot decrease.")
+                    completion(false)
+                }
+            }
+    }
 
-
-
-    // Helper to keep the closure clean
-    private func showSuccessAndPop() {
-        let alert = UIAlertController(title: "Success", message: "Request Saved", preferredStyle: .alert)
+    private func showSuccessAndPop(message: String = "Request Saved") {
+        let alert = UIAlertController(title: "Success", message: message, preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: "OK", style: .default) { _ in
             self.navigationController?.popViewController(animated: true)
         })
