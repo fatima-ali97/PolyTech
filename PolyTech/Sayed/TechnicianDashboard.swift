@@ -22,7 +22,7 @@ class TechnicianDashboardViewController: UIViewController {
     @IBOutlet weak var donutChartView: DonutChartViewTwo!
     // Popup view
     //vars for notifications
-    var userId: String?
+    var userId =  UserDefaults.standard.string(forKey: "userId") 
     private var notificationListener: ListenerRegistration?
     private var unreadCount: Int = 0
     let db = Firestore.firestore()
@@ -309,5 +309,10 @@ class TechnicianDashboardViewController: UIViewController {
         }
 
     @IBAction func taskListButtonTapped(_ sender: UIButton) {
+    }
+    override func viewWillAppear(_ animated: Bool){
+        super.viewWillAppear(animated)
+        // Refresh unread count when view appears
+        fetchUnreadNotificationCount()
     }
 }
