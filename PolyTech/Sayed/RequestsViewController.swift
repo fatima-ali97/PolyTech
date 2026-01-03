@@ -23,7 +23,7 @@ class RequestsViewController: UIViewController, UITableViewDataSource, UITableVi
         guard let currentUserID = Auth.auth().currentUser?.uid else { return }
 
         db.collection("maintenanceRequest")
-            .whereField("status", isEqualTo: "Pending")
+            .whereField("status", isEqualTo: "pending")
             .addSnapshotListener { (querySnapshot, error) in
                 if let error = error {
                     print("Error fetching tasks: \(error.localizedDescription)")
@@ -72,15 +72,19 @@ class RequestsViewController: UIViewController, UITableViewDataSource, UITableVi
         guard let indexPath = self.tableView.indexPathForRow(at: buttonPosition) else { return }
         
         let selectedRequest = requestsList[indexPath.row]
-        
         guard let currentUserID = Auth.auth().currentUser?.uid else { return }
         
         db.collection("maintenanceRequest").document(selectedRequest.documentID).updateData([
-            "status": "In Progress",
+            "status": "in_progress",
             "technicianID": currentUserID,
-            "acceptedDate": Timestamp()
+            "acceptedDate": Timestamp(),
+            "updatedAt": FieldValue.serverTimestamp()
         ]) { error in
-            if error == nil { print("Success: Task accepted") }
+            if let error = error {
+                print("❌ Error accepting task: \(error.localizedDescription)")
+            } else {
+                print("✅ Task moved to My Tasks")
+            }
         }
     }
 
@@ -116,7 +120,7 @@ class RequestsViewController: UIViewController, UITableViewDataSource, UITableVi
             "id": customID,
             "requestName": desc,
             "location": addr,
-            "status": "Pending",
+            "status": "pending",
             "technicianID": "",
             "createdAt": FieldValue.serverTimestamp(),
             "updatedAt": FieldValue.serverTimestamp(),
