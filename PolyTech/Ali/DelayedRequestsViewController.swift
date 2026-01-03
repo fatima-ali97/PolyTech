@@ -99,6 +99,8 @@ final class DelayedRequestsViewController: UIViewController {
 
                     let status = (data["status"] as? String ?? "").lowercased()
                     if status == "completed" { return nil }
+                    
+                    if data["reassignedAt"] != nil { return nil }
 
                     guard let title = data["requestName"] as? String else { return nil }
                     return (doc.documentID, DelayedRequest(id: doc.documentID, title: title))
@@ -188,7 +190,8 @@ final class DelayedRequestsViewController: UIViewController {
             "technicianId": technician.id,
             "assignedTechnicianName": technician.name,
             "status": "in_progress",
-            "updatedAt": FieldValue.serverTimestamp()
+            "updatedAt": FieldValue.serverTimestamp(),
+            "reassignedAt": FieldValue.serverTimestamp()   // <-- add this
         ]
 
         db.collection("maintenanceRequest").document(requestId).updateData(updates)

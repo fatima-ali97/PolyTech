@@ -13,12 +13,8 @@ struct MaintenanceRequestModel: Codable {
     var updatedAt: Timestamp
     var imageUrl: String?
     var userId: String?
-    var status: String
-    var technicianID: String
-    var declinedBy: [String]
-    
-    // NEW: Assigned technician
-    var assignedTech: String?   // optional, can be nil if not yet assigned
+    let status: String
+    let feedbackSubmitted: Bool
     
     // MARK: - Urgency Enum
     enum UrgencyLevel: String, Codable {
@@ -50,13 +46,9 @@ struct MaintenanceRequestModel: Codable {
         self.updatedAt = updatedAt
         self.imageUrl = dictionary["imageUrl"] as? String
         self.userId = dictionary["userId"] as? String
-
-        self.assignedTech = dictionary["assignedTech"] as? String   // ✅ parse from Firestore
-
-        self.status = dictionary["status"] as? String ?? "Pending"
-        self.technicianID = dictionary["technicianID"] as? String ?? ""
-        self.declinedBy = dictionary["declinedBy"] as? [String] ?? []
-
+        self.status = (dictionary["status"] as? String) ?? ""
+        self.feedbackSubmitted = (dictionary["feedbackSubmitted"] as? Bool) ?? false
+        
         // Handle location saved as String or Int
         if let locStr = dictionary["location"] as? String {
             self.location = locStr
@@ -75,14 +67,10 @@ struct MaintenanceRequestModel: Codable {
             "location": location,
             "urgency": urgency.rawValue,
             "createdAt": createdAt,
-            "updatedAt": updatedAt,
-            "status": status,
-            "technicianID": technicianID,
-            "declinedBy": declinedBy
+            "updatedAt": updatedAt
         ]
         if let imageUrl = imageUrl { dict["imageUrl"] = imageUrl }
         if let userId = userId { dict["userId"] = userId }
-        if let assignedTech = assignedTech { dict["assignedTech"] = assignedTech } // ✅ include
         return dict
     }
     
@@ -120,10 +108,5 @@ struct MaintenanceRequestModel: Codable {
         case "facility_issue": return "building.2.fill"
         default: return "exclamationmark.circle.fill"
         }
-    }
-    
-    // NEW: Computed property for display
-    var assignedTechDisplay: String {
-        return assignedTech?.isEmpty == false ? assignedTech! : "Pending"
     }
 }
