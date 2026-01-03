@@ -35,7 +35,7 @@ class DetailsTasksViewController: UIViewController {
     }
 
     func updateUI(with task: TaskRequest) {
-        clientLabel.text = "Client: \(task.client)"
+        clientLabel.text = "User: \(task.client)"
         taskIDLabel.text = "Task ID: \(task.id)"
         descriptionLabel.text = task.description
         acceptedDateLabel.text = "Accepted on: \(task.acceptedDate)"
@@ -68,7 +68,7 @@ class DetailsTasksViewController: UIViewController {
         
         let newNote = notesTextView.text ?? ""
 
-        db.collection("TasksRequests").document(docID).updateData([
+        db.collection("maintenanceRequest").document(docID).updateData([
                 "status": newStatus,
                 "note": newNote
             ]) { error in

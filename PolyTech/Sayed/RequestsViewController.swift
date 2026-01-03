@@ -117,6 +117,7 @@ class RequestsViewController: UIViewController, UITableViewDataSource, UITableVi
             "requestName": desc,
             "location": addr,
             "status": "Pending",
+            "technicianID": "",
             "createdAt": FieldValue.serverTimestamp(),
             "updatedAt": FieldValue.serverTimestamp(),
             "urgency": "high",
