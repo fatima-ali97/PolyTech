@@ -173,9 +173,35 @@ class TasksViewController: UIViewController, UITableViewDataSource, UITableViewD
     func updateNoTasksLabel() {
         noTasksLabel?.alpha = tasks.isEmpty ? 1.0 : 0.0
     }
+    
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        if searchText.isEmpty {
+            filterTasks(by: currentFilter)
+            return
+        }
+        
+        let lowercasedSearchText = searchText.lowercased()
+
+        tasks = allTasksFromFirebase.filter { task in
+            let nameMatch = task.fullName.lowercased().contains(lowercasedSearchText)
+            let idMatch = task.id.lowercased().contains(lowercasedSearchText)
+            let statusMatch = task.status.lowercased().contains(lowercasedSearchText)
+            
+            let matchesSearchText = nameMatch || idMatch || statusMatch
+
+            if currentFilter == .all {
+                return matchesSearchText
+            } else {
+                return matchesSearchText && task.status.lowercased() == currentFilter.rawValue.lowercased()
+            }
+        }
+        
+        updateNoTasksLabel()
+        tableView.reloadData()
+    }
+    
 }
 
-// MARK: - TaskCellDelegate Implementation
 extension TasksViewController: TaskCellDelegate {
     
     func didTapViewDetails(on cell: TaskTableViewCell) {
