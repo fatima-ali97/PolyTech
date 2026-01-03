@@ -18,9 +18,18 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             if granted {
                 print("✅ Notification permissions granted")
                 
-                // 🔔 Start monitoring request status changes
-                if let userId = UserDefaults.standard.string(forKey: "userId") {
-                    RequestStatusNotificationService.shared.startMonitoring(userId: userId)
+                // Get user info
+                guard let userId = UserDefaults.standard.string(forKey: "userId"),
+                      let userRole = UserDefaults.standard.string(forKey: "userRole") else {
+                    return
+                }
+                
+                // 🔔 Start monitoring request status changes (for students)
+                RequestStatusNotificationService.shared.startMonitoring(userId: userId)
+                
+                // 🔔 Start monitoring delayed requests (for admins)
+                if userRole == "admin" {
+                    DelayedRequestNotificationService.shared.startMonitoringDelayedRequests()
                 }
             } else {
                 print("❌ Notification permissions denied")
@@ -33,6 +42,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     func applicationWillTerminate(_ application: UIApplication) {
         // Stop monitoring when app closes
         RequestStatusNotificationService.shared.stopMonitoring()
+        DelayedRequestNotificationService.shared.stopMonitoring()
     }
 
     // MARK: UISceneSession Lifecycle

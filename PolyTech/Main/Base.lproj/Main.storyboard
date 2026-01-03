@@ -8,36 +8,6 @@
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
-        <!--TempFaqViewController-->
-        <scene sceneID="08c-p8-6EB">
-            <objects>
-                <viewController storyboardIdentifier="TempFaqViewController" title="TempFaqViewController" modalPresentationStyle="fullScreen" id="wqR-iE-tV5" customClass="TempFaqViewController" customModule="PolyTech" customModuleProvider="target" sceneMemberID="viewController">
-                    <view key="view" contentMode="scaleToFill" id="aD6-c2-Kif">
-                        <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <subviews>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="dummy FAQ" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Htt-Qu-eZB">
-                                <rect key="frame" x="0.0" y="118" width="393" height="666"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                <nil key="textColor"/>
-                                <nil key="highlightedColor"/>
-                            </label>
-                        </subviews>
-                        <viewLayoutGuide key="safeArea" id="Vl4-Z2-ZnX"/>
-                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
-                        <constraints>
-                            <constraint firstItem="Vl4-Z2-ZnX" firstAttribute="bottom" secondItem="Htt-Qu-eZB" secondAttribute="bottom" id="89R-2T-pIW"/>
-                            <constraint firstItem="Htt-Qu-eZB" firstAttribute="leading" secondItem="Vl4-Z2-ZnX" secondAttribute="leading" id="KmG-0V-JCN"/>
-                            <constraint firstItem="Vl4-Z2-ZnX" firstAttribute="trailing" secondItem="Htt-Qu-eZB" secondAttribute="trailing" id="uq5-Mm-EXA"/>
-                            <constraint firstItem="Htt-Qu-eZB" firstAttribute="top" secondItem="Vl4-Z2-ZnX" secondAttribute="top" id="xzM-LD-np9"/>
-                        </constraints>
-                    </view>
-                    <navigationItem key="navigationItem" largeTitleDisplayMode="always" id="5EE-3k-udg"/>
-                </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="Wh4-DG-rBN" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="8901.5267175572517" y="-176.05633802816902"/>
-        </scene>
         <!--Home View Controller-->
         <scene sceneID="lvn-uF-vti">
             <objects>
@@ -143,7 +113,7 @@
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>
         <systemColor name="systemGray2Color">
-            <color red="0.68235294120000001" green="0.68235294120000001" blue="0.69803921570000005" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.68235294117647061" green="0.68235294117647061" blue="0.69803921568627447" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
         <systemColor name="underPageBackgroundColor">
             <color red="0.70980392156862748" green="0.71764705882352942" blue="0.74117647058823533" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
