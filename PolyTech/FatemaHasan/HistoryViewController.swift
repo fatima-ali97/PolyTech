@@ -26,24 +26,12 @@ class HistoryViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-//        setupUI()
         setupTableView()
         setupEmptyState()
         loadHistoryItems()
         
         SearchBar.delegate = self
-        
-
-        let textField = SearchBar.searchTextField
-        textField.textColor = .onBackground
-        textField.tintColor = .background
-        textField.backgroundColor = .secondarySystemBackground
-
-
-        SearchBar.backgroundImage = UIImage()
-        
-        
-        // Setup custom back button (remove the conflicting lines)
+        // Setup custom back button
         let backButton = UIBarButtonItem(
             image: UIImage(systemName: "chevron.left"),
             style: .plain,
@@ -71,44 +59,20 @@ class HistoryViewController: UIViewController {
         }
     }
     
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-        maintenanceListener?.remove()
-        inventoryListener?.remove()
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        // Re-attach listeners if they were removed
+        if maintenanceListener == nil || inventoryListener == nil {
+            loadHistoryItems()
+        }
     }
     
-//    // MARK: - Setup
-//    private func setupUI() {
-//        navigationController?.navigationBar.prefersLargeTitles = true
-//        view.backgroundColor = .systemBackground
-//        
-//        // Back to Profile (robust: pop to ProfileVC if found, else pop current)
-//        let backButton = UIBarButtonItem(
-//            image: UIImage(systemName: "arrow.left"),
-//            style: .plain,
-//            target: self,
-//            action: #selector(backToProfile)
-//        )
-//        navigationItem.leftBarButtonItem = backButton
-//    }
-//    
-//    @objc private func backToProfile() {
-//        // If inside a tab bar, try to switch to Profile tab (index 3 as per your UI screenshot)
-//        if let tab = tabBarController, tab.viewControllers?.count ?? 0 > 3 {
-//            tab.selectedIndex = 3
-//            return
-//        }
-//        // Otherwise, pop to an existing ProfileViewController if present in the stack
-//        if let nav = navigationController {
-//            if let profileVC = nav.viewControllers.first(where: { $0 is ProfileViewController }) {
-//                nav.popToViewController(profileVC, animated: true)
-//            } else {
-//                nav.popViewController(animated: true)
-//            }
-//        }
-//    }
-    
-    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        // Don't remove listeners here - keep them active for real-time updates
+        // maintenanceListener?.remove()
+        // inventoryListener?.remove()
+    }
     
     private func setupTableView() {
         guard let tableView = tableView else {
@@ -175,6 +139,7 @@ class HistoryViewController: UIViewController {
                     MaintenanceRequestModel(dictionary: $0.data(), id: $0.documentID)
                 }
                 
+                // Sort by newest first (descending order)
                 self.maintenanceRequests.sort { $0.createdAt.dateValue() > $1.createdAt.dateValue() }
                 
                 DispatchQueue.main.async {
@@ -183,8 +148,8 @@ class HistoryViewController: UIViewController {
                 }
             }
         
-        // Inventory Requests (ensure collection name matches your Firestore; if you use "inventoryRequest", change it here)
-        inventoryListener = db.collection("Inventory")
+        // Inventory Requests - fetch from 'inventoryRequest' collection (matching InventoryViewController)
+        inventoryListener = db.collection("inventoryRequest")
             .whereField("userId", isEqualTo: currentUserId ?? "")
             .addSnapshotListener { [weak self] querySnapshot, error in
                 guard let self = self else { return }
@@ -196,20 +161,27 @@ class HistoryViewController: UIViewController {
                 }
                 
                 guard let documents = querySnapshot?.documents else {
+                    print("⚠️ No documents found in inventoryRequest collection")
                     self.inventoryRequests.removeAll()
                     self.updateEmptyState()
                     return
                 }
                 
+                print("📦 Found \(documents.count) inventory request documents")
+                
                 self.inventoryRequests = documents.compactMap {
                     Inventory(dictionary: $0.data(), id: $0.documentID)
                 }
                 
+                print("✅ Successfully parsed \(self.inventoryRequests.count) inventory requests")
+                
+                // Sort by newest first (descending order)
                 self.inventoryRequests.sort { $0.createdAt.dateValue() > $1.createdAt.dateValue() }
                 
                 DispatchQueue.main.async {
                     self.tableView?.reloadData()
                     self.updateEmptyState()
+                    print("🔄 Table view reloaded with \(self.getTotalCount()) total items")
                 }
             }
     }
@@ -258,16 +230,20 @@ class HistoryViewController: UIViewController {
     }
     
     private func getItemType(at index: Int) -> (type: String, item: Any) {
-        let maintenanceCount = isSearching ? filteredMaintenanceRequests.count : maintenanceRequests.count
-        
-        if index < maintenanceCount {
-            let item = isSearching ? filteredMaintenanceRequests[index] : maintenanceRequests[index]
-            return ("maintenance", item)
-        } else {
-            let adjustedIndex = index - maintenanceCount
-            let item = isSearching ? filteredInventoryRequests[adjustedIndex] : inventoryRequests[adjustedIndex]
-            return ("inventory", item)
+        // Combine both arrays and sort by date
+        let maintenanceItems: [(date: Date, type: String, item: Any)] = (isSearching ? filteredMaintenanceRequests : maintenanceRequests).map {
+            (date: $0.createdAt.dateValue(), type: "maintenance", item: $0)
         }
+        
+        let inventoryItems: [(date: Date, type: String, item: Any)] = (isSearching ? filteredInventoryRequests : inventoryRequests).map {
+            (date: $0.createdAt.dateValue(), type: "inventory", item: $0)
+        }
+        
+        // Combine and sort by date (newest first)
+        let allItems = (maintenanceItems + inventoryItems).sorted { $0.date > $1.date }
+        
+        let item = allItems[index]
+        return (type: item.type, item: item.item)
     }
 }
 
@@ -317,25 +293,21 @@ extension HistoryViewController: UITableViewDelegate {
             guard let self = self else { completion(false); return }
             let itemData = self.getItemType(at: indexPath.row)
             
-            if itemData.type == "maintenance" {
-                let maintenanceCount = self.isSearching
-                    ? self.filteredMaintenanceRequests.count
-                    : self.maintenanceRequests.count
-                if indexPath.row < maintenanceCount {
-                    let itemIndex = indexPath.row
-                    let id = (self.isSearching ? self.filteredMaintenanceRequests[itemIndex] : self.maintenanceRequests[itemIndex]).id
-                    self.db.collection("maintenanceRequest").document(id).delete { error in
-                        if let error = error { self.showError("Failed to delete: \(error.localizedDescription)") }
+            if itemData.type == "maintenance", let item = itemData.item as? MaintenanceRequestModel {
+                self.db.collection("maintenanceRequest").document(item.id).delete { error in
+                    if let error = error {
+                        self.showError("Failed to delete: \(error.localizedDescription)")
+                    } else {
+                        print("✅ Maintenance request deleted successfully")
                     }
                 }
-            } else if itemData.type == "inventory" {
-                let maintenanceCount = self.isSearching
-                    ? self.filteredMaintenanceRequests.count
-                    : self.maintenanceRequests.count
-                let adjustedIndex = indexPath.row - maintenanceCount
-                let item = self.isSearching ? self.filteredInventoryRequests[adjustedIndex] : self.inventoryRequests[adjustedIndex]
-                self.db.collection("Inventory").document(item.id).delete { error in
-                    if let error = error { self.showError("Failed to delete: \(error.localizedDescription)") }
+            } else if itemData.type == "inventory", let item = itemData.item as? Inventory {
+                self.db.collection("inventoryRequest").document(item.id).delete { error in
+                    if let error = error {
+                        self.showError("Failed to delete: \(error.localizedDescription)")
+                    } else {
+                        print("✅ Inventory request deleted successfully")
+                    }
                 }
             }
             

@@ -33,7 +33,10 @@
                                 <color key="tintColor" red="0.1199271021" green="0.27991654240000002" blue="0.57909201290000001" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                             </view>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="NNc-l0-gAI">
-                                <rect key="frame" x="166" y="699" width="61" height="39"/>
+                                <rect key="frame" x="45.666666666666742" y="544" width="302" height="39"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="302" id="VHr-rl-sRU"/>
+                                </constraints>
                                 <color key="tintColor" red="0.086274509799999996" green="0.1647058824" blue="0.2666666667" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                                 <state key="normal" title="Button"/>
                                 <buttonConfiguration key="configuration" style="filled" title="Save" cornerStyle="capsule"/>
@@ -130,7 +133,7 @@
                         <viewLayoutGuide key="safeArea" id="Wdc-J0-ihR"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
-                            <constraint firstItem="NNc-l0-gAI" firstAttribute="top" secondItem="Wdc-J0-ihR" secondAttribute="top" constant="581" id="Kpw-43-a74"/>
+                            <constraint firstItem="NNc-l0-gAI" firstAttribute="top" secondItem="Wdc-J0-ihR" secondAttribute="top" constant="426" id="Kpw-43-a74"/>
                             <constraint firstItem="NNc-l0-gAI" firstAttribute="centerX" secondItem="Wdc-J0-ihR" secondAttribute="centerX" id="O8N-pz-xdR"/>
                         </constraints>
                     </view>
@@ -148,7 +151,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="rNL-cR-6xC" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2558" y="-1938"/>
+            <point key="canvasLocation" x="2556.4885496183206" y="-1938.0281690140846"/>
         </scene>
     </scenes>
     <resources>
@@ -157,7 +160,7 @@
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>
         <systemColor name="systemGray2Color">
-            <color red="0.68235294120000001" green="0.68235294120000001" blue="0.69803921570000005" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.68235294117647061" green="0.68235294117647061" blue="0.69803921568627447" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
     </resources>
 </document>

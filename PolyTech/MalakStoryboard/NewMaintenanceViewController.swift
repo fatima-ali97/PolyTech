@@ -2,6 +2,7 @@ import UIKit
 import FirebaseFirestore
 import FirebaseAuth
 import Cloudinary
+import AVFoundation
 
 class NewMaintenanceViewController: UIViewController {
     
@@ -22,6 +23,8 @@ class NewMaintenanceViewController: UIViewController {
     var documentId: String?
     var existingData: [String: Any]?
     var uploadedImageUrl: String?
+    var uploadedVoiceUrl: String?
+    var recordedVoiceURL: URL? // Local voice recording
     
     // MARK: - IBOutlets
     @IBOutlet weak var requestName: UITextField!
@@ -33,6 +36,7 @@ class NewMaintenanceViewController: UIViewController {
     @IBOutlet weak var categoryDropDown: UIImageView!
     @IBOutlet weak var urgencyDropDown: UIImageView!
     @IBOutlet weak var uploadImage: UIImageView!
+    @IBOutlet weak var recordVoiceButton: UIButton! // Add this button to your storyboard
     
     // Picker setup
     private let categoryPicker = UIPickerView()
@@ -76,6 +80,7 @@ class NewMaintenanceViewController: UIViewController {
         setupPickers()
         setupDropdownTap()
         setupImageTap()
+        setupVoiceButton()
         configureEditMode()
         setupNavigationBackButton()
         
@@ -103,6 +108,10 @@ class NewMaintenanceViewController: UIViewController {
     }
     
     @objc private func goBack() {
+        // Clean up voice recording if exists and not uploaded
+        if let voiceURL = recordedVoiceURL, uploadedVoiceUrl == nil {
+            try? FileManager.default.removeItem(at: voiceURL)
+        }
         navigationController?.popViewController(animated: true)
     }
     
@@ -110,6 +119,110 @@ class NewMaintenanceViewController: UIViewController {
         let config = CLDConfiguration(cloudName: cloudName, secure: true)
         cloudinary = CLDCloudinary(configuration: config)
     }
+    
+    // MARK: - Voice Recording Setup
+    
+    private func setupVoiceButton() {
+        // Configure the button appearance
+        var config = UIButton.Configuration.filled()
+        config.title = recordedVoiceURL == nil ? "Record Voice Note (Optional)" : "Voice Note Recorded ✓"
+        config.image = UIImage(systemName: recordedVoiceURL == nil ? "mic.fill" : "checkmark.circle.fill")
+        config.imagePlacement = .leading
+        config.imagePadding = 8
+        config.baseBackgroundColor = recordedVoiceURL == nil ? .accent : .tertiary
+        config.baseForegroundColor = .onPrimary
+        config.cornerStyle = .medium
+        config.contentInsets = NSDirectionalEdgeInsets(top: 14, leading: 20, bottom: 14, trailing: 20)
+        
+        recordVoiceButton.configuration = config
+        recordVoiceButton.addTarget(self, action: #selector(recordVoiceButtonTapped), for: .touchUpInside)
+    }
+    
+    @objc private func recordVoiceButtonTapped() {
+        // Create and present the voice recording page
+        let voiceRecordingVC = VoiceRecordingViewController()
+        
+        // Set callback to receive the recorded audio
+        voiceRecordingVC.onRecordingComplete = { [weak self] audioURL in
+            guard let self = self else { return }
+            self.recordedVoiceURL = audioURL
+            self.updateVoiceButton()
+            print("✅ Voice recording received: \(audioURL)")
+        }
+        
+        // Present as modal
+        voiceRecordingVC.modalPresentationStyle = .fullScreen
+        present(voiceRecordingVC, animated: true)
+    }
+    
+    private func updateVoiceButton() {
+        var config = recordVoiceButton.configuration
+        if recordedVoiceURL != nil {
+            config?.title = "Voice Note Recorded ✓"
+            config?.image = UIImage(systemName: "checkmark.circle.fill")
+            config?.baseBackgroundColor = .tertiary
+        } else {
+            config?.title = "Record Voice Note (Optional)"
+            config?.image = UIImage(systemName: "mic.fill")
+            config?.baseBackgroundColor = .accent
+        }
+        recordVoiceButton.configuration = config
+    }
+    
+    // MARK: - Cloudinary Upload for Voice
+    
+    private func uploadVoiceToCloudinary(completion: @escaping (Bool) -> Void) {
+        guard let voiceURL = recordedVoiceURL else {
+            completion(true) // No voice recording, continue
+            return
+        }
+        
+        // Read the audio file data
+        guard let voiceData = try? Data(contentsOf: voiceURL) else {
+            showAlert("Failed to read voice recording")
+            completion(false)
+            return
+        }
+        
+        savebtn.isEnabled = false
+        savebtn.setTitle("Uploading voice...", for: .normal)
+        
+        // Upload parameters for raw audio files
+        let params = CLDUploadRequestParams()
+        params.setResourceType(.raw) // Use 'raw' for audio files
+        
+        cloudinary.createUploader().upload(
+            data: voiceData,
+            uploadPreset: uploadPreset,
+            params: params,
+            completionHandler: { [weak self] result, error in
+                
+                guard let self = self else { return }
+                
+                self.savebtn.isEnabled = true
+                self.savebtn.setTitle(self.isEditMode ? "Update" : "Save", for: .normal)
+                
+                if let error = error {
+                    print("❌ Cloudinary voice upload error:", error.localizedDescription)
+                    self.showAlert("Failed to upload voice note. Please try again.")
+                    completion(false)
+                    return
+                }
+                
+                guard let secureUrl = result?.secureUrl else {
+                    self.showAlert("Failed to get voice URL from Cloudinary")
+                    completion(false)
+                    return
+                }
+                
+                print("✅ Voice uploaded to Cloudinary: \(secureUrl)")
+                self.uploadedVoiceUrl = secureUrl
+                completion(true)
+            }
+        )
+    }
+    
+    // MARK: - Image Upload
     
     private func setupImageTap() {
         uploadImage.isUserInteractionEnabled = true
@@ -125,36 +238,51 @@ class NewMaintenanceViewController: UIViewController {
         present(picker, animated: true)
     }
     
-    private func uploadToCloudinary(imageData: Data) {
+    private func uploadImageToCloudinary(imageData: Data, completion: @escaping (Bool) -> Void) {
         savebtn.isEnabled = false
+        savebtn.setTitle("Uploading image...", for: .normal)
         
         cloudinary.createUploader().upload(
             data: imageData,
             uploadPreset: uploadPreset,
             completionHandler: { [weak self] result, error in
                 
-                self?.savebtn.isEnabled = true
+                guard let self = self else { return }
+                
+                self.savebtn.isEnabled = true
+                self.savebtn.setTitle(self.isEditMode ? "Update" : "Save", for: .normal)
                 
                 if let error = error {
-                    print("❌ Cloudinary error:", error.localizedDescription)
+                    print("❌ Cloudinary image upload error:", error.localizedDescription)
+                    self.showAlert("Failed to upload image. Please try again.")
+                    completion(false)
                     return
                 }
                 
-                guard let secureUrl = result?.secureUrl else { return }
-                self?.uploadedImageUrl = secureUrl
+                guard let secureUrl = result?.secureUrl else {
+                    completion(false)
+                    return
+                }
+                
                 print("✅ Image uploaded to Cloudinary: \(secureUrl)")
+                self.uploadedImageUrl = secureUrl
+                completion(true)
             }
         )
     }
     
+    // MARK: - Edit Mode Configuration
+    
     private func configureEditMode() {
         if let request = requestToEdit {
+            print("✏️ Edit mode activated for request: \(request.requestName)")
             isEditMode = true
             documentId = request.id
             pageTitle.text = "Edit Maintenance Request"
             savebtn.setTitle("Update", for: .normal)
             populateFieldsFromRequest(request)
         } else {
+            print("➕ New request mode")
             isEditMode = false
             pageTitle.text = "New Maintenance Request"
             savebtn.setTitle("Save", for: .normal)
@@ -162,25 +290,41 @@ class NewMaintenanceViewController: UIViewController {
     }
     
     private func populateFieldsFromRequest(_ request: MaintenanceRequestModel) {
+        print("📝 Populating fields with request data")
+        
         requestName.text = request.requestName
         requestName.isEnabled = false
+        requestName.backgroundColor = UIColor.systemGray6
         
         location.text = request.location
         
+        // Set category
         if let cat = MaintenanceCategory(rawValue: request.category) {
             selectedCategory = cat
             category.text = cat.displayName
+            print("✅ Category set: \(cat.displayName)")
         }
         
+        // Set urgency
         if let urg = UrgencyLevel(rawValue: request.urgency.rawValue) {
             selectedUrgency = urg
             urgency.text = urg.displayName
+            print("✅ Urgency set: \(urg.displayName)")
         }
         
+        // Load image if exists
         if let imageUrl = request.imageUrl {
             uploadedImageUrl = imageUrl
             loadImage(from: imageUrl)
+            print("✅ Loading existing image")
         }
+        
+        // Load voice note if exists
+//        if let voiceUrl = request.voiceUrl {
+//            uploadedVoiceUrl = voiceUrl
+//            updateVoiceButton()
+//            print("✅ Existing voice note found")
+//        }
     }
     
     private func loadImage(from urlString: String) {
@@ -196,16 +340,44 @@ class NewMaintenanceViewController: UIViewController {
         }.resume()
     }
     
+    // MARK: - Picker Setup
+    
     private func setupPickers() {
+        // Category Picker
         categoryPicker.delegate = self
         categoryPicker.dataSource = self
         categoryPicker.tag = 1
         category.inputView = categoryPicker
         
+        // Category Toolbar with Done button
+        let categoryToolbar = UIToolbar()
+        categoryToolbar.sizeToFit()
+        let categoryDone = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(dismissCategoryPicker))
+        let categoryFlex = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
+        categoryToolbar.items = [categoryFlex, categoryDone]
+        category.inputAccessoryView = categoryToolbar
+        
+        // Urgency Picker
         urgencyPicker.delegate = self
         urgencyPicker.dataSource = self
         urgencyPicker.tag = 2
         urgency.inputView = urgencyPicker
+        
+        // Urgency Toolbar with Done button
+        let urgencyToolbar = UIToolbar()
+        urgencyToolbar.sizeToFit()
+        let urgencyDone = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(dismissUrgencyPicker))
+        let urgencyFlex = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
+        urgencyToolbar.items = [urgencyFlex, urgencyDone]
+        urgency.inputAccessoryView = urgencyToolbar
+    }
+    
+    @objc private func dismissCategoryPicker() {
+        category.resignFirstResponder()
+    }
+    
+    @objc private func dismissUrgencyPicker() {
+        urgency.resignFirstResponder()
     }
     
     private func setupDropdownTap() {
@@ -238,7 +410,7 @@ class NewMaintenanceViewController: UIViewController {
             let categoryEnum = selectedCategory,
             let urgencyEnum = selectedUrgency
         else {
-            showAlert("Please fill in all fields")
+            showAlert("Please fill in all required fields")
             return
         }
         
@@ -271,67 +443,97 @@ class NewMaintenanceViewController: UIViewController {
             if let userId = UserDefaults.standard.string(forKey: "userId") {
                 data["userId"] = userId
             }
-
-            let collectionRef = database.collection("maintenanceRequest")
-
-            // ✅ Create document reference FIRST
-            let docRef = collectionRef.document()
-            let requestId = docRef.documentID
-
-            // ✅ Write data
-            docRef.setData(data) { [weak self] error in
-                guard let self = self else { return }
-
-                if let error = error {
-                    self.showAlert(error.localizedDescription)
-                    return
+            
+            if let voiceUrl = self.uploadedVoiceUrl {
+                data["voiceUrl"] = voiceUrl
+                print("💾 Saving voiceUrl to Firebase: \(voiceUrl)")
+            }
+            
+            if self.isEditMode, let documentId = self.documentId {
+                // UPDATE existing request
+                self.database.collection("maintenanceRequest")
+                    .document(documentId)
+                    .updateData(data, completion: self.handleUpdateResult)
+            } else {
+                // CREATE new request
+                data["createdAt"] = Timestamp()
+                data["status"] = "pending"
+                
+                if let userId = UserDefaults.standard.string(forKey: "userId") {
+                    data["userId"] = userId
                 }
-
-                print("✅ Maintenance request saved with ID: \(requestId)")
-
-                // 🤖 Auto-assign technician
-                AutoAssignmentService.shared.autoAssignTechnician(
-                    requestId: requestId,
-                    requestType: "maintenance",
-                    category: categoryEnum.rawValue,
-                    location: locationText,
-                    urgency: urgencyEnum.rawValue
-                ) { success, errorMessage in
-                    if success {
-                        print("✅ Technician auto-assigned successfully")
-                    } else {
-                        print("⚠️ Auto-assignment failed: \(errorMessage ?? "Unknown error")")
+                
+                let collectionRef = self.database.collection("maintenanceRequest")
+                
+                // ✅ Create document reference FIRST
+                let docRef = collectionRef.document()
+                let requestId = docRef.documentID
+                
+                // ✅ Write data
+                docRef.setData(data) { [weak self] error in
+                    guard let self = self else { return }
+                    
+                    if let error = error {
+                        self.showAlert(error.localizedDescription)
+                        return
                     }
-                }
-
-                // 🔔 Create student notification
-                PushNotificationManager.shared.createNotificationForRequest(
-                    requestType: "Maintenance",
-                    requestName: requestNameText,
-                    status: "submitted",
-                    location: locationText
-                ) { _ in
-
-                    let alert = UIAlertController(
-                        title: "Success",
-                        message: "Maintenance request created\nA technician will be assigned.",
-                        preferredStyle: .alert
-                    )
-
-                    alert.addAction(UIAlertAction(title: "OK", style: .default) { _ in
-                        if self.presentingViewController != nil {
-                            self.dismiss(animated: true)
+                    
+                    print("✅ Maintenance request saved with ID: \(requestId)")
+                    
+                    // 🤖 Auto-assign technician
+                    AutoAssignmentService.shared.autoAssignTechnician(
+                        requestId: requestId,
+                        requestType: "maintenance",
+                        category: categoryEnum.rawValue,
+                        location: locationText,
+                        urgency: urgencyEnum.rawValue
+                    ) { success, errorMessage in
+                        if success {
+                            print("✅ Technician auto-assigned successfully")
                         } else {
-                            self.navigationController?.popViewController(animated: true)
+                            print("⚠️ Auto-assignment failed: \(errorMessage ?? "Unknown error")")
                         }
-                    })
-
-                    DispatchQueue.main.async {
-                        self.present(alert, animated: true)
+                    }
+                    
+                    // 🔔 Create student notification
+                    PushNotificationManager.shared.createNotificationForRequest(
+                        requestType: "Maintenance",
+                        requestName: requestNameText,
+                        status: "submitted",
+                        location: locationText
+                    ) { success in
+                        if success {
+                            print("✅ Push notification scheduled successfully")
+                            
+                            // Show in-app notification banner
+                            NotificationManager.shared.showSuccess(
+                                title: "Request Submitted ✓",
+                                message: "Your maintenance request has been submitted successfully."
+                            )
+                        } else {
+                            print("⚠️ Failed to schedule push notification")
+                        }
+                        
+                        let alert = UIAlertController(
+                            title: "Success",
+                            message: "Maintenance request created\nA technician will be assigned.",
+                            preferredStyle: .alert
+                        )
+                        
+                        alert.addAction(UIAlertAction(title: "OK", style: .default) { _ in
+                            if self.presentingViewController != nil {
+                                self.dismiss(animated: true)
+                            } else {
+                                self.navigationController?.popViewController(animated: true)
+                            }
+                        })
+                        
+                        DispatchQueue.main.async {
+                            self.present(alert, animated: true)
+                        }
                     }
                 }
             }
-
         }
     }
     
@@ -345,7 +547,7 @@ class NewMaintenanceViewController: UIViewController {
         
         let alert = UIAlertController(
             title: "Success",
-            message: "Maintenance request updated successfully",
+            message: "Maintenance request updated successfully ✅",
             preferredStyle: .alert
         )
         
@@ -417,6 +619,6 @@ extension NewMaintenanceViewController: UIImagePickerControllerDelegate, UINavig
               let data = image.jpegData(compressionQuality: 0.8) else { return }
         
         uploadImage.image = image
-        uploadToCloudinary(imageData: data)
+        uploadImageToCloudinary(imageData: data) { _ in }
     }
 }
