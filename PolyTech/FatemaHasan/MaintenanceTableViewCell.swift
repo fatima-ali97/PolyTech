@@ -71,8 +71,8 @@ class MaintenanceTableViewCell: UITableViewCell {
         config.image = UIImage(systemName: "eye.fill")
         config.imagePlacement = .leading
         config.imagePadding = 6
-        config.baseBackgroundColor = UIColor.systemGray5
-        config.baseForegroundColor = UIColor.systemBlue
+        config.baseBackgroundColor = UIColor(red: 0.85, green: 0.9, blue: 0.95, alpha: 1.0)
+        config.baseForegroundColor = UIColor(red: 0.2, green: 0.4, blue: 0.6, alpha: 1.0)
         config.cornerStyle = .medium
         return UIButton(configuration: config)
     }()
@@ -83,7 +83,7 @@ class MaintenanceTableViewCell: UITableViewCell {
         config.image = UIImage(systemName: "pencil")
         config.imagePlacement = .leading
         config.imagePadding = 6
-        config.baseBackgroundColor = UIColor.systemBlue
+        config.baseBackgroundColor = UIColor(red: 0.2, green: 0.4, blue: 0.6, alpha: 1.0)
         config.baseForegroundColor = .white
         config.cornerStyle = .medium
         return UIButton(configuration: config)
