@@ -15,6 +15,7 @@ struct MaintenanceRequestModel: Codable {
     var userId: String?
     let status: String
     let feedbackSubmitted: Bool
+    var technicianID: String?  // Added missing property to match Firestore field
     
     // MARK: - Urgency Enum
     enum UrgencyLevel: String, Codable {
@@ -48,6 +49,7 @@ struct MaintenanceRequestModel: Codable {
         self.userId = dictionary["userId"] as? String
         self.status = (dictionary["status"] as? String) ?? ""
         self.feedbackSubmitted = (dictionary["feedbackSubmitted"] as? Bool) ?? false
+        self.technicianID = dictionary["technicianID"] as? String  // Parse from Firestore
         
         // Handle location saved as String or Int
         if let locStr = dictionary["location"] as? String {
@@ -67,14 +69,26 @@ struct MaintenanceRequestModel: Codable {
             "location": location,
             "urgency": urgency.rawValue,
             "createdAt": createdAt,
-            "updatedAt": updatedAt
+            "updatedAt": updatedAt,
+            "status": status,
+            "feedbackSubmitted": feedbackSubmitted
         ]
         if let imageUrl = imageUrl { dict["imageUrl"] = imageUrl }
         if let userId = userId { dict["userId"] = userId }
+        if let technicianID = technicianID { dict["technicianID"] = technicianID }
         return dict
     }
     
     // MARK: - Computed Properties
+    var assignedTechDisplay: String {
+        // If you have a technician name lookup, you can fetch it here
+        // For now, display the ID or "Not Assigned"
+        if let techID = technicianID, !techID.isEmpty {
+            return techID  // You can replace this with a name lookup if needed
+        }
+        return "Not Assigned"
+    }
+    
     var createdTimeText: String {
         let date = createdAt.dateValue()
         let now = Date()
