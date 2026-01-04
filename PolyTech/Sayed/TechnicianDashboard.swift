@@ -22,7 +22,7 @@ class TechnicianDashboardViewController: UIViewController {
     @IBOutlet weak var donutChartView: DonutChartViewTwo!
     // Popup view
     //vars for notifications
-    var userId: String?
+    var userId =  UserDefaults.standard.string(forKey: "userId") 
     private var notificationListener: ListenerRegistration?
     private var unreadCount: Int = 0
     let db = Firestore.firestore()
@@ -242,7 +242,7 @@ class TechnicianDashboardViewController: UIViewController {
                 let techID = data["technicianID"] as? String ?? ""
                 let declinedBy = data["declinedBy"] as? [String] ?? []
 
-                if status == "Pending" {
+                if status == "pending" {
                     return !declinedBy.contains(currentUserID)
                 } else {
                     return techID == currentUserID
@@ -250,9 +250,9 @@ class TechnicianDashboardViewController: UIViewController {
             }
 
             let total = visibleTasks.count
-            let pending = visibleTasks.filter { ($0.data()["status"] as? String) == "Pending" }.count
-            let inProgress = visibleTasks.filter { ($0.data()["status"] as? String) == "In Progress" }.count
-            let completed = visibleTasks.filter { ($0.data()["status"] as? String) == "Completed" }.count
+            let pending = visibleTasks.filter { ($0.data()["status"] as? String) == "pending" }.count
+            let inProgress = visibleTasks.filter { ($0.data()["status"] as? String) == "in_progress" }.count
+            let completed = visibleTasks.filter { ($0.data()["status"] as? String) == "completed" }.count
 
             DispatchQueue.main.async {
                 self?.updateDashboardUI(total: total, pending: pending, inProgress: inProgress, completed: completed)
@@ -309,5 +309,10 @@ class TechnicianDashboardViewController: UIViewController {
         }
 
     @IBAction func taskListButtonTapped(_ sender: UIButton) {
+    }
+    override func viewWillAppear(_ animated: Bool){
+        super.viewWillAppear(animated)
+        // Refresh unread count when view appears
+        fetchUnreadNotificationCount()
     }
 }

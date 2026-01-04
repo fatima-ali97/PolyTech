@@ -27,6 +27,7 @@ class ProfileViewController: UIViewController {
         
         setupScrollViewUI()
         fetchUserData()
+        setupClearNotificationsTap()
     }
     
     func setupScrollViewUI() {
@@ -44,6 +45,28 @@ class ProfileViewController: UIViewController {
                 self?.nameLabel.text = data["fullName"] as? String ?? "No Name"
                 self?.emailLabel.text = data["email"] as? String ?? "No Email"
             }
+        }
+    }
+    
+    private func setupClearNotificationsTap() {
+        // Find the view containing "Clear Notifications" - adjust the tag or identifier as needed
+        // You can set a tag in storyboard or find it programmatically
+        // For example, if it's in a UIView with tag 100:
+        if let clearNotificationsView = view.viewWithTag(97) {
+            let tapGesture = UITapGestureRecognizer(target: self, action: #selector(clearNotificationsTapped))
+            clearNotificationsView.isUserInteractionEnabled = true
+            clearNotificationsView.addGestureRecognizer(tapGesture)
+        }
+    }
+    
+    @objc private func clearNotificationsTapped() {
+        let notificationsStoryboard = UIStoryboard(name: "NotificationStoryboard", bundle: nil)
+        
+        if let notificationsVC = notificationsStoryboard.instantiateInitialViewController() {
+            notificationsVC.modalPresentationStyle = .formSheet
+            self.present(notificationsVC, animated: true, completion: nil)
+        } else {
+            print("Notifications storyboard missing 'Is Initial View Controller' setting.")
         }
     }
     
@@ -130,5 +153,56 @@ class ProfileViewController: UIViewController {
             }
         }
     }
+            
+        @IBAction func clearAllNotificationsTapped(_ sender: UIButton) {
+            let alert = UIAlertController(title: "Clear Notifications", message: "Are you sure you want to delete all notifications? This cannot be undone.", preferredStyle: .alert)
+            
+            alert.addAction(UIAlertAction(title: "Cancel", style: .cancel))
+            alert.addAction(UIAlertAction(title: "Clear All", style: .destructive) { _ in
+                self.performClearNotifications()
+            })
+            
+            present(alert, animated: true)
+        }
+
+        private func performClearNotifications() {
+            guard let uid = Auth.auth().currentUser?.uid else { return }
+            
+            db.collection("Notifications")
+                .whereField("userId", isEqualTo: uid)
+                .getDocuments { [weak self] (querySnapshot, error) in
+                    if let error = error {
+                        print("Error fetching notifications: \(error.localizedDescription)")
+                        return
+                    }
+                    
+                    guard let documents = querySnapshot?.documents, !documents.isEmpty else {
+                        self?.showSimpleAlert(message: "No notifications found to clear.")
+                        return
+                    }
+                    
+                    let batch = self?.db.batch()
+                    documents.forEach { doc in
+                        batch?.deleteDocument(doc.reference)
+                    }
+                    
+                    batch?.commit { error in
+                        if let error = error {
+                            print("Batch delete failed: \(error.localizedDescription)")
+                        } else {
+                            print("All notifications cleared successfully")
+                            self?.showSimpleAlert(message: "All notifications cleared.")
+                        }
+                    }
+                }
+        }
+
+        private func showSimpleAlert(message: String) {
+            let alert = UIAlertController(title: nil, message: message, preferredStyle: .alert)
+            present(alert, animated: true)
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
+                alert.dismiss(animated: true)
+            }
+        }
     
 }

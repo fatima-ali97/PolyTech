@@ -19,7 +19,7 @@
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
                     <connections>
-                        <segue destination="QFQ-2a-HY4" kind="relationship" relationship="rootViewController" id="9VR-f4-bL0"/>
+                        <segue destination="QFQ-2a-HY4" kind="relationship" relationship="rootViewController" id="pAh-XM-S0k"/>
                     </connections>
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="4W1-Y9-Nz5" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
@@ -241,6 +241,10 @@ Due: 2025-11-15</string>
                     </view>
                     <navigationItem key="navigationItem" title="Tasks" id="DZq-Es-N3f"/>
                     <connections>
+                        <outlet property="btnAll" destination="3Zf-zR-xlJ" id="QsN-Hz-3kt"/>
+                        <outlet property="btnCompleted" destination="qCp-Ts-eBW" id="hW4-4E-F7M"/>
+                        <outlet property="btnInProgress" destination="ywC-US-aoy" id="Iyc-0H-Rhv"/>
+                        <outlet property="btnPending" destination="8k9-sf-b4P" id="uda-z9-e7o"/>
                         <outlet property="filterStackView" destination="V63-8O-Amz" id="kXU-xI-0f8"/>
                         <outlet property="noTasksLabel" destination="ihQ-zH-p5Q" id="1wz-Nk-i6i"/>
                         <outlet property="searchBar" destination="qNv-ei-73L" id="env-Gi-T0v"/>
@@ -420,15 +424,15 @@ Due: 2025-11-15</string>
                                     </userDefinedRuntimeAttribute>
                                 </userDefinedRuntimeAttributes>
                             </imageView>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Description" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Omm-cX-HMg">
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Category" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Omm-cX-HMg">
                                 <rect key="frame" x="86" y="329" width="291" height="24"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <fontDescription key="fontDescription" type="boldSystem" pointSize="20"/>
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Install new HVAC system" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="iN1-Ae-0on">
-                                <rect key="frame" x="86" y="361" width="291" height="20"/>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Install new HVAC system" textAlignment="natural" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="iN1-Ae-0on">
+                                <rect key="frame" x="86" y="361" width="291" height="78"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="16"/>
                                 <nil key="textColor"/>
@@ -532,8 +536,9 @@ Due: 2025-11-15</string>
                     <connections>
                         <outlet property="AddressLabel" destination="pJq-o8-y1c" id="Uzf-D2-lJl"/>
                         <outlet property="acceptedDateLabel" destination="bkH-TA-cbG" id="fLa-Pi-8Mv"/>
+                        <outlet property="categoryLabel" destination="iN1-Ae-0on" id="c85-P8-MN8"/>
                         <outlet property="clientLabel" destination="0Oe-5Z-CsM" id="7e8-qZ-srX"/>
-                        <outlet property="descriptionLabel" destination="iN1-Ae-0on" id="v1c-Ka-DKz"/>
+                        <outlet property="descriptionLabel" destination="Omm-cX-HMg" id="z7M-nm-iqP"/>
                         <outlet property="notesTextView" destination="6Uw-gl-2To" id="HZV-SG-zPR"/>
                         <outlet property="statusSegmentedControl" destination="yJC-ne-SPT" id="TCV-1C-qOI"/>
                         <outlet property="taskIDLabel" destination="Bzb-DN-MEm" id="aR1-HF-yLk"/>
@@ -541,7 +546,7 @@ Due: 2025-11-15</string>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="FEK-vr-4zr" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="3750" y="8"/>
+            <point key="canvasLocation" x="3748.8549618320608" y="7.746478873239437"/>
         </scene>
         <!--Technician Dashboard-->
         <scene sceneID="WZC-73-NZm">
@@ -699,7 +704,7 @@ Due: 2025-11-15</string>
                         <viewLayoutGuide key="safeArea" id="eOZ-Oe-BV6"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                     </view>
-                    <navigationItem key="navigationItem" title="Technician Dashboard" id="yK8-Iz-hzE"/>
+                    <navigationItem key="navigationItem" title="Technician Dashboard" largeTitleDisplayMode="never" id="yK8-Iz-hzE"/>
                     <connections>
                         <outlet property="StatusCard" destination="qJu-xs-gbh" id="IFC-fu-iiu"/>
                         <outlet property="completedCard" destination="dTj-bi-wDL" id="BdB-b1-BhR"/>
